@@ -1,0 +1,16 @@
+isto é o footer
+<script>
+    const passwordInput = document.getElementById('tb-password');
+    const toggleBtn = document.getElementById('button-show-psw');
+    const eyeIcon = document.getElementById('icon-eye');
+  
+    toggleBtn.addEventListener('click', () => {
+      const isPassword = passwordInput.type === 'password';
+      passwordInput.type = isPassword ? 'text' : 'password';
+      eyeIcon.classList.toggle('fa-eye');
+      eyeIcon.classList.toggle('fa-eye-slash');
+    });
+  </script>
+  
+</body>
+</html>

@@ -1,49 +1,62 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const session = require('express-session'); // <-- AQUI: importação do express-session
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var restaurantsRouter = require('./routes/restaurants');
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+const restaurantsRouter = require('./routes/restaurants');
+const authRoutes = require('./routes/auth'); // <-- AQUI: tua rota de login
 
-var app = express();
+const app = express();
 
+// Conexão à base de dados MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('✅ Ligado ao MongoDB Atlas!'))
   .catch(err => console.error('❌ Erro ao ligar ao MongoDB:', err));
 
-// view engine setup
-// a
+// View engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+// Middlewares
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Sessão
+app.use(session({
+  secret: 'segredo-super-segurissimo-hihihihi', // ⚠️ troca isto por uma env var no futuro
+  resave: false,
+  saveUninitialized: false
+}));
+app.use((req, res, next) => { // permite aceder a session.user e outras variáveis globais em qualquer EJS
+  res.locals.session = req.session;
+  next();
+});
+
+// Rotas
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/restaurants', restaurantsRouter);
+app.use('/', authRoutes); // login, registo, etc.
 
-// catch 404 and forward to error handler
+// 404 handler
 app.use(function(req, res, next) {
   next(createError(404));
 });
 
-// error handler
+// Error handler
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
   res.status(err.status || 500);
   res.render('error');
 });
