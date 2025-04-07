@@ -6,12 +6,13 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const session = require('express-session'); // <-- AQUI: importação do express-session
+const session = require('express-session'); // <-- importação do express-session
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const restaurantsRouter = require('./routes/restaurants');
-const authRoutes = require('./routes/auth'); // <-- AQUI: tua rota de login
+const authRoutes = require('./routes/auth'); // <-- rota de login
+app.use('/', authRoutes);
 
 const app = express();
 
