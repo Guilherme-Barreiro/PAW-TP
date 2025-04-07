@@ -18,6 +18,7 @@ mongoose.connect(process.env.MONGO_URI)
   .catch(err => console.error('❌ Erro ao ligar ao MongoDB:', err));
 
 // view engine setup
+// a
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
