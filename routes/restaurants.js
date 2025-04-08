@@ -45,21 +45,19 @@ router.get('/:id/add-menu', async (req, res) => {
   }
 });
 
-// POST - Adicionar prato ao array de menus do restaurante
+// POST - Adicionar prato ao restaurante
 router.post('/:id/add-menu', async (req, res) => {
-  const { name, category, description, price } = req.body;
+  const { name, category, description, image, nutrition, price } = req.body;
 
   try {
     const restaurante = await Restaurant.findById(req.params.id);
     if (!restaurante) return res.status(404).send('Restaurante não encontrado');
 
-    // Verificar se já tem 10 pratos
     if (restaurante.menus.length >= 10) {
       return res.send('Este restaurante já tem 10 pratos no menu.');
     }
 
-    // Adicionar novo prato
-    restaurante.menus.push({ name, category, description, price });
+    restaurante.menus.push({ name, category, description, image, nutrition, price });
     await restaurante.save();
 
     res.redirect('/restaurants/list');

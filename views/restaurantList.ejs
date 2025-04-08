@@ -11,6 +11,7 @@
     <% restaurantes.forEach(rest => { %>
       <li>
         <strong><%= rest.name %></strong> — <%= rest.email %>
+        [<a href="/restaurants/<%= rest._id %>/add-menu">Adicionar Prato</a>]
       </li>
     <% }) %>
   </ul>
