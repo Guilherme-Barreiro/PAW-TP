@@ -1,3 +1,4 @@
+
 require('dotenv').config();
 const mongoose = require('mongoose');
 
@@ -6,15 +7,14 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const session = require('express-session'); // <-- importação do express-session
+const session = require('express-session');
+
+const app = express();
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const restaurantsRouter = require('./routes/restaurants');
-const authRoutes = require('./routes/auth'); // <-- rota de login
-app.use('/', authRoutes);
-
-const app = express();
+const authRoutes = require('./routes/auth');
 
 // Conexão à base de dados MongoDB
 mongoose.connect(process.env.MONGO_URI)
@@ -34,11 +34,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Sessão
 app.use(session({
-  secret: 'segredo-super-segurissimo-hihihihi', // ⚠️ troca isto por uma env var no futuro
+  secret: 'segredo-super-segurissimo-hihihihi',
   resave: false,
   saveUninitialized: false
 }));
-app.use((req, res, next) => { // permite aceder a session.user e outras variáveis globais em qualquer EJS
+app.use((req, res, next) => {
   res.locals.session = req.session;
   next();
 });
@@ -47,7 +47,7 @@ app.use((req, res, next) => { // permite aceder a session.user e outras variáve
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/restaurants', restaurantsRouter);
-app.use('/', authRoutes); // login, registo, etc.
+app.use('/', authRoutes);
 
 // 404 handler
 app.use(function(req, res, next) {
