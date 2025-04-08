@@ -2,17 +2,20 @@ const express = require('express');
 const router = express.Router();
 const Restaurant = require('../models/Restaurant');
 
-// GET - Página do formulário de registo
 router.get('/register', (req, res) => {
   res.render('restaurantRegister');
 });
 
-// POST - Submeter formulário de registo
 router.post('/register', async (req, res) => {
   const { name, email, password } = req.body;
 
   try {
-    const novoRestaurante = new Restaurant({ name, email, password });
+    const novoRestaurante = new Restaurant({
+      name,
+      email,
+      password,
+      validado: false
+    });
     await novoRestaurante.save();
     res.redirect('/restaurants/list');
   } catch (err) {
@@ -21,7 +24,6 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// GET - Listar todos os restaurantes
 router.get('/list', async (req, res) => {
   try {
     const restaurantes = await Restaurant.find();
@@ -32,7 +34,6 @@ router.get('/list', async (req, res) => {
   }
 });
 
-// GET - Mostrar formulário para adicionar prato a restaurante
 router.get('/:id/add-menu', async (req, res) => {
   try {
     const restaurante = await Restaurant.findById(req.params.id);
@@ -45,7 +46,6 @@ router.get('/:id/add-menu', async (req, res) => {
   }
 });
 
-// POST - Adicionar prato ao restaurante
 router.post('/:id/add-menu', async (req, res) => {
   const { name, category, description, image, nutrition, price } = req.body;
 
@@ -66,6 +66,5 @@ router.post('/:id/add-menu', async (req, res) => {
     res.status(500).send('Erro ao adicionar prato');
   }
 });
-
 
 module.exports = router;

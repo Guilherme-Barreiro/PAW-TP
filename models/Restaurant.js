@@ -4,6 +4,7 @@ const restaurantSchema = new mongoose.Schema({
   name: String,
   email: String,
   password: String,
+  validado: Boolean,
   menus: [{
     name: String,
     category: String,
