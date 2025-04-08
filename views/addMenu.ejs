@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Adicionar Prato</title>
+</head>
+<body>
+  <h1>Adicionar Prato ao Restaurante: <%= restaurante.name %></h1>
+
+  <form action="/restaurants/<%= restaurante._id %>/add-menu" method="POST">
+    <label for="name">Nome do prato:</label>
+    <input type="text" name="name" required><br>
+
+    <label for="category">Categoria:</label>
+    <input type="text" name="category" required><br>
+
+    <label for="description">Descrição:</label>
+    <input type="text" name="description"><br>
+
+    <label for="price">Preço (€):</label>
+    <input type="number" name="price" step="0.01" required><br>
+
+    <button type="submit">Adicionar Prato</button>
+  </form>
+</body>
+</html>
