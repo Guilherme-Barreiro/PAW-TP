@@ -1,34 +1,46 @@
+
+<%- include('partials/header') %>
+
 <!DOCTYPE html>
-<html lang="pt">
-<head>
-  <meta charset="UTF-8">
-  <title>Adicionar Prato</title>
-</head>
-<body>
-  <h1>Adicionar Prato a <%= restaurante.name %></h1>
+  <div class="container mt-5">
+    <h1 class="text-center mb-4">Adicionar Prato a <%= restaurante.name %></h1>
 
-  <form action="/restaurants/<%= restaurante._id %>/add-menu" method="POST">
-    <label>Nome do prato:</label>
-    <input type="text" name="name" required><br>
+    <form action="/restaurants/<%= restaurante._id %>/add-menu" method="POST" enctype="multipart/form-data" class="card p-4 shadow-sm mx-auto" style="max-width: 600px;">
+      <div class="mb-3">
+        <label for="name" class="form-label">Nome do prato</label>
+        <input type="text" class="form-control" id="name" name="name" required>
+      </div>
 
-    <label>Categoria:</label>
-    <input type="text" name="category" required><br>
+      <div class="mb-3">
+        <label for="category" class="form-label">Categoria</label>
+        <input type="text" class="form-control" id="category" name="category" required>
+      </div>
 
-    <label>Descrição:</label>
-    <textarea name="description" required></textarea><br>
+      <div class="mb-3">
+        <label for="description" class="form-label">Descrição</label>
+        <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+      </div>
 
-    <label>Imagem (URL):</label>
-    <input type="text" name="image"><br>
+      <div class="mb-3">
+        <label for="image" class="form-label">Imagem do prato</label>
+        <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+      </div>
 
-    <label>Informação Nutricional:</label>
-    <input type="text" name="nutrition"><br>
+      <div class="mb-3">
+        <label for="nutrition" class="form-label">Informação Nutricional</label>
+        <input type="text" class="form-control" id="nutrition" name="nutrition">
+      </div>
 
-    <label>Preço (€):</label>
-    <input type="number" step="0.01" name="price" required><br>
+      <div class="mb-3">
+        <label for="price" class="form-label">Preço (€)</label>
+        <input type="number" class="form-control" id="price" name="price" step="0.01" required>
+      </div>
 
-    <button type="submit">Adicionar Prato</button>
-  </form>
+      <button type="submit" class="btn btn-success w-100">Adicionar Prato</button>
+    </form>
 
-  <a href="/restaurants/list">← Voltar</a>
-</body>
-</html>
+    <div class="text-center mt-3">
+      <a href="/restaurants/list" class="text-decoration-none">← Voltar</a>
+    </div>
+  </div>
+  <%- include('partials/footer') %>

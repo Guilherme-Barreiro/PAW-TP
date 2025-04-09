@@ -1,0 +1,61 @@
+<%- include('partials/header') %>
+
+<div class="container mt-4">
+  <h2 class="mb-4">Gestão do Restaurante</h2>
+
+  <div class="card p-4">
+    <h4><%= restaurante.name %></h4>
+    <p><strong>Email:</strong> <%= restaurante.email %></p>
+    <p><strong>Validado:</strong>
+      <% if (restaurante.validado) { %>
+        <span class="badge bg-success">Sim</span>
+      <% } else { %>
+        <span class="badge bg-danger">Não</span>
+      <% } %>
+    </p>
+
+    <hr>
+
+    <!-- Lista de pratos -->
+    <h5 class="mt-3 mb-2">Pratos do Menu</h5>
+
+    <% if (restaurante.menu && restaurante.menu.length > 0) { %>
+      <table class="table table-bordered table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>#</th>
+            <th>Nome</th>
+            <th>Categoria</th>
+            <th>Preço</th>
+            <th>Imagem</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% restaurante.menu.forEach((prato, index) => { %>
+            <tr>
+              <td><%= index + 1 %></td>
+              <td><%= prato.name %></td>
+              <td><%= prato.category %></td>
+              <td><%= prato.price %> €</td>
+              <td>
+                <% if (prato.image) { %>
+                  <img src="/images/pratos/<%= prato.image %>" alt="<%= prato.name %>" width="60">
+                <% } else { %>
+                  <span class="text-muted">Sem imagem</span>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <p class="text-muted">Ainda não existem pratos registados.</p>
+    <% } %>
+
+    <div class="d-grid gap-2 mt-3">
+      <a href="/restaurants/<%= restaurante._id %>/add-menu" class="btn btn-primary">Adicionar Prato</a>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Restaurant = require('../models/Restaurant');
+const upload = require('../utils/multerConfig');
 
 router.get('/register', (req, res) => {
   res.render('restaurantRegister');
@@ -46,24 +47,38 @@ router.get('/:id/add-menu', async (req, res) => {
   }
 });
 
-router.post('/:id/add-menu', async (req, res) => {
-  const { name, category, description, image, nutrition, price } = req.body;
+router.post('/:id/add-menu', upload.single('image'), async (req, res) => {
+  const { name, category, description, nutrition, price } = req.body;
+  const image = req.file ? req.file.filename : '';
 
   try {
     const restaurante = await Restaurant.findById(req.params.id);
     if (!restaurante) return res.status(404).send('Restaurante não encontrado');
 
-    if (restaurante.menus.length >= 10) {
+    if (restaurante.menu.length >= 10) {
       return res.send('Este restaurante já tem 10 pratos no menu.');
     }
 
-    restaurante.menus.push({ name, category, description, image, nutrition, price });
+    restaurante.menu.push({ name, category, description, image, nutrition, price });
     await restaurante.save();
 
     res.redirect('/restaurants/list');
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao adicionar prato');
+  }
+});
+
+
+router.get('/:id/manage', async (req, res) => {
+  try {
+    const restaurante = await Restaurant.findById(req.params.id);
+    if (!restaurante) return res.status(404).send('Restaurante não encontrado');
+
+    res.render('restaurantManage', { restaurante });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao carregar gestão do restaurante');
   }
 });
 
