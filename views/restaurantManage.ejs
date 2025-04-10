@@ -28,6 +28,7 @@
             <th>Categoria</th>
             <th>Preço</th>
             <th>Imagem</th>
+            <th>Ações</th> <!-- nova coluna -->
           </tr>
         </thead>
         <tbody>
@@ -43,6 +44,12 @@
                 <% } else { %>
                   <span class="text-muted">Sem imagem</span>
                 <% } %>
+              </td>
+              <td>
+                <!-- Botão Editar -->
+                <a href="/restaurants/<%= restaurante._id %>/edit-menu/<%= index %>" class="btn btn-sm btn-outline-warning">
+                  Editar
+                </a>
               </td>
             </tr>
           <% }) %>

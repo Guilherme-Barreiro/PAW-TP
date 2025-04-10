@@ -1,0 +1,40 @@
+<%- include('partials/header') %>
+
+<div class="container mt-5">
+  <h1 class="text-center mb-4">Editar Prato</h1>
+
+  <form action="/restaurants/<%= restauranteId %>/edit-menu/<%= pratoIndex %>" method="POST" class="card p-4 shadow-sm mx-auto" style="max-width: 600px;">
+    <div class="mb-3">
+      <label for="name" class="form-label">Nome do prato</label>
+      <input type="text" class="form-control" id="name" name="name" value="<%= prato.name %>" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="category" class="form-label">Categoria</label>
+      <input type="text" class="form-control" id="category" name="category" value="<%= prato.category %>" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="description" class="form-label">Descrição</label>
+      <textarea class="form-control" id="description" name="description" rows="3" required><%= prato.description %></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label for="nutrition" class="form-label">Informação Nutricional</label>
+      <input type="text" class="form-control" id="nutrition" name="nutrition" value="<%= prato.nutrition %>">
+    </div>
+
+    <div class="mb-3">
+      <label for="price" class="form-label">Preço (€)</label>
+      <input type="number" class="form-control" id="price" name="price" step="0.01" value="<%= prato.price %>" required>
+    </div>
+
+    <button type="submit" class="btn btn-success w-100">Guardar Alterações</button>
+  </form>
+
+  <div class="text-center mt-3">
+    <a href="/restaurants/<%= restauranteId %>/manage" class="text-decoration-none">← Voltar</a>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

@@ -82,4 +82,47 @@ router.get('/:id/manage', async (req, res) => {
   }
 });
 
+router.get('/:id/edit-menu/:pratoIndex', async (req, res) => {
+  try {
+    const restaurante = await Restaurant.findById(req.params.id);
+    const pratoIndex = parseInt(req.params.pratoIndex);
+
+    if (!restaurante || !restaurante.menu[pratoIndex]) {
+      return res.status(404).send('Prato não encontrado');
+    }
+
+    const prato = restaurante.menu[pratoIndex];
+    res.render('editMenu', { restauranteId: restaurante._id, pratoIndex, prato });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao carregar prato para edição');
+  }
+});
+
+router.post('/:id/edit-menu/:pratoIndex', async (req, res) => {
+  const { name, category, description, nutrition, price } = req.body;
+
+  try {
+    const restaurante = await Restaurant.findById(req.params.id);
+    const index = parseInt(req.params.pratoIndex);
+
+    if (!restaurante || !restaurante.menu[index]) {
+      return res.status(404).send('Prato não encontrado');
+    }
+
+    restaurante.menu[index].name = name;
+    restaurante.menu[index].category = category;
+    restaurante.menu[index].description = description;
+    restaurante.menu[index].nutrition = nutrition;
+    restaurante.menu[index].price = price;
+
+    await restaurante.save();
+
+    res.redirect(`/restaurants/${req.params.id}/manage`);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao atualizar prato');
+  }
+});
+
 module.exports = router;
