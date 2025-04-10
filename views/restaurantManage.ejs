@@ -6,62 +6,88 @@
   <div class="card p-4">
     <h4><%= restaurante.name %></h4>
     <p><strong>Email:</strong> <%= restaurante.email %></p>
-    <p><strong>Validado:</strong>
+    <p>
+      <strong>Validado:</strong>
       <% if (restaurante.validado) { %>
-        <span class="badge bg-success">Sim</span>
+      <span class="badge bg-success">Sim</span>
       <% } else { %>
-        <span class="badge bg-danger">Não</span>
+      <span class="badge bg-danger">Não</span>
       <% } %>
     </p>
 
-    <hr>
+    <hr />
 
     <!-- Lista de pratos -->
     <h5 class="mt-3 mb-2">Pratos do Menu</h5>
 
     <% if (restaurante.menu && restaurante.menu.length > 0) { %>
-      <table class="table table-bordered table-hover">
-        <thead class="table-light">
-          <tr>
-            <th>#</th>
-            <th>Nome</th>
-            <th>Categoria</th>
-            <th>Preço</th>
-            <th>Imagem</th>
-            <th>Ações</th> <!-- nova coluna -->
-          </tr>
-        </thead>
-        <tbody>
-          <% restaurante.menu.forEach((prato, index) => { %>
-            <tr>
-              <td><%= index + 1 %></td>
-              <td><%= prato.name %></td>
-              <td><%= prato.category %></td>
-              <td><%= prato.price %> €</td>
-              <td>
-                <% if (prato.image) { %>
-                  <img src="/images/pratos/<%= prato.image %>" alt="<%= prato.name %>" width="60">
-                <% } else { %>
-                  <span class="text-muted">Sem imagem</span>
-                <% } %>
-              </td>
-              <td>
-                <!-- Botão Editar -->
-                <a href="/restaurants/<%= restaurante._id %>/edit-menu/<%= index %>" class="btn btn-sm btn-outline-warning">
-                  Editar
-                </a>
-              </td>
-            </tr>
-          <% }) %>
-        </tbody>
-      </table>
+    <table class="table table-bordered table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th>Nome</th>
+          <th>Categoria</th>
+          <th>Preço</th>
+          <th>Imagem</th>
+          <th style="width: 150px">Ações</th>
+          <!-- nova coluna -->
+        </tr>
+      </thead>
+      <tbody>
+        <% restaurante.menu.forEach((prato, index) => { %>
+        <tr>
+          <td><%= index + 1 %></td>
+          <td><%= prato.name %></td>
+          <td><%= prato.category %></td>
+          <td><%= prato.price %> €</td>
+          <td>
+            <% if (prato.image) { %>
+            <img
+              src="/images/pratos/<%= prato.image %>"
+              alt="<%= prato.name %>"
+              width="60"
+            />
+            <% } else { %>
+            <span class="text-muted">Sem imagem</span>
+            <% } %>
+          </td>
+          <td class="text-center">
+            <!-- Botão Editar e Remover lado a lado -->
+            <div class="d-flex justify-content-center gap-2">
+              <a
+                href="/restaurants/<%= restaurante._id %>/edit-menu/<%= index %>"
+                class="btn btn-sm btn-outline-warning">
+                Editar
+              </a>
+          
+              <form
+                action="/restaurants/<%= restaurante._id %>/remove-menu/<%= index %>"
+                method="POST"
+                onsubmit="return confirm('Tens a certeza que queres remover este prato?');">
+                <button class="btn btn-sm btn-outline-danger" type="submit">
+                  Remover
+                </button>
+              </form>
+            </div>
+          </td>
+          
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
     <% } else { %>
-      <p class="text-muted">Ainda não existem pratos registados.</p>
+    <p class="text-muted">Ainda não existem pratos registados.</p>
     <% } %>
 
     <div class="d-grid gap-2 mt-3">
-      <a href="/restaurants/<%= restaurante._id %>/add-menu" class="btn btn-primary">Adicionar Prato</a>
+      <a
+        href="/restaurants/<%= restaurante._id %>/add-menu"
+        class="btn btn-success"
+      >
+        Adicionar Prato
+      </a>
     </div>
+    
   </div>
 </div>
 

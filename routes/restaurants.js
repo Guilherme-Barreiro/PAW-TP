@@ -125,4 +125,22 @@ router.post('/:id/edit-menu/:pratoIndex', async (req, res) => {
   }
 });
 
+router.post('/:id/remove-menu/:pratoIndex', async (req, res) => {
+  const { id, pratoIndex } = req.params;
+
+  try {
+    const restaurante = await Restaurant.findById(id);
+    if (!restaurante) return res.status(404).send('Restaurante não encontrado');
+
+    // Remover prato pelo índice
+    restaurante.menu.splice(pratoIndex, 1);
+    await restaurante.save();
+
+    res.redirect(`/restaurants/${id}/manage`);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao remover prato');
+  }
+});
+
 module.exports = router;
