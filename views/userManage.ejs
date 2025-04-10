@@ -1,0 +1,32 @@
+<%- include('partials/header') %>
+
+<div class="container mt-4">
+  <h2 class="mb-4 text-center">Gestão de Utilizadores</h2>
+
+  <table class="table table-bordered table-hover" style="width: 80%; margin: auto;">
+    <thead class="table-dark text-center">
+      <tr>
+        <th>#</th>
+        <th>Username</th>
+        <th>Role</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% users.forEach((user, index) => { %>
+        <tr class="text-center">
+          <td><%= index + 1 %></td>
+          <td><%= user.username %></td>
+          <td><%= user.role %></td>
+          <td>
+            <form action="/users/<%= user._id %>/delete" method="POST" onsubmit="return confirm('Tens a certeza que queres remover este utilizador?');">
+              <button class="btn btn-sm btn-danger" type="submit">Remover</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('partials/footer') %>
