@@ -9,12 +9,16 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const session = require('express-session');
 
+
+
 const app = express();
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const restaurantsRouter = require('./routes/restaurants');
 const authRoutes = require('./routes/auth');
+
+
 
 // Conexão à base de dados MongoDB
 mongoose.connect(process.env.MONGO_URI)
@@ -31,6 +35,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
 
 // Sessão
 app.use(session({
