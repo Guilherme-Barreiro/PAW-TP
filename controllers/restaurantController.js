@@ -43,14 +43,15 @@ exports.getManage = async (req, res) => {
 exports.getEditMenu = async (req, res) => {
   try {
     const restaurante = await Restaurant.findById(req.params.id);
-    const pratoIndex = parseInt(req.params.pratoIndex);
+    const index = parseInt(req.params.pratoIndex);
 
-    if (!restaurante || !restaurante.menu[pratoIndex]) {
-      return res.status(404).send('Prato não encontrado');
-    }
+    if (!restaurante || isNaN(index) || !restaurante.menu[index]) {
+    return res.status(404).send('Prato não encontrado');
+  }
 
-    const prato = restaurante.menu[pratoIndex];
-    res.render('editMenu', { restauranteId: restaurante._id, pratoIndex, prato });
+  const prato = restaurante.menu[index];
+  res.render('editMenu', { restauranteId: restaurante._id, pratoIndex: index, prato });
+
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao carregar prato para edição');
@@ -58,27 +59,25 @@ exports.getEditMenu = async (req, res) => {
 };
 
 exports.viewPrato = async (req, res) => {
-  const restauranteId = req.params.id;
-  const pratoId = req.params.pratoId;
-
   try {
-    const restaurante = await Restaurant.findById(restauranteId);
-    if (!restaurante) return res.status(404).send('Restaurante não encontrado');
+    const restaurante = await Restaurant.findById(req.params.id);
+    const index = parseInt(req.params.pratoIndex);
 
-    const prato = restaurante.menu.id(pratoId); // ⬅ Encontra por ID do subdocumento
+    if (!restaurante || isNaN(index) || !restaurante.menu[index]) {
+      return res.status(404).send('Prato não encontrado');
+    }
 
-    if (!prato) return res.status(404).send('Prato não encontrado');
-
+    const prato = restaurante.menu[index];
     res.render('viewPrato', {
       prato,
-      restauranteId
+      restauranteId: restaurante._id,
+      pratoIndex: index
     });
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao carregar o prato');
   }
 };
-
 
 
 // ============ POSTs ============
@@ -123,35 +122,35 @@ exports.postEditMenu = async (req, res) => {
   const imageFile = req.file ? req.file.filename : null;
 
   try {
-    const restaurante = await Restaurant.findById(req.params.id);
     const index = parseInt(req.params.pratoIndex);
+const restaurante = await Restaurant.findById(req.params.id);
 
-    if (!restaurante || !restaurante.menu[index]) {
-      return res.status(404).send('Prato não encontrado');
-    }
+if (!restaurante || isNaN(index) || !restaurante.menu[index]) {
+  return res.status(404).send('Prato não encontrado');
+}
 
-    // Se há nova imagem, apagar a anterior
-    if (imageFile) {
-        // apaga a anterior
-        const oldImage = restaurante.menu[index].image;
-        if (oldImage) {
-          const oldPath = path.join(__dirname, '../public/images/pratos', oldImage);
-          fs.unlink(oldPath, (err) => {
-            if (err) console.error('Erro ao apagar imagem antiga:', err);
-          });
-        }
- 
-        restaurante.menu[index].image = imageFile;
-      }
+const prato = restaurante.menu[index];
 
-    restaurante.menu[index].name = name;
-    restaurante.menu[index].category = category;
-    restaurante.menu[index].description = description;
-    restaurante.menu[index].nutrition = nutrition;
-    restaurante.menu[index].price = price;
+// Atualizar campos
+prato.name = req.body.name;
+prato.category = req.body.category;
+prato.description = req.body.description;
+prato.nutrition = req.body.nutrition;
+prato.price = req.body.price;
 
-    await restaurante.save();
-    res.redirect(`/restaurants/${req.params.id}/manage`);
+if (req.file) {
+  // Apagar imagem anterior
+  const oldPath = path.join(__dirname, '../public/images/pratos', prato.image);
+  fs.unlink(oldPath, err => {
+    if (err) console.error('Erro ao apagar imagem antiga:', err);
+  });
+
+  prato.image = req.file.filename;
+}
+
+await restaurante.save();
+res.redirect(`/restaurants/${req.params.id}/manage`);
+
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao atualizar prato');
@@ -160,27 +159,29 @@ exports.postEditMenu = async (req, res) => {
 
 exports.postRemoveMenu = async (req, res) => {
   try {
-    const restaurante = await Restaurant.findById(req.params.id);
-    const pratoIndex = req.params.pratoIndex;
+    const index = parseInt(req.params.pratoIndex);
+const restaurante = await Restaurant.findById(req.params.id);
 
-    if (!restaurante || !restaurante.menu[pratoIndex]) {
-      return res.status(404).send('Prato não encontrado');
-    }
+if (!restaurante || isNaN(index) || !restaurante.menu[index]) {
+  return res.status(404).send('Prato não encontrado');
+}
 
-    const prato = restaurante.menu[pratoIndex];
+const prato = restaurante.menu[index];
 
-    // Apagar imagem do prato do sistema de ficheiros
-    if (prato.image) {
-      const imagePath = path.join(__dirname, '../public/images/pratos', prato.image);
-      fs.unlink(imagePath, (err) => {
-        if (err) console.error('Erro ao apagar imagem do prato:', err);
-      });
-    }
+// Apagar imagem
+if (prato.image) {
+  const imagePath = path.join(__dirname, '../public/images/pratos', prato.image);
+  fs.unlink(imagePath, err => {
+    if (err) console.error('Erro ao apagar imagem do prato:', err);
+  });
+}
 
-    restaurante.menu.splice(pratoIndex, 1);
-    await restaurante.save();
+// Remover prato
+restaurante.menu.splice(index, 1);
+await restaurante.save();
 
-    res.redirect(`/restaurants/${req.params.id}/manage`);
+res.redirect(`/restaurants/${req.params.id}/manage`);
+
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao remover prato');

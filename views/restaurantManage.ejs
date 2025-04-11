@@ -53,25 +53,24 @@
           <td class="text-center">
             <div class="d-flex justify-content-center gap-2">
               <a
-                href="/restaurants/<%= restaurante._id %>/edit-menu/<%= prato._id %>"
-                class="btn btn-sm btn-outline-warning">
-                Editar
-              </a>
+  href="/restaurants/<%= restaurante._id %>/edit-menu/<%= index %>"
+  class="btn btn-sm btn-outline-warning">
+  Editar
+</a>
 
-              <form
-                action="/restaurants/<%= restaurante._id %>/remove-menu/<%= prato._id %>"
-                method="POST"
-                onsubmit="return confirm('Tens a certeza que queres remover este prato?');">
-                <button class="btn btn-sm btn-outline-danger" type="submit">
-                  Remover
-                </button>
-              </form>
+<form
+  action="/restaurants/<%= restaurante._id %>/remove-menu/<%= index %>"
+  method="POST"
+  onsubmit="return confirm('Tens a certeza que queres remover este prato?');">
+  <button class="btn btn-sm btn-outline-danger" type="submit">Remover</button>
+</form>
 
-              <a
-                href="/restaurants/<%= restaurante._id %>/menu/<%= prato._id %>"
-                class="btn btn-sm btn-outline-info">
-                Ver
-              </a>
+<a
+  href="/restaurants/<%= restaurante._id %>/menu/<%= index %>"
+  class="btn btn-sm btn-outline-info">
+  Ver
+</a>
+
             </div>
           </td>
         </tr>
