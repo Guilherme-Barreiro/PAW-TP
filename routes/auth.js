@@ -30,9 +30,12 @@ router.post('/login', async (req, res) => {
   }
 });
 
-
 router.get('/register', (req, res) => {
   res.render('register', { error: null });
+});
+
+router.get('/dashboard', (req, res) => {
+  res.render('dashboard', { error: null });
 });
 
 // POST /register (não há GET /register)
@@ -53,7 +56,6 @@ router.post('/register', async (req, res) => {
       role: 'cliente' 
     });
     
-
     await newUser.save();
     res.redirect('/login');
   } catch (err) {

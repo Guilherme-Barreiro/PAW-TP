@@ -19,4 +19,44 @@
 
 </head>
 <body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="/">Início</a>
+  
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+  
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+
+          <li class="nav-item">
+            <a class="nav-link" href="/restaurants/list">Restaurantes</a>
+          </li>
+          <% if (session && session.user && session.user.role === 'admin') { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/users/manage">Gerir Utilizadores</a>
+          </li>
+          <% } %>
+        </ul>
+  
+        <ul class="navbar-nav ms-auto">
+          <% if (session && session.user) { %>
+            <li class="nav-item">
+              <span class="navbar-text text-light me-2">Olá, <%= session.user.username %></span>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/logout">Logout</a>
+            </li>
+          <% } else { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/login">Login</a>
+            </li>
+          <% } %>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  
 isto é o header

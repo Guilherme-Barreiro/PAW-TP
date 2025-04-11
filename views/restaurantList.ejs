@@ -8,6 +8,7 @@
         <th>#</th>
         <th>Nome</th>
         <th>Email</th>
+        <th>Nº de pratos</th>
         <th>Gerir Restaurante</th>
         <th>Validado</th>
       </tr>
@@ -18,6 +19,7 @@
         <td><%= index + 1 %></td>
         <td><%= rest.name %></td>
         <td><%= rest.email %></td>
+        <td><%= rest.menu.length %></td>
         <td>
           <a href="/restaurants/<%= rest._id %>/manage" class="btn btn-sm btn-outline-primary">
             Gerir
