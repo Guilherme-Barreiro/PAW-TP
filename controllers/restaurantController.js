@@ -57,6 +57,27 @@ exports.getEditMenu = async (req, res) => {
   }
 };
 
+exports.viewPrato = async (req, res) => {
+  try {
+    const { id, pratoId } = req.params;
+
+    const restaurante = await Restaurant.findById(id);
+    if (!restaurante) {
+      return res.status(404).render('error', { message: 'Restaurante não encontrado' });
+    }
+
+    const prato = restaurante.menu[pratoId];
+    if (!prato) {
+      return res.status(404).render('error', { message: 'Prato não encontrado' });
+    }
+
+    res.render('viewPrato', { prato });
+  } catch (err) {
+    console.error(err);
+    res.status(500).render('error', { message: 'Erro ao procurar o prato' });
+  }
+};
+
 // ============ POSTs ============
 
 exports.postRegister = async (req, res) => {

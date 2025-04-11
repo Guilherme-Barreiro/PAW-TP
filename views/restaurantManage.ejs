@@ -29,8 +29,7 @@
           <th>Categoria</th>
           <th>Preço</th>
           <th>Imagem</th>
-          <th style="width: 150px">Ações</th>
-          <!-- nova coluna -->
+          <th style="width: 200px">Ações</th>
         </tr>
       </thead>
       <tbody>
@@ -52,14 +51,13 @@
             <% } %>
           </td>
           <td class="text-center">
-            <!-- Botão Editar e Remover lado a lado -->
             <div class="d-flex justify-content-center gap-2">
               <a
                 href="/restaurants/<%= restaurante._id %>/edit-menu/<%= index %>"
                 class="btn btn-sm btn-outline-warning">
                 Editar
               </a>
-          
+
               <form
                 action="/restaurants/<%= restaurante._id %>/remove-menu/<%= index %>"
                 method="POST"
@@ -68,9 +66,15 @@
                   Remover
                 </button>
               </form>
+
+              <!-- Novo botão "Ver" -->
+              <a
+                href="/restaurants/<%= restaurante._id %>/menu/<%= index %>"
+                class="btn btn-sm btn-outline-info">
+                Ver
+              </a>
             </div>
           </td>
-          
         </tr>
         <% }) %>
       </tbody>
@@ -87,7 +91,7 @@
         Adicionar Prato
       </a>
     </div>
-    
+
   </div>
 </div>
 
