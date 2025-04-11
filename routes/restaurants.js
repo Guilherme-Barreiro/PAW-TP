@@ -2,15 +2,18 @@ const express = require('express');
 const router = express.Router();
 const restaurantController = require('../controllers/restaurantController');
 const upload = require('../utils/multerConfig');
+const { isAuthenticated } = require('../controllers/authController');
 
-router.get('/register', restaurantController.getRegister);
-router.post('/register', restaurantController.postRegister);
-router.get('/list', restaurantController.getList);
-router.get('/:id/manage', restaurantController.getManage);
-router.get('/:id/add-menu', restaurantController.getAddMenu);
-router.post('/:id/add-menu', upload.single('image'), restaurantController.postAddMenu);
-router.get('/:id/edit-menu/:pratoIndex', restaurantController.getEditMenu);
-router.post('/:id/edit-menu/:pratoIndex', restaurantController.postEditMenu);
-router.post('/:id/remove-menu/:pratoIndex', restaurantController.postRemoveMenu);
+router.get('/register', isAuthenticated, restaurantController.getRegister);
+router.post('/register', isAuthenticated, restaurantController.postRegister);
+router.get('/list', isAuthenticated, restaurantController.getList);
+
+router.get('/:id/manage', isAuthenticated, restaurantController.getManage);
+router.get('/:id/add-menu', isAuthenticated, restaurantController.getAddMenu);
+router.post('/:id/add-menu', isAuthenticated, upload.single('image'), restaurantController.postAddMenu);
+router.get('/:id/edit-menu/:pratoIndex', isAuthenticated, restaurantController.getEditMenu);
+router.post('/:id/edit-menu/:pratoIndex', isAuthenticated, restaurantController.postEditMenu);
+router.post('/:id/remove-menu/:pratoIndex', isAuthenticated, restaurantController.postRemoveMenu);
 
 module.exports = router;
+

@@ -1,9 +1,30 @@
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 
+// ============ MIDDLEWARE ============
+
+exports.isAuthenticated = (req, res, next) => {
+  if (req.session && req.session.user) {
+    return next();
+  }
+  return res.redirect('/login');
+};
+
+// ============ GETs ============
+
 exports.getLogin = (req, res) => {
   res.render('login', { error: null });
 };
+
+exports.getRegister = (req, res) => {
+  res.render('register', { error: null });
+};
+
+exports.getDashboard = (req, res) => {
+  res.render('dashboard', { error: null });
+};
+
+// ============ POSTs ============
 
 exports.postLogin = async (req, res) => {
   const { username, password } = req.body;
@@ -21,10 +42,6 @@ exports.postLogin = async (req, res) => {
     console.error(err);
     res.render('login', { error: 'Erro ao autenticar.' });
   }
-};
-
-exports.getRegister = (req, res) => {
-  res.render('register', { error: null });
 };
 
 exports.postRegister = async (req, res) => {
@@ -45,6 +62,16 @@ exports.postRegister = async (req, res) => {
   }
 };
 
-exports.getDashboard = (req, res) => {
-  res.render('dashboard', { error: null });
+// ============ LOGOUT ============
+
+exports.logout = (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      console.error('Erro ao fazer logout:', err);
+      return res.status(500).send('Erro ao terminar sessão');
+    }
+
+    res.clearCookie('connect.sid');
+    res.redirect('/login');
+  });
 };

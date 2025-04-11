@@ -36,7 +36,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-
 // Sessão
 app.use(session({
   secret: 'segredo-super-segurissimo-hihihihi',
