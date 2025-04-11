@@ -1,9 +1,15 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+const Restaurant = require('../models/Restaurant');
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+router.get('/', async (req, res) => {
+  try {
+    const restaurantes = await Restaurant.find().limit(5); // Mostra os 5 primeiros
+    res.render('index', { title: 'Página Inicial', restaurantes });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao carregar a página inicial');
+  }
 });
 
 module.exports = router;

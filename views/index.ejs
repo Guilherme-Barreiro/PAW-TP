@@ -1,12 +1,48 @@
 <%- include('partials/header') %>
-<div style="margin-left:60px; margin-top: 20px">
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-    <a href="/login">/login</a><br><br>
-    <a href="/register">/register</a><br><br>
-    <a href="/users/manage">/users/manage</a><br><br>
-    <a href="/restaurants/list">/restaurants/list</a><br><br>
-    <a href="/restaurants/register">/restaurants/register</a><br><br>
+
+<div class="container mt-5">
+  <div class="text-center mb-5">
+    <h1 class="display-4">Bem-vindo ao PAW Food Hub</h1>
+    <p class="lead">Descobre os melhores restaurantes, explora menus e faz parte da nossa comunidade!</p>
+
+    <% if (!session.user) { %>
+      <a href="/login" class="btn btn-primary me-2">Login</a>
+      <a href="/register" class="btn btn-outline-primary">Criar Conta</a>
+    <% } else { %>
+      <a href="/restaurants/list" class="btn btn-success">Ir para Restaurantes</a>
+    <% } %>
   </div>
-  </body>
-</html>
+
+  <hr>
+
+  <div>
+    <h3 class="mb-4">🍽 Restaurantes em destaque</h3>
+    <% if (restaurantes.length === 0) { %>
+      <p class="text-muted">Nenhum restaurante registado ainda.</p>
+    <% } else { %>
+      <div class="row">
+        <% restaurantes.forEach(rest => { %>
+          <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+              <div class="card-body">
+                <h5 class="card-title"><%= rest.name %></h5>
+                <p class="card-text">
+                  <strong>Email:</strong> <%= rest.email %><br>
+                  <strong>Pratos:</strong> <%= rest.menu.length %><br>
+                  <strong>Status:</strong>
+                  <% if (rest.validado) { %>
+                    <span class="badge bg-success">Validado</span>
+                  <% } else { %>
+                    <span class="badge bg-danger">Pendente</span>
+                  <% } %>
+                </p>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
