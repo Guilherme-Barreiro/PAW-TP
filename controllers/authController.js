@@ -24,6 +24,15 @@ exports.getDashboard = (req, res) => {
   res.render('dashboard', { error: null });
 };
 
+exports.getProfile = (req, res) => {
+    const user = req.session.user;
+  
+    if (!user) return res.redirect('/login');
+  
+    res.render('profile', { user });
+  };
+  
+
 // ============ POSTs ============
 
 exports.postLogin = async (req, res) => {

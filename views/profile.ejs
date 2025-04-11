@@ -1,0 +1,48 @@
+<%- include('partials/header') %>
+
+<div class="container mt-5">
+  <div class="card shadow-lg mx-auto" style="max-width: 600px;">
+    <div class="card-header bg-dark text-white">
+      <h4 class="mb-0">Perfil do Utilizador</h4>
+    </div>
+    <div class="card-body">
+      <p><strong>Nome de Utilizador:</strong> <%= user.username %></p>
+      <% if (user.nomeCompleto) { %>
+        <p><strong>Nome Completo:</strong> <%= user.nomeCompleto %></p>
+      <% } %>
+      <% if (user.email) { %>
+        <p><strong>Email:</strong> <%= user.email %></p>
+      <% } %>
+      <% if (user.morada) { %>
+        <p><strong>Morada:</strong> <%= user.morada %></p>
+      <% } %>
+      <% if (user.telefone) { %>
+        <p><strong>Telefone:</strong> <%= user.telefone %></p>
+      <% } %>
+      <% if (user.dataNascimento) { %>
+        <p><strong>Data de Nascimento:</strong> <%= new Date(user.dataNascimento).toLocaleDateString() %></p>
+      <% } %>
+      <p><strong>Tipo de Conta:</strong> <span class="badge bg-secondary"><%= user.role %></span></p>
+
+      <% if (user.role === 'cliente') { %>
+        <hr>
+        <h5>Histórico de Encomendas</h5>
+        <% if (user.historicoEncomendas && user.historicoEncomendas.length > 0) { %>
+          <ul>
+            <% user.historicoEncomendas.forEach(encomenda => { %>
+              <li><%= encomenda %></li> <!-- Substituir pelo nome da encomenda quando estiver ligado -->
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <p class="text-muted">Sem encomendas registadas.</p>
+        <% } %>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="text-center mt-3">
+    <a href="/" class="btn btn-outline-primary">← Voltar ao início</a>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
