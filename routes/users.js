@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
-const { isAuthenticated } = require('../controllers/authController');
+const { verifyToken } = require('../controllers/authController');
 
-router.get('/manage', isAuthenticated, userController.getManage);
-router.post('/:id/delete', isAuthenticated, userController.postDelete);
+router.get('/manage', verifyToken, userController.getManage);
+router.post('/:id/delete', verifyToken, userController.postDelete);
 
 module.exports = router;
