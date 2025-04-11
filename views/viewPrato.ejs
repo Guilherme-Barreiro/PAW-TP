@@ -1,6 +1,24 @@
-<h1><%= prato.name %></h1>
-<img src="/images/pratos/<%= prato.image %>" alt="<%= prato.name %>" width="300">
-<p><strong>Categoria:</strong> <%= prato.category %></p>
-<p><strong>Descrição:</strong> <%= prato.description %></p>
-<p><strong>Nutrição:</strong> <%= prato.nutrition %></p>
-<p><strong>Preço:</strong> €<%= prato.price %></p>
+<%- include('partials/header') %>
+
+<div class="container mt-5">
+  <div class="card shadow-lg mx-auto" style="max-width: 800px;">
+    <div class="row g-0">
+      <div class="col-md-5">
+        <img src="/images/pratos/<%= prato.image %>" alt="<%= prato.name %>" class="img-fluid rounded-start" style="object-fit: cover; height: 100%;">
+      </div>
+      <div class="col-md-7">
+        <div class="card-body">
+          <h3 class="card-title"><%= prato.name %></h3>
+          <p class="card-text"><strong>Categoria:</strong> <%= prato.category %></p>
+          <p class="card-text"><strong>Descrição:</strong> <%= prato.description %></p>
+          <p class="card-text"><strong>Nutrição:</strong> <%= prato.nutrition %></p>
+          <p class="card-text"><strong>Preço:</strong> €<%= prato.price %></p>
+
+          <a href="/restaurants/<%= restauranteId %>/manage" class="btn btn-outline-secondary mt-3">← Voltar</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

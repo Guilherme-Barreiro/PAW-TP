@@ -58,25 +58,28 @@ exports.getEditMenu = async (req, res) => {
 };
 
 exports.viewPrato = async (req, res) => {
+  const restauranteId = req.params.id;
+  const pratoId = req.params.pratoId;
+
   try {
-    const { id, pratoId } = req.params;
+    const restaurante = await Restaurant.findById(restauranteId);
+    if (!restaurante) return res.status(404).send('Restaurante não encontrado');
 
-    const restaurante = await Restaurant.findById(id);
-    if (!restaurante) {
-      return res.status(404).render('error', { message: 'Restaurante não encontrado' });
-    }
+    const prato = restaurante.menu.id(pratoId); // ⬅ Encontra por ID do subdocumento
 
-    const prato = restaurante.menu[pratoId];
-    if (!prato) {
-      return res.status(404).render('error', { message: 'Prato não encontrado' });
-    }
+    if (!prato) return res.status(404).send('Prato não encontrado');
 
-    res.render('viewPrato', { prato });
+    res.render('viewPrato', {
+      prato,
+      restauranteId
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).render('error', { message: 'Erro ao procurar o prato' });
+    res.status(500).send('Erro ao carregar o prato');
   }
 };
+
+
 
 // ============ POSTs ============
 

@@ -16,5 +16,4 @@ router.post('/:id/edit-menu/:pratoIndex', verifyToken, upload.single('image'), r
 router.post('/:id/remove-menu/:pratoIndex', verifyToken, restaurantController.postRemoveMenu);
 router.get('/:id/menu/:pratoId', verifyToken, restaurantController.viewPrato);
 
-
 module.exports = router;

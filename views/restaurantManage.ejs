@@ -29,7 +29,7 @@
           <th>Categoria</th>
           <th>Preço</th>
           <th>Imagem</th>
-          <th style="width: 200px">Ações</th>
+          <th style="width: 220px">Ações</th>
         </tr>
       </thead>
       <tbody>
@@ -53,13 +53,13 @@
           <td class="text-center">
             <div class="d-flex justify-content-center gap-2">
               <a
-                href="/restaurants/<%= restaurante._id %>/edit-menu/<%= index %>"
+                href="/restaurants/<%= restaurante._id %>/edit-menu/<%= prato._id %>"
                 class="btn btn-sm btn-outline-warning">
                 Editar
               </a>
 
               <form
-                action="/restaurants/<%= restaurante._id %>/remove-menu/<%= index %>"
+                action="/restaurants/<%= restaurante._id %>/remove-menu/<%= prato._id %>"
                 method="POST"
                 onsubmit="return confirm('Tens a certeza que queres remover este prato?');">
                 <button class="btn btn-sm btn-outline-danger" type="submit">
@@ -67,9 +67,8 @@
                 </button>
               </form>
 
-              <!-- Novo botão "Ver" -->
               <a
-                href="/restaurants/<%= restaurante._id %>/menu/<%= index %>"
+                href="/restaurants/<%= restaurante._id %>/menu/<%= prato._id %>"
                 class="btn btn-sm btn-outline-info">
                 Ver
               </a>
