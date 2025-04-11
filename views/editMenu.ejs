@@ -3,7 +3,7 @@
 <div class="container mt-5">
   <h1 class="text-center mb-4">Editar Prato</h1>
 
-  <form action="/restaurants/<%= restauranteId %>/edit-menu/<%= pratoIndex %>" method="POST" class="card p-4 shadow-sm mx-auto" style="max-width: 600px;">
+  <form action="/restaurants/<%= restauranteId %>/edit-menu/<%= pratoIndex %>" method="POST" enctype="multipart/form-data" class="card p-4 shadow-sm mx-auto" style="max-width: 600px;">
     <div class="mb-3">
       <label for="name" class="form-label">Nome do prato</label>
       <input type="text" class="form-control" id="name" name="name" value="<%= prato.name %>" required>
@@ -17,6 +17,16 @@
     <div class="mb-3">
       <label for="description" class="form-label">Descrição</label>
       <textarea class="form-control" id="description" name="description" rows="3" required><%= prato.description %></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label for="image" class="form-label">Imagem do prato</label>
+      <input type="file" class="form-control" id="image" name="image" accept="image/*">
+      
+      <% if (prato.image) { %>
+        <p class="mt-2">Imagem atual:</p>
+        <img src="/images/pratos/<%= prato.image %>" alt="Imagem atual" width="120">
+      <% } %>
     </div>
 
     <div class="mb-3">

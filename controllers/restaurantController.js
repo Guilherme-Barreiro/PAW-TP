@@ -1,4 +1,6 @@
 const Restaurant = require('../models/Restaurant');
+const fs = require('fs');
+const path = require('path');
 
 // ============ GETs ============
 
@@ -94,6 +96,7 @@ exports.postAddMenu = async (req, res) => {
 
 exports.postEditMenu = async (req, res) => {
   const { name, category, description, nutrition, price } = req.body;
+  const imageFile = req.file ? req.file.filename : null;
 
   try {
     const restaurante = await Restaurant.findById(req.params.id);
@@ -103,14 +106,25 @@ exports.postEditMenu = async (req, res) => {
       return res.status(404).send('Prato não encontrado');
     }
 
-    restaurante.menu[index] = {
-      name,
-      category,
-      description,
-      nutrition,
-      price,
-      image: restaurante.menu[index].image // mantém a imagem existente
-    };
+    // Se há nova imagem, apagar a anterior
+    if (imageFile) {
+        // apaga a anterior
+        const oldImage = restaurante.menu[index].image;
+        if (oldImage) {
+          const oldPath = path.join(__dirname, '../public/images/pratos', oldImage);
+          fs.unlink(oldPath, (err) => {
+            if (err) console.error('Erro ao apagar imagem antiga:', err);
+          });
+        }
+ 
+        restaurante.menu[index].image = imageFile;
+      }
+
+    restaurante.menu[index].name = name;
+    restaurante.menu[index].category = category;
+    restaurante.menu[index].description = description;
+    restaurante.menu[index].nutrition = nutrition;
+    restaurante.menu[index].price = price;
 
     await restaurante.save();
     res.redirect(`/restaurants/${req.params.id}/manage`);
@@ -123,9 +137,23 @@ exports.postEditMenu = async (req, res) => {
 exports.postRemoveMenu = async (req, res) => {
   try {
     const restaurante = await Restaurant.findById(req.params.id);
-    if (!restaurante) return res.status(404).send('Restaurante não encontrado');
+    const pratoIndex = req.params.pratoIndex;
 
-    restaurante.menu.splice(req.params.pratoIndex, 1);
+    if (!restaurante || !restaurante.menu[pratoIndex]) {
+      return res.status(404).send('Prato não encontrado');
+    }
+
+    const prato = restaurante.menu[pratoIndex];
+
+    // Apagar imagem do prato do sistema de ficheiros
+    if (prato.image) {
+      const imagePath = path.join(__dirname, '../public/images/pratos', prato.image);
+      fs.unlink(imagePath, (err) => {
+        if (err) console.error('Erro ao apagar imagem do prato:', err);
+      });
+    }
+
+    restaurante.menu.splice(pratoIndex, 1);
     await restaurante.save();
 
     res.redirect(`/restaurants/${req.params.id}/manage`);
