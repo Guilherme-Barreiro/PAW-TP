@@ -1,4 +1,4 @@
-<%- include('partials/header') %>
+<%- include('../partials/header') %>
 
 <div class="container mt-4">
   <h2 class="mb-4">Gestão do Restaurante</h2>
@@ -17,7 +17,6 @@
 
     <hr />
 
-    <!-- Lista de pratos -->
     <h5 class="mt-3 mb-2">Pratos do Menu</h5>
 
     <% if (restaurante.menu && restaurante.menu.length > 0) { %>
@@ -27,8 +26,8 @@
             <th>#</th>
             <th>Nome</th>
             <th>Categoria</th>
-            <th>Preço (Meia Dose)</th>
-            <th>Preço (1 Dose)</th>
+            <th>Meia Dose (€)</th>
+            <th>1 Dose (€)</th>
             <th>Imagem</th>
             <th style="width: 220px">Ações</th>
           </tr>
@@ -75,4 +74,4 @@
   </div>
 </div>
 
-<%- include('partials/footer') %>
+<%- include('../partials/footer') %>

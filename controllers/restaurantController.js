@@ -5,13 +5,13 @@ const path = require('path');
 // ============ GETs ============
 
 exports.getRegister = (req, res) => {
-  res.render('restaurantRegister', { title: 'Registo do novo restaurante' });
+  res.render('restaurant/restaurantRegister', { title: 'Registo do novo restaurante' });
 };
 
 exports.getList = async (req, res) => {
   try {
     const restaurantes = await Restaurant.find();
-    res.render('restaurantList', { restaurantes, title: 'Lista de restaurantes' });
+    res.render('restaurant/restaurantList', { restaurantes, title: 'Lista de restaurantes' });
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao carregar restaurantes');
@@ -22,7 +22,7 @@ exports.getAddMenu = async (req, res) => {
   try {
     const restaurante = await Restaurant.findById(req.params.id);
     if (!restaurante) return res.status(404).send('Restaurante não encontrado');
-    res.render('addMenu', { restaurante, title: 'Adicionar novo prato' });
+    res.render('menus/addMenu', { restaurante, title: 'Adicionar novo prato' });
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao carregar formulário de menu');
@@ -33,7 +33,7 @@ exports.getManage = async (req, res) => {
   try {
     const restaurante = await Restaurant.findById(req.params.id);
     if (!restaurante) return res.status(404).send('Restaurante não encontrado');
-    res.render('restaurantManage', { restaurante, title: 'Gerir restaurantes' });
+    res.render('restaurant/restaurantManage', { restaurante, title: 'Gerir restaurantes' });
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao carregar gestão do restaurante');
@@ -50,13 +50,12 @@ exports.getEditMenu = async (req, res) => {
     }
 
     const prato = restaurante.menu[index];
-    res.render('editMenu', {
+    res.render('menus/editMenu', {
       restauranteId: restaurante._id,
       pratoIndex: index,
       prato,
       title: 'Editar Prato'
     });
-
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao carregar prato para edição');
@@ -73,13 +72,12 @@ exports.viewPrato = async (req, res) => {
     }
 
     const prato = restaurante.menu[index];
-    res.render('viewPrato', {
+    res.render('restaurant/viewPrato', {
       prato,
       restauranteId: restaurante._id,
       pratoIndex: index,
       title: `Visualizar ${prato.name}`
     });
-
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao carregar o prato');
@@ -105,17 +103,6 @@ exports.postAddMenu = async (req, res) => {
   const { name, category, description, nutrition, meia, inteira } = req.body;
   const image = req.file ? req.file.filename : '';
 
-  const precoMeia = parseFloat(meia);
-  const precoInteira = parseFloat(inteira);
-
-  if (isNaN(precoMeia) || isNaN(precoInteira)) {
-    return res.status(400).send('Preços inválidos.');
-  }
-
-  if (precoMeia > precoInteira) {
-    return res.status(400).send('A meia dose não pode ser mais cara que a dose inteira.');
-  }
-
   try {
     const restaurante = await Restaurant.findById(req.params.id);
     if (!restaurante) return res.status(404).send('Restaurante não encontrado');
@@ -131,15 +118,15 @@ exports.postAddMenu = async (req, res) => {
       image,
       nutrition,
       price: {
-        meia: precoMeia,
-        inteira: precoInteira
+        meia: parseFloat(meia),
+        inteira: parseFloat(inteira)
       }
     });
 
     await restaurante.save();
-    res.redirect(`/restaurants/${req.params.id}/manage`);
+    res.redirect('/restaurants/list');
   } catch (err) {
-    console.error('Erro ao adicionar prato:', err);
+    console.error(err);
     res.status(500).send('Erro ao adicionar prato');
   }
 };
@@ -147,17 +134,6 @@ exports.postAddMenu = async (req, res) => {
 exports.postEditMenu = async (req, res) => {
   const { name, category, description, nutrition, meia, inteira } = req.body;
   const imageFile = req.file ? req.file.filename : null;
-
-  const precoMeia = parseFloat(meia);
-  const precoInteira = parseFloat(inteira);
-
-  if (isNaN(precoMeia) || isNaN(precoInteira)) {
-    return res.status(400).send('Preços inválidos.');
-  }
-
-  if (precoMeia > precoInteira) {
-    return res.status(400).send('A meia dose não pode ser mais cara que a dose inteira.');
-  }
 
   try {
     const index = parseInt(req.params.pratoIndex);
@@ -174,8 +150,8 @@ exports.postEditMenu = async (req, res) => {
     prato.description = description;
     prato.nutrition = nutrition;
     prato.price = {
-      meia: precoMeia,
-      inteira: precoInteira
+      meia: parseFloat(meia),
+      inteira: parseFloat(inteira)
     };
 
     if (req.file) {
@@ -184,13 +160,14 @@ exports.postEditMenu = async (req, res) => {
         if (err) console.error('Erro ao apagar imagem antiga:', err);
       });
 
-      prato.image = imageFile;
+      prato.image = req.file.filename;
     }
 
     await restaurante.save();
     res.redirect(`/restaurants/${req.params.id}/manage`);
+
   } catch (err) {
-    console.error('Erro ao atualizar prato:', err);
+    console.error(err);
     res.status(500).send('Erro ao atualizar prato');
   }
 };
@@ -217,6 +194,7 @@ exports.postRemoveMenu = async (req, res) => {
     await restaurante.save();
 
     res.redirect(`/restaurants/${req.params.id}/manage`);
+
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao remover prato');

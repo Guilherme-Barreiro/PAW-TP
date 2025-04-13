@@ -1,0 +1,30 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-5" style="max-width: 500px;">
+  <h2 class="mb-4 text-center">Registar Restaurante</h2>
+
+  <form action="/restaurants/register" method="POST" class="card p-4 shadow-sm">
+    <div class="mb-3">
+      <label for="name" class="form-label">Nome</label>
+      <input type="text" class="form-control" id="name" name="name" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input type="email" class="form-control" id="email" name="email" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="password" class="form-label">Senha</label>
+      <input type="password" class="form-control" id="password" name="password" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">Registar</button>
+  </form>
+
+  <div class="text-center mt-3">
+    <a href="/restaurants/list" class="text-decoration-none">← Voltar à lista</a>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

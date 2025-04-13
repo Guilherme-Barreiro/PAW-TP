@@ -1,4 +1,4 @@
-<%- include('partials/header') %>
+<%- include('../partials/header') %>
 
 <div class="container mt-5">
   <h1 class="text-center mb-4">Editar Prato</h1>
@@ -12,7 +12,7 @@
     <div class="mb-3">
       <label for="category" class="form-label">Categoria</label>
       <select class="form-select" id="category" name="category" required>
-        <option disabled value="">Escolhe uma categoria</option>
+        <option value="" disabled selected>Escolhe uma categoria</option>
         <option value="Carne" <%= prato.category === 'Carne' ? 'selected' : '' %>>Carne</option>
         <option value="Peixe" <%= prato.category === 'Peixe' ? 'selected' : '' %>>Peixe</option>
         <option value="Vegetariano" <%= prato.category === 'Vegetariano' ? 'selected' : '' %>>Vegetariano</option>
@@ -83,4 +83,4 @@
   });
 </script>
 
-<%- include('partials/footer') %>
+<%- include('../partials/footer') %>
