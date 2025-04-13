@@ -44,6 +44,7 @@ app.use(session({
 }));
 app.use((req, res, next) => {
   res.locals.session = req.session;
+  res.locals.title = 'RestGest';
   next();
 });
 
@@ -65,6 +66,5 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-
 
 module.exports = app;

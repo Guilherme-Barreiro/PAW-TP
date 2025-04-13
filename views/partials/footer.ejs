@@ -1,16 +1,47 @@
-isto é o footer
+<footer class="bg-dark text-light pt-4 pb-3 mt-auto">
+  <div class="container">
+    <div class="row text-center text-md-start">
+      <div class="col-md-4 mb-3">
+        <h5>Sobre o Projeto</h5>
+        <p>Plataforma desenvolvida no âmbito da unidade curricular de PAW para gestão de restaurantes e encomendas online.</p>
+      </div>
+      <div class="col-md-4 mb-3">
+        <h5>Equipa</h5>
+        <ul class="list-unstyled">
+          <li>Guilherme Barreiro</li>
+          <li>Miguel Costa</li>
+          <li>Diogo Silva</li>
+        </ul>
+      </div>
+      <div class="col-md-4 mb-3">
+        <h5>Contacto</h5>
+        <p>Email: <a href="mailto:support@restgest.com" class="text-light text-decoration-underline">support@restgest.com</a></p>
+        <p>UC: Programação em Ambiente Web</p>
+      </div>
+    </div>
+    <div class="text-center mt-3">
+      <small>© 2024 RestGest. Todos os direitos reservados.</small>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Toggle password script (opcional) -->
 <script>
-    const passwordInput = document.getElementById('tb-password');
-    const toggleBtn = document.getElementById('button-show-psw');
-    const eyeIcon = document.getElementById('icon-eye');
-  
+  const passwordInput = document.getElementById('tb-password');
+  const toggleBtn = document.getElementById('button-show-psw');
+  const eyeIcon = document.getElementById('icon-eye');
+
+  if (toggleBtn && passwordInput && eyeIcon) {
     toggleBtn.addEventListener('click', () => {
       const isPassword = passwordInput.type === 'password';
       passwordInput.type = isPassword ? 'text' : 'password';
       eyeIcon.classList.toggle('fa-eye');
       eyeIcon.classList.toggle('fa-eye-slash');
     });
-  </script>
-  
+  }
+</script>
 </body>
 </html>

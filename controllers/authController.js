@@ -24,7 +24,7 @@ exports.verifyToken = (req, res, next) => {
 
 // ======= GET /login =======
 exports.getLogin = (req, res) => {
-  res.render('login', { error: null });
+  res.render('login', { error: null, title: 'Login' });
 };
 
 // ======= POST /login =======

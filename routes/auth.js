@@ -12,3 +12,5 @@ router.get('/logout', authController.logout);
 router.get('/dashboard', verifyToken, authController.getDashboard);
 
 module.exports = router;
+
+  
