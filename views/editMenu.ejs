@@ -20,31 +20,61 @@
     </div>
 
     <div class="mb-3">
-      <label for="image" class="form-label">Imagem do prato</label>
-      <input type="file" class="form-control" id="image" name="image" accept="image/*">
-      
-      <% if (prato.image) { %>
-        <p class="mt-2">Imagem atual:</p>
-        <img src="/images/pratos/<%= prato.image %>" alt="Imagem atual" width="120">
-      <% } %>
-    </div>
-
-    <div class="mb-3">
       <label for="nutrition" class="form-label">Informação Nutricional</label>
       <input type="text" class="form-control" id="nutrition" name="nutrition" value="<%= prato.nutrition %>">
     </div>
 
+    <<div class="mb-3">
+      <label class="form-label">Preços por dose (€)</label>
+      <div class="input-group mb-2">
+        <span class="input-group-text">Pequena</span>
+        <input type="number" step="0.01" min="0" name="pequena" id="pricePequena" class="form-control" value="<%= prato.price?.pequena || '' %>" required>
+      </div>
+      <div class="input-group mb-2">
+        <span class="input-group-text">Média</span>
+        <input type="number" step="0.01" min="0" name="media" id="priceMedia" class="form-control" value="<%= prato.price?.media || '' %>" required>
+      </div>
+      <div class="input-group mb-2">
+        <span class="input-group-text">Grande</span>
+        <input type="number" step="0.01" min="0" name="grande" id="priceGrande" class="form-control" value="<%= prato.price?.grande || '' %>" required>
+      </div>
+    </div>    
+
     <div class="mb-3">
-      <label for="price" class="form-label">Preço (€)</label>
-      <input type="number" class="form-control" id="price" name="price" step="0.01" value="<%= prato.price %>" required>
+      <label class="form-label">Imagem atual:</label><br>
+      <% if (prato.image) { %>
+        <img src="/images/pratos/<%= prato.image %>" alt="<%= prato.name %>" width="100" class="img-thumbnail mb-2">
+      <% } else { %>
+        <span class="text-muted">Sem imagem</span>
+      <% } %>
     </div>
 
-    <button type="submit" class="btn btn-success w-100">Guardar Alterações</button>
+    <div class="mb-3">
+      <label for="image" class="form-label">Alterar Imagem</label>
+      <input type="file" class="form-control" id="image" name="image" accept="image/*">
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">Guardar Alterações</button>
   </form>
 
   <div class="text-center mt-3">
     <a href="/restaurants/<%= restauranteId %>/manage" class="text-decoration-none">← Voltar</a>
   </div>
+</div>
+
+<script>
+  const form = document.querySelector('form');
+  form.addEventListener('submit', function (e) {
+    const p = parseFloat(document.getElementById('pricePequena').value);
+    const m = parseFloat(document.getElementById('priceMedia').value);
+    const g = parseFloat(document.getElementById('priceGrande').value);
+
+    if (p < 0 || m < 0 || g < 0) {
+      e.preventDefault();
+      alert('Os preços não podem ser negativos.');
+    }
+  });
+</script>
 </div>
 
 <%- include('partials/footer') %>

@@ -5,7 +5,7 @@ const User = require('../models/User');
 exports.getManage = async (req, res) => {
   try {
     const users = await User.find();
-    res.render('userManage', { users });
+    res.render('userManage', { users, title: 'Gerir utilizadores' });
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao carregar utilizadores');

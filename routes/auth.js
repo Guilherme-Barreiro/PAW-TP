@@ -3,14 +3,14 @@ const router = express.Router();
 const authController = require('../controllers/authController');
 const { verifyToken } = require('../controllers/authController');
 
-router.get('/profile', verifyToken, authController.getProfile);
 router.get('/login', authController.getLogin);
 router.post('/login', authController.postLogin);
 router.get('/register', authController.getRegister);
 router.post('/register', authController.postRegister);
-router.get('/logout', authController.logout);
+
+// 🔐 A partir daqui, precisa de login
+router.get('/profile', verifyToken, authController.getProfile);
 router.get('/dashboard', verifyToken, authController.getDashboard);
+router.get('/logout', authController.logout);
 
 module.exports = router;
-
-  

@@ -24,7 +24,7 @@ exports.verifyToken = (req, res, next) => {
 
 // ======= GET /login =======
 exports.getLogin = (req, res) => {
-  res.render('login', { error: null, title: 'Login' });
+  res.render('login', { error: null, showError: false, title: 'Login' });
 };
 
 // ======= POST /login =======
@@ -33,11 +33,15 @@ exports.postLogin = async (req, res) => {
 
   try {
     const user = await User.findOne({ username });
-    if (!user) return res.render('login', { error: 'Utilizador não encontrado.' });
+    if (!user) {
+      return res.render('login', { error: 'Utilizador não encontrado.', showError: true, title: 'Login' });
+    }    
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.render('login', { error: 'Palavra-passe incorreta.' });
-
+    if (!isMatch) {
+      return res.render('login', { error: 'Palavra-passe incorreta.', showError: true, title: 'Login' });
+    }
+    
     // Criar token JWT
     const token = jwt.sign(
       { id: user._id, username: user.username, role: user.role },
@@ -56,7 +60,7 @@ exports.postLogin = async (req, res) => {
     res.redirect('/restaurants/list');
   } catch (err) {
     console.error(err);
-    res.render('login', { error: 'Erro ao autenticar.' });
+    res.render('login', { error: 'Erro ao autenticar.', showError: true, title: 'Login' });
   }
 };
 
@@ -71,7 +75,7 @@ exports.postRegister = async (req, res) => {
 
   try {
     const userExists = await User.findOne({ username });
-    if (userExists) return res.render('login', { error: 'Utilizador já existe.' });
+    if (userExists) return res.render('login', { error: 'Este utilizador já existe.' });
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({
@@ -84,7 +88,7 @@ exports.postRegister = async (req, res) => {
     res.redirect('/login');
   } catch (err) {
     console.error(err);
-    res.render('login', { error: 'Erro ao registar.' });
+    res.render('login', { error: 'Erro no registo da conta.' });
   }
 };
 

@@ -12,7 +12,23 @@
           <p class="card-text"><strong>Categoria:</strong> <%= prato.category %></p>
           <p class="card-text"><strong>Descrição:</strong> <%= prato.description %></p>
           <p class="card-text"><strong>Nutrição:</strong> <%= prato.nutrition %></p>
-          <p class="card-text"><strong>Preço:</strong> €<%= prato.price %></p>
+          <p class="card-text"><strong>Preço Pequena:</strong> €<%= prato.price.pequena.toFixed(2) %></p>
+          <p class="card-text"><strong>Preço Média:</strong> €<%= prato.price.media.toFixed(2) %></p>
+          <p class="card-text"><strong>Preço Grande:</strong> €<%= prato.price.grande.toFixed(2) %></p>
+
+          <hr>
+          <div class="mb-3">
+            <label for="doseSelect" class="form-label"><strong>Escolher Dose:</strong></label>
+            <select id="doseSelect" class="form-select" onchange="calcularPessoas()">
+              <option value="0.5">Meia Dose</option>
+              <option value="1">1 Dose</option>
+              <option value="2">2 Doses</option>
+              <option value="3">3 Doses</option>
+              <option value="4">4 Doses</option>
+            </select>
+          </div>
+
+          <p id="doseResult" class="fw-bold">Serve aproximadamente 1 pessoa.</p>
 
           <a href="/restaurants/<%= restauranteId %>/manage" class="btn btn-outline-secondary mt-3">← Voltar</a>
         </div>
@@ -20,5 +36,15 @@
     </div>
   </div>
 </div>
+
+<script>
+  function calcularPessoas() {
+    const dose = parseFloat(document.getElementById('doseSelect').value);
+    const pessoas = dose * 2;
+    const resultText = `Serve aproximadamente ${pessoas} pessoa${pessoas > 1 ? 's' : ''}.`;
+    document.getElementById('doseResult').innerText = resultText;
+  }
+  window.addEventListener('DOMContentLoaded', calcularPessoas);
+</script>
 
 <%- include('partials/footer') %>

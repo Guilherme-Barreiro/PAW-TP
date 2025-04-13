@@ -11,7 +11,11 @@ const restaurantSchema = new mongoose.Schema({
     description: String,
     image: String,
     nutrition: String,
-    price: Number
+    price: {
+      pequena: Number,
+      media: Number,
+      grande: Number
+    }    
   }]
 });
 

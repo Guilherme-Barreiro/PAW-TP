@@ -2,21 +2,22 @@ const express = require('express');
 const router = express.Router();
 const restaurantController = require('../controllers/restaurantController');
 const upload = require('../utils/multerConfig');
-const { verifyToken } = require('../controllers/authController'); // ✅ correto
+const { verifyToken } = require('../controllers/authController');
 
-// 🔐 Todas estas rotas protegidas com JWT
-router.get('/register', verifyToken, restaurantController.getRegister);
-router.post('/register', verifyToken, restaurantController.postRegister);
-router.get('/list', verifyToken, restaurantController.getList);
-router.get('/:id/manage', verifyToken, restaurantController.getManage);
-router.get('/:id/add-menu', verifyToken, restaurantController.getAddMenu);
-router.post('/:id/add-menu', verifyToken, upload.single('image'), restaurantController.postAddMenu);
-router.get('/:id/edit-menu/:pratoIndex', verifyToken, restaurantController.getEditMenu);
-router.get('/:id/menu/:pratoId', verifyToken, restaurantController.viewPrato);
-router.get('/:id/edit-menu/:pratoIndex', verifyToken, restaurantController.getEditMenu);
-router.post('/:id/edit-menu/:pratoIndex', verifyToken, upload.single('image'), restaurantController.postEditMenu);
-router.post('/:id/remove-menu/:pratoIndex', verifyToken, restaurantController.postRemoveMenu);
-router.get('/:id/menu/:pratoIndex', verifyToken, restaurantController.viewPrato);
+// ✅ ACESSO PÚBLICO
+router.get('/list', restaurantController.getList);
 
+// 🔐 ACESSO PROTEGIDO — A partir daqui precisa de login
+router.use(verifyToken);
+
+router.get('/register', restaurantController.getRegister);
+router.post('/register', restaurantController.postRegister);
+router.get('/:id/manage', restaurantController.getManage);
+router.get('/:id/add-menu', restaurantController.getAddMenu);
+router.post('/:id/add-menu', upload.single('image'), restaurantController.postAddMenu);
+router.get('/:id/edit-menu/:pratoIndex', restaurantController.getEditMenu);
+router.post('/:id/edit-menu/:pratoIndex', upload.single('image'), restaurantController.postEditMenu);
+router.post('/:id/remove-menu/:pratoIndex', restaurantController.postRemoveMenu);
+router.get('/:id/menu/:pratoIndex', restaurantController.viewPrato);
 
 module.exports = router;
