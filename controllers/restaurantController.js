@@ -86,7 +86,6 @@ exports.viewPrato = async (req, res) => {
   }
 };
 
-
 // ============ POSTs ============
 
 exports.postRegister = async (req, res) => {
@@ -103,17 +102,18 @@ exports.postRegister = async (req, res) => {
 };
 
 exports.postAddMenu = async (req, res) => {
-  const { name, category, description, nutrition, pequena, media, grande } = req.body;
+  const { name, category, description, nutrition, meia, inteira } = req.body;
   const image = req.file ? req.file.filename : '';
 
-  // Verifica se os preços são válidos números
-  const precoPequena = parseFloat(pequena);
-  const precoMedia = parseFloat(media);
-  const precoGrande = parseFloat(grande);
+  const precoMeia = parseFloat(meia);
+  const precoInteira = parseFloat(inteira);
 
-  if (isNaN(precoPequena) || isNaN(precoMedia) || isNaN(precoGrande)) {
-    console.error('Preços inválidos:', pequena, media, grande);
-    return res.status(400).send('Preços inválidos. Certifica-te que são valores numéricos.');
+  if (isNaN(precoMeia) || isNaN(precoInteira)) {
+    return res.status(400).send('Preços inválidos.');
+  }
+
+  if (precoMeia > precoInteira) {
+    return res.status(400).send('A meia dose não pode ser mais cara que a dose inteira.');
   }
 
   try {
@@ -131,15 +131,13 @@ exports.postAddMenu = async (req, res) => {
       image,
       nutrition,
       price: {
-        pequena: precoPequena,
-        media: precoMedia,
-        grande: precoGrande
+        meia: precoMeia,
+        inteira: precoInteira
       }
     });
 
     await restaurante.save();
     res.redirect(`/restaurants/${req.params.id}/manage`);
-
   } catch (err) {
     console.error('Erro ao adicionar prato:', err);
     res.status(500).send('Erro ao adicionar prato');
@@ -147,17 +145,18 @@ exports.postAddMenu = async (req, res) => {
 };
 
 exports.postEditMenu = async (req, res) => {
-  const { name, category, description, nutrition, pequena, media, grande } = req.body;
+  const { name, category, description, nutrition, meia, inteira } = req.body;
   const imageFile = req.file ? req.file.filename : null;
 
-  // Validar preços
-  const precoPequena = parseFloat(pequena);
-  const precoMedia = parseFloat(media);
-  const precoGrande = parseFloat(grande);
+  const precoMeia = parseFloat(meia);
+  const precoInteira = parseFloat(inteira);
 
-  if (isNaN(precoPequena) || isNaN(precoMedia) || isNaN(precoGrande)) {
-    console.error('Preços inválidos:', pequena, media, grande);
-    return res.status(400).send('Preços inválidos. Certifica-te que são valores numéricos.');
+  if (isNaN(precoMeia) || isNaN(precoInteira)) {
+    return res.status(400).send('Preços inválidos.');
+  }
+
+  if (precoMeia > precoInteira) {
+    return res.status(400).send('A meia dose não pode ser mais cara que a dose inteira.');
   }
 
   try {
@@ -170,15 +169,13 @@ exports.postEditMenu = async (req, res) => {
 
     const prato = restaurante.menu[index];
 
-    // Atualizar dados
     prato.name = name;
     prato.category = category;
     prato.description = description;
     prato.nutrition = nutrition;
     prato.price = {
-      pequena: precoPequena,
-      media: precoMedia,
-      grande: precoGrande
+      meia: precoMeia,
+      inteira: precoInteira
     };
 
     if (req.file) {
@@ -192,13 +189,11 @@ exports.postEditMenu = async (req, res) => {
 
     await restaurante.save();
     res.redirect(`/restaurants/${req.params.id}/manage`);
-
   } catch (err) {
     console.error('Erro ao atualizar prato:', err);
     res.status(500).send('Erro ao atualizar prato');
   }
 };
-
 
 exports.postRemoveMenu = async (req, res) => {
   try {
@@ -222,7 +217,6 @@ exports.postRemoveMenu = async (req, res) => {
     await restaurante.save();
 
     res.redirect(`/restaurants/${req.params.id}/manage`);
-
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao remover prato');

@@ -27,9 +27,8 @@
             <th>#</th>
             <th>Nome</th>
             <th>Categoria</th>
-            <th>Preço (Pequena)</th>
-            <th>Preço (Média)</th>
-            <th>Preço (Grande)</th>
+            <th>Preço (Meia Dose)</th>
+            <th>Preço (1 Dose)</th>
             <th>Imagem</th>
             <th style="width: 220px">Ações</th>
           </tr>
@@ -40,9 +39,8 @@
               <td><%= index + 1 %></td>
               <td><%= prato.name %></td>
               <td><%= prato.category %></td>
-              <td>€<%= prato.price?.pequena?.toFixed(2) %></td>
-              <td>€<%= prato.price?.media?.toFixed(2) %></td>
-              <td>€<%= prato.price?.grande?.toFixed(2) %></td>              
+              <td>€<%= prato.price?.meia?.toFixed(2) || 'N/A' %></td>
+              <td>€<%= prato.price?.inteira?.toFixed(2) || 'N/A' %></td>
               <td>
                 <% if (prato.image) { %>
                   <img src="/images/pratos/<%= prato.image %>" alt="<%= prato.name %>" width="60" />

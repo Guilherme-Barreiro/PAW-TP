@@ -12,9 +12,8 @@
           <p class="card-text"><strong>Categoria:</strong> <%= prato.category %></p>
           <p class="card-text"><strong>Descrição:</strong> <%= prato.description %></p>
           <p class="card-text"><strong>Nutrição:</strong> <%= prato.nutrition %></p>
-          <p class="card-text"><strong>Preço Pequena:</strong> €<%= prato.price.pequena.toFixed(2) %></p>
-          <p class="card-text"><strong>Preço Média:</strong> €<%= prato.price.media.toFixed(2) %></p>
-          <p class="card-text"><strong>Preço Grande:</strong> €<%= prato.price.grande.toFixed(2) %></p>
+          <p class="card-text"><strong>Preço Meia Dose:</strong> €<%= prato.price?.meia?.toFixed(2) || 'N/A' %></p>
+          <p class="card-text"><strong>Preço 1 Dose:</strong> €<%= prato.price?.inteira?.toFixed(2) || 'N/A' %></p>
 
           <hr>
           <div class="mb-3">
