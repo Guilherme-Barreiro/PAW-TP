@@ -16,14 +16,12 @@ const usersRouter = require('./routes/users');
 const restaurantsRouter = require('./routes/restaurants');
 const authRoutes = require('./routes/auth');
 
-
-
-// Conexão à base de dados MongoDB
+// Ligação à base de dados do MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('✅ Ligado ao MongoDB Atlas!'))
   .catch(err => console.error('❌ Erro ao ligar ao MongoDB:', err));
 
-// View engine setup
+// Views
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
@@ -34,7 +32,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Sessão
+// Sessão com JWT
 app.use(session({
   secret: 'segredo-super-segurissimo-hihihihi',
   resave: false,
@@ -52,12 +50,12 @@ app.use('/users', usersRouter);
 app.use('/restaurants', restaurantsRouter);
 app.use('/', authRoutes);
 
-// 404 handler
+// Erro 404
 app.use(function(req, res, next) {
   next(createError(404));
 });
 
-// Error handler
+// Mensagem de erro
 app.use(function(err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

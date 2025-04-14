@@ -1,4 +1,3 @@
-// models/User.js
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
@@ -15,10 +14,8 @@ const userSchema = new mongoose.Schema({
   telefone: { type: String },
   dataNascimento: { type: Date },
 
-  // Só para clientes
   historicoEncomendas: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }],
 
-  // Só para restaurantes
   validado: { type: Boolean, default: false },
   menus: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Menu' }]
 });

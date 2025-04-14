@@ -1,7 +1,5 @@
 const User = require('../models/User');
 
-// ============ GETs ============
-
 exports.getManage = async (req, res) => {
   try {
     const users = await User.find();
@@ -11,8 +9,6 @@ exports.getManage = async (req, res) => {
     res.status(500).send('Erro ao carregar utilizadores');
   }
 };
-
-// ============ POSTs ============
 
 exports.postDelete = async (req, res) => {
   try {

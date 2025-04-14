@@ -4,11 +4,11 @@ const restaurantController = require('../controllers/restaurantController');
 const upload = require('../utils/multerConfig');
 const { verifyToken } = require('../controllers/authController');
 
-// ✅ ACESSO PÚBLICO
 router.get('/list', restaurantController.getList);
 
-// 🔐 ACESSO PROTEGIDO — A partir daqui precisa de login
 router.use(verifyToken);
+
+// Rotas protegidas, só acedidas através de login
 
 router.get('/register', restaurantController.getRegister);
 router.post('/register', restaurantController.postRegister);

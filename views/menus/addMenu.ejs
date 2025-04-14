@@ -3,16 +3,16 @@
 <div class="container mt-5">
   <h1 class="text-center mb-4">Adicionar Prato a <%= restaurante.name %></h1>
 
-  <form action="/restaurants/<%= restaurante._id %>/add-menu" method="POST" enctype="multipart/form-data" class="card p-4 shadow-sm mx-auto" style="max-width: 600px;">
+  <form action="/restaurants/<%= restaurante._id %>/add-menu" method="POST" enctype="multipart/form-data" class="card p-4 shadow-sm mx-auto" style="max-width: 700px;" id="addForm">
     <div class="mb-3">
       <label for="name" class="form-label">Nome do prato</label>
-      <input type="text" class="form-control" id="name" name="name" required>
+      <input type="text" class="form-control" id="name" name="name" pattern="[A-Za-zÀ-ÿ\s]+" required>
     </div>
 
     <div class="mb-3">
       <label for="category" class="form-label">Categoria</label>
       <select class="form-select" id="category" name="category" required>
-        <option disabled selected value="">Escolhe uma categoria</option>
+        <option value="">Escolhe uma categoria</option>
         <option value="Carne">Carne</option>
         <option value="Peixe">Peixe</option>
         <option value="Vegetariano">Vegetariano</option>
@@ -32,8 +32,8 @@
 
     <div class="mb-3">
       <label for="nutrition" class="form-label">Informação Nutricional</label>
-      <input type="text" class="form-control" id="nutrition" name="nutrition">
-    </div>
+      <textarea class="form-control" name="nutrition" id="nutrition" rows="3" placeholder="Ex: Energia: 200kcal, Proteínas: 10g, ..." required></textarea>
+    </div>    
 
     <div class="mb-3">
       <label class="form-label">Preços por dose (€)</label>
@@ -41,7 +41,7 @@
         <span class="input-group-text">Meia Dose</span>
         <input type="number" step="0.01" min="0" name="meia" id="priceMeia" class="form-control" required>
       </div>
-      <div class="input-group mb-2">
+      <div class="input-group">
         <span class="input-group-text">1 Dose</span>
         <input type="number" step="0.01" min="0" name="inteira" id="priceInteira" class="form-control" required>
       </div>
@@ -56,20 +56,43 @@
 </div>
 
 <script>
-  const form = document.querySelector('form');
-  form.addEventListener('submit', function (e) {
+  document.getElementById('addForm').addEventListener('submit', function (e) {
+    const nome = document.getElementById('name').value;
     const meia = parseFloat(document.getElementById('priceMeia').value);
     const inteira = parseFloat(document.getElementById('priceInteira').value);
 
-    if (meia < 0 || inteira < 0) {
+    if (/\d/.test(nome)) {
       e.preventDefault();
-      alert('Os preços não podem ser negativos.');
+      alert('O nome do prato não pode conter números.');
       return;
     }
 
-    if (meia > inteira) {
+    if (meia < 0 || inteira < 0 || meia > inteira) {
       e.preventDefault();
-      alert('A meia dose não pode ser mais cara que a dose inteira.');
+      alert('Verifica os preços: sem negativos, e meia dose < dose inteira.');
+      return;
+    }
+
+    const units = {
+      energia: 'kcal',
+      carboidratos: 'g',
+      proteinas: 'g',
+      gordurasTotais: 'g',
+      gordurasSaturadas: 'g',
+      gordurasTrans: 'g',
+      fibra: 'g',
+      sodio: 'mg'
+    };
+
+    for (let field in units) {
+      const input = document.getElementById(field);
+      if (input && parseFloat(input.value) >= 0) {
+        input.value = parseFloat(input.value) + units[field];
+      } else {
+        e.preventDefault();
+        alert(`Campo "${field}" inválido.`);
+        return;
+      }
     }
   });
 </script>

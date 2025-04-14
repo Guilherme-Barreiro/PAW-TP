@@ -10,7 +10,7 @@ const restaurantSchema = new mongoose.Schema({
     category: String,
     description: String,
     image: String,
-    nutrition: String,
+    nutrition: String, 
     price: {
       meia: Number,
       inteira: Number

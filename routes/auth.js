@@ -8,7 +8,7 @@ router.post('/login', authController.postLogin);
 router.get('/register', authController.getRegister);
 router.post('/register', authController.postRegister);
 
-// 🔐 A partir daqui, precisa de login
+// Rotas protegidas, só acedidas através de login
 router.get('/profile', verifyToken, authController.getProfile);
 router.get('/dashboard', verifyToken, authController.getDashboard);
 router.get('/logout', authController.logout);

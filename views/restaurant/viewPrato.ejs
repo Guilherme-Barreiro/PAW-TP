@@ -1,22 +1,26 @@
 <%- include('../partials/header') %>
 
 <div class="container mt-5">
-  <div class="card shadow-lg mx-auto" style="max-width: 800px;">
-    <div class="row g-0">
-      <div class="col-md-5">
-        <img src="/images/pratos/<%= prato.image %>" alt="<%= prato.name %>" class="img-fluid rounded-start" style="object-fit: cover; height: 100%;">
+  <div class="card shadow p-4">
+    <div class="row">
+      <div class="col-md-6">
+        <% if (prato.image) { %>
+          <img src="/images/pratos/<%= prato.image %>" alt="<%= prato.name %>" class="img-fluid rounded">
+        <% } else { %>
+          <span class="text-muted">Sem imagem</span>
+        <% } %>
       </div>
-      <div class="col-md-7">
-        <div class="card-body">
-          <h3 class="card-title"><%= prato.name %></h3>
-          <p class="card-text"><strong>Categoria:</strong> <%= prato.category %></p>
-          <p class="card-text"><strong>Descrição:</strong> <%= prato.description %></p>
-          <p class="card-text"><strong>Nutrição:</strong> <%= prato.nutrition %></p>
-          <p class="card-text"><strong>Preço Meia Dose:</strong> €<%= prato.price?.meia?.toFixed(2) || 'N/A' %></p>
-          <p class="card-text"><strong>Preço 1 Dose:</strong> €<%= prato.price?.inteira?.toFixed(2) || 'N/A' %></p>
+      <div class="col-md-6">
+        <h2><%= prato.name %></h2>
+        <p><strong>Categoria:</strong> <%= prato.category %></p>
+        <p><strong>Descrição:</strong> <%= prato.description %></p>
 
-          <a href="/restaurants/<%= restauranteId %>/manage" class="btn btn-outline-secondary mt-3">← Voltar</a>
-        </div>
+        <p><strong>Informação Nutricional:</strong> <%= prato.nutrition || '-' %></p>
+
+        <p><strong>Preço Meia Dose:</strong> €<%= prato.price?.meia?.toFixed(2) %></p>
+        <p><strong>Preço 1 Dose:</strong> €<%= prato.price?.inteira?.toFixed(2) %></p>
+
+        <a href="/restaurants/<%= restauranteId %>/manage" class="btn btn-outline-secondary mt-3">← Voltar</a>
       </div>
     </div>
   </div>

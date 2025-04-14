@@ -4,7 +4,8 @@ const User = require('../models/User');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
-// ======= Middleware: verifica o token da sessão =======
+// Verifica token da sessão 
+
 exports.verifyToken = (req, res, next) => {
   const token = req.cookies.token;
 
@@ -21,13 +22,10 @@ exports.verifyToken = (req, res, next) => {
   }
 };
 
-
-// ======= GET /login =======
 exports.getLogin = (req, res) => {
   res.render('login', { error: null, showError: false, title: 'Login' });
 };
 
-// ======= POST /login =======
 exports.postLogin = async (req, res) => {
   const { username, password } = req.body;
 
@@ -42,14 +40,14 @@ exports.postLogin = async (req, res) => {
       return res.render('login', { error: 'Palavra-passe incorreta.', showError: true, title: 'Login' });
     }
     
-    // Criar token JWT
+    // Cria a Token JWT
     const token = jwt.sign(
       { id: user._id, username: user.username, role: user.role },
       JWT_SECRET,
       { expiresIn: '2h' }
     );
 
-    // Guardar o token num cookie HTTP-only
+    // Guarda o token numa cookie HTTP/ONLY
     res.cookie('token', token, {
       httpOnly: true,
       maxAge: 2 * 60 * 60 * 1000 // 2 horas
@@ -64,12 +62,10 @@ exports.postLogin = async (req, res) => {
   }
 };
 
-// ======= GET /register =======
 exports.getRegister = (req, res) => {
   res.render('register', { error: null });
 };
 
-// ======= POST /register =======
 exports.postRegister = async (req, res) => {
   const { username, password } = req.body;
 
@@ -92,9 +88,9 @@ exports.postRegister = async (req, res) => {
   }
 };
 
-// ======= GET /logout =======
 exports.logout = (req, res) => {
-  res.clearCookie('token'); // remove o cookie JWT
+  // Remove o cookie JWT
+  res.clearCookie('token'); 
   req.session.destroy(err => {
     if (err) {
       console.error('Erro ao terminar sessão:', err);
@@ -106,13 +102,10 @@ exports.logout = (req, res) => {
   });
 };
 
-
-// ======= GET /dashboard =======
 exports.getDashboard = (req, res) => {
   res.render('dashboard', { error: null });
 };
 
-// ======= GET /profile =======
 exports.getProfile = (req, res) => {
   const user = req.session.user;
 

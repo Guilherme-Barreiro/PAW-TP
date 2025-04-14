@@ -3,56 +3,56 @@
 <div class="container mt-5">
   <h1 class="text-center mb-4">Editar Prato</h1>
 
-  <form action="/restaurants/<%= restauranteId %>/edit-menu/<%= pratoIndex %>" method="POST" enctype="multipart/form-data" class="card p-4 shadow-sm mx-auto" style="max-width: 600px;">
+  <form action="/restaurants/<%= restauranteId %>/edit-menu/<%= pratoIndex %>" method="POST" enctype="multipart/form-data" class="card p-4 shadow-sm mx-auto" style="max-width: 700px;" id="editForm">
+
     <div class="mb-3">
-      <label for="name" class="form-label">Nome do prato</label>
-      <input type="text" class="form-control" id="name" name="name" value="<%= prato.name %>" required>
+      <label class="form-label">Nome do prato</label>
+      <input type="text" class="form-control" id="name" name="name" value="<%= prato.name %>" pattern="[A-Za-zÀ-ÿ\s]+" required>
     </div>
 
     <div class="mb-3">
-      <label for="category" class="form-label">Categoria</label>
-      <select class="form-select" id="category" name="category" required>
-        <option value="" disabled selected>Escolhe uma categoria</option>
-        <option value="Carne" <%= prato.category === 'Carne' ? 'selected' : '' %>>Carne</option>
-        <option value="Peixe" <%= prato.category === 'Peixe' ? 'selected' : '' %>>Peixe</option>
-        <option value="Vegetariano" <%= prato.category === 'Vegetariano' ? 'selected' : '' %>>Vegetariano</option>
-        <option value="Sobremesa" <%= prato.category === 'Sobremesa' ? 'selected' : '' %>>Sobremesa</option>
+      <label class="form-label">Categoria</label>
+      <select class="form-select" name="category" required>
+        <% ['Carne','Peixe','Vegetariano','Sobremesa'].forEach(opt => { %>
+          <option value="<%= opt %>" <%= prato.category === opt ? 'selected' : '' %>><%= opt %></option>
+        <% }) %>
       </select>
     </div>
 
     <div class="mb-3">
-      <label for="description" class="form-label">Descrição</label>
-      <textarea class="form-control" id="description" name="description" rows="3" required><%= prato.description %></textarea>
+      <label class="form-label">Descrição</label>
+      <textarea class="form-control" name="description" rows="3" required><%= prato.description %></textarea>
     </div>
 
     <div class="mb-3">
       <label class="form-label">Imagem atual:</label><br>
       <% if (prato.image) { %>
-        <img src="/images/pratos/<%= prato.image %>" alt="<%= prato.name %>" width="100" class="img-thumbnail mb-2">
+        <img src="/images/pratos/<%= prato.image %>" alt="<%= prato.name %>" class="img-thumbnail" width="120">
       <% } else { %>
         <span class="text-muted">Sem imagem</span>
       <% } %>
     </div>
 
     <div class="mb-3">
-      <label for="image" class="form-label">Alterar Imagem</label>
-      <input type="file" class="form-control" id="image" name="image" accept="image/*">
+      <label class="form-label">Alterar imagem</label>
+      <input type="file" name="image" class="form-control" accept="image/*">
     </div>
 
     <div class="mb-3">
       <label for="nutrition" class="form-label">Informação Nutricional</label>
-      <input type="text" class="form-control" id="nutrition" name="nutrition" value="<%= prato.nutrition %>">
+      <textarea class="form-control" name="nutrition" id="nutrition" rows="3" required><%= prato.nutrition %></textarea>
     </div>
+    
 
     <div class="mb-3">
-      <label class="form-label">Preços por dose (€)</label>
+      <label class="form-label">Preços (€)</label>
       <div class="input-group mb-2">
         <span class="input-group-text">Meia Dose</span>
-        <input type="number" step="0.01" min="0" name="meia" id="priceMeia" class="form-control" value="<%= prato.price?.meia || '' %>" required>
+        <input type="number" step="0.01" name="meia" id="priceMeia" class="form-control" min="0" value="<%= prato.price?.meia || '' %>" required>
       </div>
-      <div class="input-group mb-2">
+      <div class="input-group">
         <span class="input-group-text">1 Dose</span>
-        <input type="number" step="0.01" min="0" name="inteira" id="priceInteira" class="form-control" value="<%= prato.price?.inteira || '' %>" required>
+        <input type="number" step="0.01" name="inteira" id="priceInteira" class="form-control" min="0" value="<%= prato.price?.inteira || '' %>" required>
       </div>
     </div>
 
@@ -65,20 +65,44 @@
 </div>
 
 <script>
-  const form = document.querySelector('form');
-  form.addEventListener('submit', function (e) {
+  document.getElementById('editForm').addEventListener('submit', function (e) {
     const meia = parseFloat(document.getElementById('priceMeia').value);
     const inteira = parseFloat(document.getElementById('priceInteira').value);
+    const nome = document.getElementById('name').value;
 
-    if (meia < 0 || inteira < 0) {
+    if (/\d/.test(nome)) {
       e.preventDefault();
-      alert('Os preços não podem ser negativos.');
+      alert('O nome do prato não pode conter números.');
       return;
     }
 
-    if (meia > inteira) {
+    if (meia < 0 || inteira < 0 || meia > inteira) {
       e.preventDefault();
-      alert('A meia dose não pode ser mais cara que a dose inteira.');
+      alert('Corrige os preços inseridos.');
+      return;
+    }
+
+    const unidades = {
+      energia: 'kcal',
+      carboidratos: 'g',
+      proteinas: 'g',
+      gordurasTotais: 'g',
+      gordurasSaturadas: 'g',
+      gordurasTrans: 'g',
+      fibra: 'g',
+      sodio: 'mg'
+    };
+
+    for (let id in unidades) {
+      const input = document.getElementById(id);
+      const val = parseFloat(input.value);
+      if (input && !isNaN(val) && val >= 0) {
+        input.value = val + unidades[id];
+      } else {
+        e.preventDefault();
+        alert(`Campo "${id}" inválido.`);
+        return;
+      }
     }
   });
 </script>

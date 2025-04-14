@@ -3,8 +3,9 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 const { verifyToken } = require('../controllers/authController');
 
-// 🔐 Só acessível se estiver logado
 router.use(verifyToken);
+
+// Rotas protegidas, só acedidas através de login
 
 router.get('/manage', userController.getManage);
 router.post('/:id/delete', userController.postDelete);

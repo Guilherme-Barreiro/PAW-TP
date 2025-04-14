@@ -4,7 +4,7 @@ const Restaurant = require('../models/Restaurant');
 
 router.get('/', async (req, res) => {
   try {
-    const restaurantes = await Restaurant.find().limit(5); // Mostra os 5 primeiros
+    const restaurantes = await Restaurant.find().limit(5);
     res.render('index', { title: 'Página Inicial', restaurantes });
   } catch (err) {
     console.error(err);
