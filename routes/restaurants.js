@@ -5,6 +5,8 @@ const upload = require('../utils/multerConfig');
 const { verifyToken } = require('../controllers/authController');
 
 router.get('/list', restaurantController.getList);
+router.get('/search', restaurantController.getFilteredList);
+router.get('/:id/menu', restaurantController.viewMenu);
 
 router.use(verifyToken);
 

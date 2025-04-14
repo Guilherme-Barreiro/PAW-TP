@@ -15,13 +15,32 @@ exports.getRegister = (req, res) => {
 
 exports.getList = async (req, res) => {
   try {
-    const restaurantes = await Restaurant.find();
-    res.render('restaurant/restaurantList', { restaurantes, title: 'Lista de restaurantes' });
+    const { name, category, location, min, max } = req.query;
+
+    const filtro = {};
+
+    if (name) filtro.name = { $regex: name, $options: 'i' };
+    if (category) filtro['menu.category'] = category;
+    if (location) filtro.location = { $regex: location, $options: 'i' };
+
+    if (min || max) {
+      filtro['menu.price.inteira'] = {};
+      if (min) filtro['menu.price.inteira'].$gte = parseFloat(min);
+      if (max) filtro['menu.price.inteira'].$lte = parseFloat(max);
+    }
+
+    const restaurantes = await Restaurant.find(filtro);
+    res.render('restaurant/restaurantList', {
+      restaurantes,
+      title: 'Lista de restaurantes',
+      filtros: req.query 
+    });
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao carregar restaurantes');
   }
 };
+
 
 exports.getAddMenu = async (req, res) => {
   try {
@@ -67,6 +86,36 @@ exports.getEditMenu = async (req, res) => {
   }
 };
 
+exports.getFilteredList = async (req, res) => {
+  try {
+    const { category, priceMin, priceMax, location, name, orderBy } = req.query;
+    const query = {};
+
+    if (category) query['menu.category'] = category;
+    if (location) query.location = { $regex: new RegExp(location, 'i') };
+    if (name) query.name = { $regex: new RegExp(name, 'i') };
+
+    if (priceMin || priceMax) {
+      query['menu.price.inteira'] = {};
+      if (priceMin) query['menu.price.inteira'].$gte = parseFloat(priceMin);
+      if (priceMax) query['menu.price.inteira'].$lte = parseFloat(priceMax);
+    }
+
+    let restaurantes = await Restaurant.find(query);
+
+    if (orderBy === 'preco') {
+      restaurantes.sort((a, b) => a.menu[0]?.price?.inteira - b.menu[0]?.price?.inteira);
+    } else if (orderBy === 'nome') {
+      restaurantes.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    res.render('home', { restaurantes, title: 'Homepage com Filtros' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao aplicar filtros');
+  }
+};
+
 exports.viewPrato = async (req, res) => {
   try {
     const restaurante = await Restaurant.findById(req.params.id);
@@ -90,10 +139,19 @@ exports.viewPrato = async (req, res) => {
 };
 
 exports.postRegister = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, location } = req.body;
+
+
+
 
   try {
-    const novoRestaurante = new Restaurant({ name, email, password, validado: false });
+    const novoRestaurante = new Restaurant({
+      name,
+      email,
+      password,
+      location,
+      validado: false
+    });
     await novoRestaurante.save();
     res.redirect('/restaurants/list');
   } catch (err) {
@@ -101,6 +159,35 @@ exports.postRegister = async (req, res) => {
     res.status(500).send('Erro ao registar restaurante');
   }
 };
+
+exports.viewMenu = async (req, res) => {
+  try {
+    const restaurante = await Restaurant.findById(req.params.id);
+    if (!restaurante) return res.status(404).send('Restaurante não encontrado');
+
+    const menu = restaurante.menu;
+
+    if (!menu || menu.length === 0) {
+      return res.render('restaurant/viewMenu', {
+        restaurante,
+        menu: [],
+        title: restaurante.name,
+        msg: 'Este restaurante ainda não tem pratos registados.'
+      });
+    }
+
+    res.render('restaurant/viewMenu', {
+      restaurante,
+      menu,
+      title: restaurante.name,
+      msg: null
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao carregar os pratos');
+  }
+};
+
 
 exports.postAddMenu = async (req, res) => {
   const { name, category, description, nutrition, meia, inteira } = req.body;
