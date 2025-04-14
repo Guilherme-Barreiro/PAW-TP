@@ -63,11 +63,15 @@
           <td><%= rest.menu.length %></td>
           <td>
             <% if (session && session.user) { %>
-              <a href="/restaurants/<%= rest._id %>/manage" class="btn btn-sm btn-outline-primary">Gerir</a>
+              <a href="/restaurants/<%= rest._id %>/manage" class="btn btn-sm btn-outline-primary me-1">Gerir</a>
+              <a href="/restaurants/<%= rest._id %>/edit" class="btn btn-sm btn-outline-warning me-1">Editar</a>
+              <form method="POST" action="/restaurants/<%= rest._id %>/delete" style="display:inline;" onsubmit="return confirm('Tem a certeza que quer eliminar este restaurante?');">
+                <button type="submit" class="btn btn-sm btn-outline-danger">Remover</button>
+              </form>
             <% } else { %>
               <a href="/restaurants/<%= rest._id %>/menu" class="btn btn-sm btn-outline-info">Ver Pratos</a>
             <% } %>
-          </td>          
+          </td>                  
           <td>
             <% if (rest.validado) { %>
               <span class="badge bg-success">Sim</span>

@@ -280,3 +280,43 @@ exports.postRemoveMenu = async (req, res) => {
     res.status(500).send('Erro ao remover prato');
   }
 };
+
+exports.getEditRestaurant = async (req, res) => {
+  try {
+    const restaurante = await Restaurant.findById(req.params.id);
+    if (!restaurante) return res.status(404).send('Restaurante não encontrado');
+    res.render('restaurant/editRestaurant', { restaurante, title: 'Editar Restaurante' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao carregar restaurante para edição');
+  }
+};
+
+exports.postEditRestaurant = async (req, res) => {
+  const { name, email, location } = req.body;
+  try {
+    const restaurante = await Restaurant.findById(req.params.id);
+    if (!restaurante) return res.status(404).send('Restaurante não encontrado');
+
+    restaurante.name = name;
+    restaurante.email = email;
+    restaurante.location = location;
+
+    await restaurante.save();
+    res.redirect('/restaurants/list');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao atualizar restaurante');
+  }
+};
+
+exports.postDeleteRestaurant = async (req, res) => {
+  try {
+    await Restaurant.findByIdAndDelete(req.params.id);
+    res.redirect('/restaurants/list');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao eliminar restaurante');
+  }
+};
+

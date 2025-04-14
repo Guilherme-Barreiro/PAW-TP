@@ -1,0 +1,26 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-4">
+  <h1>Editar Restaurante</h1>
+  <form method="POST">
+    <div class="mb-3">
+      <label class="form-label">Nome</label>
+      <input type="text" class="form-control" name="name" value="<%= restaurante.name %>" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-control" name="email" value="<%= restaurante.email %>" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Localização</label>
+      <input type="text" class="form-control" name="location" value="<%= restaurante.location %>">
+    </div>
+
+    <button type="submit" class="btn btn-success">Guardar Alterações</button>
+    <a href="/restaurants/list" class="btn btn-secondary">Cancelar</a>
+  </form>
+</div>
+
+<%- include('../partials/footer') %>
