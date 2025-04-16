@@ -7,41 +7,55 @@
     </div>
     <div class="card-body">
       <p><strong>Nome de Utilizador:</strong> <%= user.username %></p>
+
       <% if (user.nomeCompleto) { %>
         <p><strong>Nome Completo:</strong> <%= user.nomeCompleto %></p>
       <% } %>
+
       <% if (user.email) { %>
         <p><strong>Email:</strong> <%= user.email %></p>
       <% } %>
+
       <% if (user.morada) { %>
         <p><strong>Morada:</strong> <%= user.morada %></p>
       <% } %>
+
       <% if (user.telefone) { %>
         <p><strong>Telefone:</strong> <%= user.telefone %></p>
       <% } %>
+
+      <% if (user.nif) { %>
+        <p><strong>NIF:</strong> <%= user.nif %></p>
+      <% } %>
+
       <% if (user.dataNascimento) { %>
         <p><strong>Data de Nascimento:</strong> <%= new Date(user.dataNascimento).toLocaleDateString() %></p>
       <% } %>
-      <p><strong>Tipo de Conta:</strong> <span class="badge bg-secondary"><%= user.role %></span></p>
 
-      <% if (user.role === 'cliente') { %>
-        <hr>
-        <h5>Histórico de Encomendas</h5>
-        <% if (user.historicoEncomendas && user.historicoEncomendas.length > 0) { %>
-          <ul>
-            <% user.historicoEncomendas.forEach(encomenda => { %>
-              <li><%= encomenda %></li> 
-            <% }) %>
-          </ul>
-        <% } else { %>
-          <p class="text-muted">Sem encomendas registadas.</p>
-        <% } %>
+      <p><strong>Tipo de Conta:</strong> <span class="badge bg-secondary"><%= user.role %></span></p>
+    </div>
+
+    <hr class="m-0">
+
+    <div class="card-body">
+      <h5>Histórico de Encomendas</h5>
+      <% if (user.historicoEncomendas && user.historicoEncomendas.length > 0) { %>
+        <ul>
+          <% user.historicoEncomendas.forEach(encomenda => { %>
+            <li><%= encomenda %></li>
+          <% }) %>
+        </ul>
+      <% } else { %>
+        <p class="text-muted">Sem encomendas registadas.</p>
       <% } %>
     </div>
-  </div>
 
-  <div class="text-center mt-3">
-    <a href="/" class="btn btn-outline-primary">← Voltar ao início</a>
+    <div class="card-footer text-center">
+      <a href="/profile/edit" class="btn btn-warning me-2">
+        <i class="fas fa-edit me-1"></i> Editar Perfil
+      </a>
+      <a href="/" class="btn btn-outline-primary">← Voltar ao início</a>
+    </div>
   </div>
 </div>
 

@@ -12,5 +12,7 @@ router.post('/register', authController.postRegister);
 router.get('/profile', verifyToken, authController.getProfile);
 router.get('/dashboard', verifyToken, authController.getDashboard);
 router.get('/logout', authController.logout);
+router.get('/profile/edit', verifyToken, authController.getEditProfile);
+router.post('/profile/edit', verifyToken, authController.postEditProfile);
 
 module.exports = router;

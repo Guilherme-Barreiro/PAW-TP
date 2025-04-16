@@ -42,7 +42,6 @@
       <label for="nutrition" class="form-label">Informação Nutricional</label>
       <textarea class="form-control" name="nutrition" id="nutrition" rows="3" required><%= prato.nutrition %></textarea>
     </div>
-    
 
     <div class="mb-3">
       <label class="form-label">Preços (€)</label>
@@ -69,6 +68,7 @@
     const meia = parseFloat(document.getElementById('priceMeia').value);
     const inteira = parseFloat(document.getElementById('priceInteira').value);
     const nome = document.getElementById('name').value;
+    const nutritionText = document.getElementById('nutrition').value.trim();
 
     if (/\d/.test(nome)) {
       e.preventDefault();
@@ -82,27 +82,10 @@
       return;
     }
 
-    const unidades = {
-      energia: 'kcal',
-      carboidratos: 'g',
-      proteinas: 'g',
-      gordurasTotais: 'g',
-      gordurasSaturadas: 'g',
-      gordurasTrans: 'g',
-      fibra: 'g',
-      sodio: 'mg'
-    };
-
-    for (let id in unidades) {
-      const input = document.getElementById(id);
-      const val = parseFloat(input.value);
-      if (input && !isNaN(val) && val >= 0) {
-        input.value = val + unidades[id];
-      } else {
-        e.preventDefault();
-        alert(`Campo "${id}" inválido.`);
-        return;
-      }
+    if (!nutritionText) {
+      e.preventDefault();
+      alert('Por favor preenche a informação nutricional.');
+      return;
     }
   });
 </script>

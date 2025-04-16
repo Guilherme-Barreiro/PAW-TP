@@ -1,0 +1,112 @@
+<%- include('partials/header') %>
+
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">Editar Perfil</h2>
+
+  <% if (successMessage) { %>
+    <div class="alert alert-success text-center"><%= successMessage %></div>
+  <% } %>
+
+  <% if (error) { %>
+    <div class="alert alert-danger text-center"><%= error %></div>
+  <% } %>
+
+  <form method="POST" action="/profile/edit" class="card p-4 shadow-sm mx-auto" style="max-width: 600px;" id="editProfileForm">
+
+    <div class="mb-3">
+      <label class="form-label">Nome de Utilizador</label>
+      <input type="text" class="form-control" name="username" value="<%= user.username %>" readonly>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Nome Completo</label>
+      <input type="text" class="form-control" name="nomeCompleto" id="nomeCompleto" value="<%= user.nomeCompleto || '' %>" required pattern="[A-Za-zÀ-ÿ\s]+">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-control" name="email" id="email" value="<%= user.email || '' %>" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Morada</label>
+      <input type="text" class="form-control" name="morada" id="morada" value="<%= user.morada || '' %>" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Telefone</label>
+      <input type="text" class="form-control" name="telefone" id="telefone" value="<%= user.telefone || '' %>" required pattern="[0-9]{9}">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">NIF</label>
+      <input type="text" class="form-control" name="nif" id="nif" value="<%= user.nif || '' %>" required pattern="[0-9]{9}">
+    </div>
+
+    <%
+      let dataFormatada = '';
+      if (user.dataNascimento instanceof Date) {
+        dataFormatada = user.dataNascimento.toISOString().split('T')[0];
+      } else if (typeof user.dataNascimento === 'string') {
+        try {
+          dataFormatada = new Date(user.dataNascimento).toISOString().split('T')[0];
+        } catch (e) {
+          dataFormatada = '';
+        }
+      }
+    %>
+    <div class="mb-3">
+      <label class="form-label">Data de Nascimento</label>
+      <input type="date" class="form-control" name="dataNascimento" id="dataNascimento" value="<%= dataFormatada %>" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">Guardar Alterações</button>
+  </form>
+
+  <div class="text-center mt-3">
+    <a href="/profile" class="btn btn-outline-secondary">← Voltar</a>
+  </div>
+</div>
+
+<script>
+  document.getElementById('editProfileForm').addEventListener('submit', function (e) {
+    const nome = document.getElementById('nomeCompleto').value;
+    const telefone = document.getElementById('telefone').value;
+    const nif = document.getElementById('nif').value;
+    const morada = document.getElementById('morada').value;
+    const dataNasc = document.getElementById('dataNascimento').value;
+    const dataAtual = new Date().toISOString().split('T')[0];
+
+    if (/[^A-Za-zÀ-ÿ\s]/.test(nome)) {
+      e.preventDefault();
+      alert('O nome completo não pode conter números ou caracteres especiais.');
+      return;
+    }
+
+    if (!/^\d{9}$/.test(telefone)) {
+      e.preventDefault();
+      alert('O número de telefone deve ter exatamente 9 dígitos numéricos.');
+      return;
+    }
+
+    if (!/^\d{9}$/.test(nif)) {
+      e.preventDefault();
+      alert('O NIF deve conter exatamente 9 dígitos.');
+      return;
+    }
+
+    if (!/[A-Za-z]/.test(morada)) {
+      e.preventDefault();
+      alert('A morada deve conter pelo menos uma letra.');
+      return;
+    }
+
+    if (dataNasc > dataAtual) {
+      e.preventDefault();
+      alert('A data de nascimento não pode ser no futuro.');
+      return;
+    }
+  });
+</script>
+
+<%- include('partials/footer') %>

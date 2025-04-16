@@ -24,5 +24,6 @@ router.get('/:id/menu/:pratoIndex', restaurantController.viewPrato);
 router.get('/:id/edit', restaurantController.getEditRestaurant);
 router.post('/:id/edit', restaurantController.postEditRestaurant);
 router.post('/:id/delete', restaurantController.postDeleteRestaurant);
+router.post('/:id/validate', restaurantController.validateRestaurant);
 
 module.exports = router;

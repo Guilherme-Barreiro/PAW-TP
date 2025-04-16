@@ -7,7 +7,7 @@
     <h4><%= restaurante.name %></h4>
     <p><strong>Email:</strong> <%= restaurante.email %></p>
     <p><strong>Validado:</strong> 
-      <% if (restaurante.validated) { %>
+      <% if (restaurante.validado) { %>
         <span class="badge bg-success">Sim</span>
       <% } else { %>
         <span class="badge bg-danger">Não</span>
@@ -51,10 +51,10 @@
             </td>
             <td>
               <a href="/restaurants/<%= restaurante._id %>/edit-menu/<%= index %>" class="btn btn-warning btn-sm">Editar</a>
-              <form action="/restaurants/<%= restaurante._id %>/remove-menu/<%= index %>" method="POST" class="d-inline">
+              <form action="/restaurants/<%= restaurante._id %>/remove-menu/<%= index %>" method="POST" class="d-inline" onsubmit="return confirm('Tem a certeza que deseja remover este prato?');">
                 <button type="submit" class="btn btn-danger btn-sm">Remover</button>
               </form>
-              <a href="/restaurants/<%= restaurante._id %>/view/<%= index %>" class="btn btn-info btn-sm">Ver</a>
+              <a href="/restaurants/<%= restaurante._id %>/menu/<%= index %>" class="btn btn-info btn-sm">Ver</a>
             </td>
           </tr>
         <% }) %>

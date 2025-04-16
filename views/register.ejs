@@ -7,15 +7,77 @@
 <% } %>
 
 <div class="container">
-  <main class="form-signin text-center mx-auto" style="max-width: 400px;">
-    <form action="/register" method="POST">
-      <input type="text" class="form-control mb-2" name="username" placeholder="Novo utilizador" required>
-      <input type="password" class="form-control mb-2" name="password" placeholder="Nova senha" required>
+  <main class="form-signin text-center mx-auto" style="max-width: 500px;">
+    <form action="/register" method="POST" id="registerForm">
+      <input type="text" class="form-control mb-2" name="username" id="username" placeholder="Nome de Utilizador (só letras)" required pattern="[A-Za-z]+">
+
+      <input type="password" class="form-control mb-2" name="password" placeholder="Senha" required>
+
+      <input type="text" class="form-control mb-2" name="nomeCompleto" id="nomeCompleto" placeholder="Nome Completo" required pattern="[A-Za-zÀ-ÿ\s]+">
+
+      <input type="email" class="form-control mb-2" name="email" id="email" placeholder="Email" required>
+
+      <input type="text" class="form-control mb-2" name="morada" id="morada" placeholder="Morada" required>
+
+      <input type="text" class="form-control mb-2" name="telefone" id="telefone" placeholder="Telefone (9 dígitos)" required pattern="[0-9]{9}">
+
+      <input type="text" class="form-control mb-2" name="nif" id="nif" placeholder="NIF (9 dígitos)" required pattern="[0-9]{9}">
+
+      <input type="date" class="form-control mb-3" name="dataNascimento" id="dataNascimento" required>
+
       <button class="btn btn-success w-100" type="submit">Criar Conta</button>
     </form>
 
     <p class="mt-3">Já tens conta? <a href="/login">Faz login</a></p>
   </main>
 </div>
+
+<script>
+  document.getElementById('registerForm').addEventListener('submit', function (e) {
+    const username = document.getElementById('username').value;
+    const nome = document.getElementById('nomeCompleto').value;
+    const telefone = document.getElementById('telefone').value;
+    const nif = document.getElementById('nif').value;
+    const morada = document.getElementById('morada').value;
+    const dataNasc = document.getElementById('dataNascimento').value;
+    const dataAtual = new Date().toISOString().split('T')[0];
+
+    if (!/^[A-Za-z]+$/.test(username)) {
+      e.preventDefault();
+      alert('O nome de utilizador só pode conter letras (sem números, espaços ou símbolos).');
+      return;
+    }
+
+    if (/[^A-Za-zÀ-ÿ\s]/.test(nome)) {
+      e.preventDefault();
+      alert('O nome completo não pode conter números ou caracteres especiais.');
+      return;
+    }
+
+    if (!/^\d{9}$/.test(telefone)) {
+      e.preventDefault();
+      alert('O número de telefone deve ter exatamente 9 dígitos numéricos.');
+      return;
+    }
+
+    if (!/^\d{9}$/.test(nif)) {
+      e.preventDefault();
+      alert('O NIF deve conter exatamente 9 dígitos.');
+      return;
+    }
+
+    if (!/[A-Za-z]/.test(morada)) {
+      e.preventDefault();
+      alert('A morada deve conter pelo menos uma letra.');
+      return;
+    }
+
+    if (dataNasc > dataAtual) {
+      e.preventDefault();
+      alert('A data de nascimento não pode ser no futuro.');
+      return;
+    }
+  });
+</script>
 
 <%- include('partials/footer') %>

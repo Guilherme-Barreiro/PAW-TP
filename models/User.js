@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema({
   morada: { type: String },
   telefone: { type: String },
   dataNascimento: { type: Date },
+  nif: { type: String },
 
   historicoEncomendas: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }],
 

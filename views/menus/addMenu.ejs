@@ -60,6 +60,7 @@
     const nome = document.getElementById('name').value;
     const meia = parseFloat(document.getElementById('priceMeia').value);
     const inteira = parseFloat(document.getElementById('priceInteira').value);
+    const nutritionText = document.getElementById('nutrition').value.trim();
 
     if (/\d/.test(nome)) {
       e.preventDefault();
@@ -73,28 +74,13 @@
       return;
     }
 
-    const units = {
-      energia: 'kcal',
-      carboidratos: 'g',
-      proteinas: 'g',
-      gordurasTotais: 'g',
-      gordurasSaturadas: 'g',
-      gordurasTrans: 'g',
-      fibra: 'g',
-      sodio: 'mg'
-    };
-
-    for (let field in units) {
-      const input = document.getElementById(field);
-      if (input && parseFloat(input.value) >= 0) {
-        input.value = parseFloat(input.value) + units[field];
-      } else {
-        e.preventDefault();
-        alert(`Campo "${field}" inválido.`);
-        return;
-      }
+    if (!nutritionText) {
+      e.preventDefault();
+      alert('Por favor preenche a informação nutricional.');
+      return;
     }
   });
 </script>
+
 
 <%- include('../partials/footer') %>

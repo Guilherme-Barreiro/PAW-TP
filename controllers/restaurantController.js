@@ -2,12 +2,10 @@ const Restaurant = require('../models/Restaurant');
 const fs = require('fs');
 const path = require('path');
 
-
 const parseNutri = (val) => {
   const num = parseFloat(val);
   return !isNaN(num) && num >= 0 ? num : null;
 };
-
 
 exports.getRegister = (req, res) => {
   res.render('restaurant/restaurantRegister', { title: 'Registo do novo restaurante' });
@@ -141,9 +139,6 @@ exports.viewPrato = async (req, res) => {
 exports.postRegister = async (req, res) => {
   const { name, email, password, location } = req.body;
 
-
-
-
   try {
     const novoRestaurante = new Restaurant({
       name,
@@ -197,15 +192,35 @@ exports.postAddMenu = async (req, res) => {
     const restaurante = await Restaurant.findById(req.params.id);
     if (!restaurante) return res.status(404).send('Restaurante não encontrado');
 
+    // Validação: máximo 10 pratos
+    if (restaurante.menu.length >= 10) {
+      return res.status(400).send('Este restaurante já tem o máximo de 10 pratos.');
+    }
+
+    // Validações adicionais
+    if (/\d/.test(name)) {
+      return res.status(400).send('O nome do prato não pode conter números.');
+    }
+
+    if (!nutrition || nutrition.trim() === '') {
+      return res.status(400).send('Informação nutricional obrigatória.');
+    }
+
+    const meiaF = parseFloat(meia);
+    const inteiraF = parseFloat(inteira);
+    if (isNaN(meiaF) || isNaN(inteiraF) || meiaF < 0 || inteiraF < 0 || meiaF > inteiraF) {
+      return res.status(400).send('Verifica os preços: sem negativos, e meia dose < dose inteira.');
+    }
+
     restaurante.menu.push({
       name,
       category,
       description,
       image,
-      nutrition, // <- STRING
+      nutrition,
       price: {
-        meia: parseFloat(meia),
-        inteira: parseFloat(inteira)
+        meia: meiaF,
+        inteira: inteiraF
       }
     });
 
@@ -216,7 +231,6 @@ exports.postAddMenu = async (req, res) => {
     res.status(500).send('Erro ao adicionar prato');
   }
 };
-
 
 exports.postEditMenu = async (req, res) => {
   const { name, category, description, nutrition, meia, inteira } = req.body;
@@ -230,15 +244,27 @@ exports.postEditMenu = async (req, res) => {
       return res.status(404).send('Prato não encontrado');
     }
 
+    // Validações
+    if (/\d/.test(name)) {
+      return res.status(400).send('O nome do prato não pode conter números.');
+    }
+
+    if (!nutrition || nutrition.trim() === '') {
+      return res.status(400).send('Informação nutricional obrigatória.');
+    }
+
+    const meiaF = parseFloat(meia);
+    const inteiraF = parseFloat(inteira);
+    if (isNaN(meiaF) || isNaN(inteiraF) || meiaF < 0 || inteiraF < 0 || meiaF > inteiraF) {
+      return res.status(400).send('Verifica os preços: sem negativos, e meia dose < dose inteira.');
+    }
+
     const prato = restaurante.menu[index];
     prato.name = name;
     prato.category = category;
     prato.description = description;
-    prato.nutrition = nutrition; // <- STRING
-    prato.price = {
-      meia: parseFloat(meia),
-      inteira: parseFloat(inteira)
-    };
+    prato.nutrition = nutrition;
+    prato.price = { meia: meiaF, inteira: inteiraF };
 
     if (imageFile) {
       prato.image = imageFile;
@@ -251,7 +277,6 @@ exports.postEditMenu = async (req, res) => {
     res.status(500).send('Erro ao atualizar prato');
   }
 };
-
 
 exports.postRemoveMenu = async (req, res) => {
   try {
@@ -319,4 +344,20 @@ exports.postDeleteRestaurant = async (req, res) => {
     res.status(500).send('Erro ao eliminar restaurante');
   }
 };
+
+exports.validateRestaurant = async (req, res) => {
+  try {
+    const restaurante = await Restaurant.findById(req.params.id);
+    if (!restaurante) return res.status(404).send('Restaurante não encontrado');
+
+    restaurante.validado = true;
+    await restaurante.save();
+
+    res.redirect('/restaurants/list');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao validar restaurante');
+  }
+};
+
 
