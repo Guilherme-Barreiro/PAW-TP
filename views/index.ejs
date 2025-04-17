@@ -6,11 +6,12 @@
     <p class="lead">Descobre os melhores restaurantes, explora menus e faz parte da nossa comunidade!</p>
 
     <% if (!session.user) { %>
-      <a href="/login" class="btn btn-primary me-2">Login</a>
-      <a href="/register" class="btn btn-outline-primary">Criar Conta</a>
+      <a href="/user/login" class="btn btn-primary me-2">Login</a>
+      <a href="/user/register" class="btn btn-outline-primary me-2">Criar Conta</a>
     <% } else { %>
       <a href="/restaurants/list" class="btn btn-success">Ir para Restaurantes</a>
-    <% } %>
+    <% } %>          
+        
   </div>
 
   <hr>
@@ -48,10 +49,11 @@
   <h4>pessoal, deixem estar estes links abaixo<br>ass: barreiro</h4>
   <h1><%= title %></h1>
   <p>Welcome to <%= title %></p>
-  <a href="/login">/login</a><br><br>
-  <a href="/register">/register</a><br><br>
+  <a href="/user/login">/user/login</a><br><br>
+  <a href="/user/register">/user/register</a><br><br>
   <a href="/users/manage">/users/manage</a><br><br>
   <a href="/restaurants/list">/restaurants/list</a><br><br>
   <a href="/restaurants/register">/restaurants/register</a><br><br>
 </div>
+
 <%- include('partials/footer') %>

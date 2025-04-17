@@ -7,6 +7,8 @@ router.get('/login', authController.getLogin);
 router.post('/login', authController.postLogin);
 router.get('/register', authController.getRegister);
 router.post('/register', authController.postRegister);
+router.get('/forgot-password', authController.getForgotPassword);
+router.post('/forgot-password', authController.postForgotPassword);
 
 // Rotas protegidas, só acedidas através de login
 router.get('/profile', verifyToken, authController.getProfile);

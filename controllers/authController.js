@@ -8,21 +8,21 @@ const JWT_SECRET = process.env.JWT_SECRET;
 exports.verifyToken = (req, res, next) => {
   const token = req.cookies.token;
 
-  if (!token) return res.redirect('/login');
+  if (!token) return res.redirect('/user/login');
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET);
     req.user = decoded;
     next();
   } catch (err) {
     console.error('Token inválido:', err);
-    return res.redirect('/login');
+    return res.redirect('/user/login');
   }
 };
 
 // RENDER LOGIN
 exports.getLogin = (req, res) => {
-  res.render('login', { error: null, showError: false, title: 'Login' });
+  res.render('user/login', { error: null, showError: false, title: 'Login' });
 };
 
 // AUTENTICAÇÃO
@@ -32,7 +32,7 @@ exports.postLogin = async (req, res) => {
   try {
     const user = await User.findOne({ username });
     if (!user) {
-      return res.render('login', {
+      return res.render('user/login', {
         error: 'Utilizador não encontrado.',
         showError: true,
         title: 'Login'
@@ -41,7 +41,7 @@ exports.postLogin = async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.render('login', {
+      return res.render('user/login', {
         error: 'Palavra-passe incorreta.',
         showError: true,
         title: 'Login'
@@ -60,11 +60,10 @@ exports.postLogin = async (req, res) => {
     });
 
     req.session.user = user;
-
     res.redirect('/restaurants/list');
   } catch (err) {
     console.error(err);
-    res.render('login', {
+    res.render('user/login', {
       error: 'Erro ao autenticar.',
       showError: true,
       title: 'Login'
@@ -74,7 +73,7 @@ exports.postLogin = async (req, res) => {
 
 // RENDER REGISTO
 exports.getRegister = (req, res) => {
-  res.render('register', { error: null });
+  res.render('user/register', { error: null });
 };
 
 // REGISTO DE CONTA COM VALIDAÇÕES
@@ -91,42 +90,51 @@ exports.postRegister = async (req, res) => {
   } = req.body;
 
   try {
-    const userExists = await User.findOne({ username });
+    const userExists = await User.findOne({
+      $or: [
+        { username },
+        { email },
+        { nif },
+        { telefone }
+      ]
+    });
+    
     if (userExists) {
-      return res.render('register', { error: 'Este utilizador já existe.' });
-    }
+      return res.render('user/register', {
+        error: 'Já existe um utilizador com este nome de utilizador, email, NIF ou telefone.',
+      });
+    }    
 
-    // Validações no servidor
     if (!/^[A-Za-z]+$/.test(username)) {
-      return res.render('register', {
+      return res.render('user/register', {
         error: 'O nome de utilizador só pode conter letras (sem espaços, números ou símbolos).'
       });
     }
 
     if (!/^[A-Za-zÀ-ÿ\s]+$/.test(nomeCompleto)) {
-      return res.render('register', {
+      return res.render('user/register', {
         error: 'O nome completo não pode conter números ou caracteres especiais.'
       });
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return res.render('register', { error: 'O email introduzido não é válido.' });
+      return res.render('user/register', { error: 'O email introduzido não é válido.' });
     }
 
     if (!/^\d{9}$/.test(telefone)) {
-      return res.render('register', {
+      return res.render('user/register', {
         error: 'O número de telefone deve ter exatamente 9 dígitos.'
       });
     }
 
     if (!/[A-Za-z]/.test(morada)) {
-      return res.render('register', {
+      return res.render('user/register', {
         error: 'A morada deve conter pelo menos uma letra.'
       });
     }
 
     if (!/^\d{9}$/.test(nif)) {
-      return res.render('register', {
+      return res.render('user/register', {
         error: 'O NIF deve conter exatamente 9 dígitos.'
       });
     }
@@ -134,7 +142,7 @@ exports.postRegister = async (req, res) => {
     const hoje = new Date();
     const dataNasc = new Date(dataNascimento);
     if (isNaN(dataNasc.getTime()) || dataNasc > hoje) {
-      return res.render('register', {
+      return res.render('user/register', {
         error: 'A data de nascimento não pode ser no futuro.'
       });
     }
@@ -154,10 +162,10 @@ exports.postRegister = async (req, res) => {
     });
 
     await newUser.save();
-    res.redirect('/login');
+    res.redirect('/user/login');
   } catch (err) {
     console.error(err);
-    res.render('register', { error: 'Erro no registo da conta.' });
+    res.render('user/register', { error: 'Erro no registo da conta.' });
   }
 };
 
@@ -170,29 +178,24 @@ exports.logout = (req, res) => {
       return res.status(500).send('Erro ao fazer logout');
     }
     res.clearCookie('connect.sid');
-    res.redirect('/login');
+    res.redirect('/user/login');
   });
-};
-
-// RENDER DASHBOARD
-exports.getDashboard = (req, res) => {
-  res.render('dashboard', { error: null });
 };
 
 // PERFIL
 exports.getProfile = (req, res) => {
   const user = req.session.user;
-  if (!user) return res.redirect('/login');
+  if (!user) return res.redirect('/user/login');
   const successMessage = req.session.successMessage || null;
   req.session.successMessage = null;
-  res.render('profile', { user, successMessage });
+  res.render('user/profile', { user, successMessage });
 };
 
 // EDIT PROFILE (GET)
 exports.getEditProfile = (req, res) => {
   const user = req.session.user;
-  if (!user) return res.redirect('/login');
-  res.render('editProfile', { user, error: null, successMessage: null });
+  if (!user) return res.redirect('/user/login');
+  res.render('user/editProfile', { user, error: null, successMessage: null });
 };
 
 // EDIT PROFILE (POST)
@@ -212,7 +215,7 @@ exports.postEditProfile = async (req, res) => {
     if (!user) return res.status(404).send('Utilizador não encontrado');
 
     if (!/^[A-Za-zÀ-ÿ\s]+$/.test(nomeCompleto)) {
-      return res.render('editProfile', {
+      return res.render('user/editProfile', {
         user,
         successMessage: null,
         error: 'O nome completo não pode conter números ou caracteres especiais.'
@@ -220,7 +223,7 @@ exports.postEditProfile = async (req, res) => {
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return res.render('editProfile', {
+      return res.render('user/editProfile', {
         user,
         successMessage: null,
         error: 'O email introduzido não é válido.'
@@ -228,7 +231,7 @@ exports.postEditProfile = async (req, res) => {
     }
 
     if (!/^\d{9}$/.test(telefone)) {
-      return res.render('editProfile', {
+      return res.render('user/editProfile', {
         user,
         successMessage: null,
         error: 'O número de telefone deve ter exatamente 9 dígitos.'
@@ -236,7 +239,7 @@ exports.postEditProfile = async (req, res) => {
     }
 
     if (!/[A-Za-z]/.test(morada)) {
-      return res.render('editProfile', {
+      return res.render('user/editProfile', {
         user,
         successMessage: null,
         error: 'A morada deve conter letras.'
@@ -244,7 +247,7 @@ exports.postEditProfile = async (req, res) => {
     }
 
     if (!/^\d{9}$/.test(nif)) {
-      return res.render('editProfile', {
+      return res.render('user/editProfile', {
         user,
         successMessage: null,
         error: 'O NIF deve conter exatamente 9 dígitos.'
@@ -254,14 +257,13 @@ exports.postEditProfile = async (req, res) => {
     const hoje = new Date();
     const dataNasc = new Date(dataNascimento);
     if (isNaN(dataNasc.getTime()) || dataNasc > hoje) {
-      return res.render('editProfile', {
+      return res.render('user/editProfile', {
         user,
         successMessage: null,
         error: 'A data de nascimento não pode ser no futuro.'
       });
     }
 
-    // Atualização dos dados
     user.nomeCompleto = nomeCompleto;
     user.email = email;
     user.morada = morada;
@@ -272,10 +274,76 @@ exports.postEditProfile = async (req, res) => {
     await user.save();
     req.session.user = user;
     req.session.successMessage = 'Perfil atualizado com sucesso!';
-    res.redirect('/profile');
-
+    res.redirect('/user/profile');
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao atualizar perfil');
   }
 };
+
+exports.getForgotPassword = (req, res) => {
+  res.render('user/forgotPassword', {
+    title: 'Recuperar Senha',
+    error: null,
+    showForm: false,
+    username: '',
+    email: ''
+  });
+};
+
+exports.postForgotPassword = async (req, res) => {
+  const { username, email, novaSenha, confirmarSenha } = req.body;
+
+  try {
+    const user = await User.findOne({ username, email });
+
+    if (!user) {
+      return res.render('user/forgotPassword', {
+        title: 'Recuperar Senha',
+        error: 'Utilizador não encontrado com esses dados.',
+        showForm: false,
+        username,
+        email
+      });
+    }
+
+    if (!novaSenha || !confirmarSenha) {
+      // Se está na primeira parte do processo, só com username/email
+      return res.render('user/forgotPassword', {
+        title: 'Recuperar Senha',
+        showForm: true,
+        error: null,
+        username,
+        email
+      });
+    }
+
+    if (novaSenha !== confirmarSenha) {
+      return res.render('user/forgotPassword', {
+        title: 'Recuperar Senha',
+        error: 'As palavras-passe não coincidem.',
+        showForm: true,
+        username,
+        email
+      });
+    }
+
+    const hashed = await bcrypt.hash(novaSenha, 10);
+    user.password = hashed;
+    await user.save();
+
+    res.redirect('/user/login');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao atualizar a senha');
+  }
+};
+
+
+// RENDER DASHBOARD
+exports.getDashboard = (req, res) => {
+  res.render('dashboard', { title: 'Dashboard' });
+};
+
+
+

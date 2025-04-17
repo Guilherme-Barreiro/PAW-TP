@@ -56,7 +56,7 @@ app.use((req, res, next) => {
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/restaurants', restaurantsRouter);
-app.use('/', authRoutes);
+app.use('/user', authRoutes);
 
 // Erro 404
 app.use(function(req, res, next) {

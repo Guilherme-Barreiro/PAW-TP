@@ -1,14 +1,55 @@
 const Restaurant = require('../models/Restaurant');
 const fs = require('fs');
 const path = require('path');
+const bcrypt = require('bcryptjs');
 
 const parseNutri = (val) => {
   const num = parseFloat(val);
   return !isNaN(num) && num >= 0 ? num : null;
 };
 
-exports.getRegister = (req, res) => {
-  res.render('restaurant/restaurantRegister', { title: 'Registo do novo restaurante' });
+exports.postRegister = async (req, res) => {
+  const { name, email, password, location } = req.body;
+
+  try {
+    // Nome: apenas letras e espaços
+    if (!/^[A-Za-zÀ-ÿ\s]+$/.test(name)) {
+      return res.status(400).send('O nome do restaurante só pode conter letras e espaços.');
+    }
+
+    // Localização: apenas letras e espaços
+    if (!/^[A-Za-zÀ-ÿ\s]+$/.test(location)) {
+      return res.status(400).send('A localização só pode conter letras e espaços.');
+    }
+
+    // Email: formato válido
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).send('O email introduzido não é válido.');
+    }
+
+    // Hash da password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const restauranteExistente = await Restaurant.findOne({ email });
+
+    if (restauranteExistente) {
+       return res.status(400).send('Já existe um restaurante com este email.');
+    }
+
+    const novoRestaurante = new Restaurant({
+      name,
+      email,
+      password: hashedPassword,
+      location,
+      validado: false
+    });
+
+    await novoRestaurante.save();
+    res.redirect('/restaurants/list');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao registar restaurante');
+  }
 };
 
 exports.getList = async (req, res) => {
@@ -107,7 +148,7 @@ exports.getFilteredList = async (req, res) => {
       restaurantes.sort((a, b) => a.name.localeCompare(b.name));
     }
 
-    res.render('home', { restaurantes, title: 'Homepage com Filtros' });
+    res.render('restaurant/filter', { restaurantes, title: 'Homepage com Filtros' });
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao aplicar filtros');
@@ -133,25 +174,6 @@ exports.viewPrato = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao carregar o prato');
-  }
-};
-
-exports.postRegister = async (req, res) => {
-  const { name, email, password, location } = req.body;
-
-  try {
-    const novoRestaurante = new Restaurant({
-      name,
-      email,
-      password,
-      location,
-      validado: false
-    });
-    await novoRestaurante.save();
-    res.redirect('/restaurants/list');
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Erro ao registar restaurante');
   }
 };
 
@@ -192,14 +214,16 @@ exports.postAddMenu = async (req, res) => {
     const restaurante = await Restaurant.findById(req.params.id);
     if (!restaurante) return res.status(404).send('Restaurante não encontrado');
 
-    // Validação: máximo 10 pratos
     if (restaurante.menu.length >= 10) {
       return res.status(400).send('Este restaurante já tem o máximo de 10 pratos.');
     }
 
-    // Validações adicionais
-    if (/\d/.test(name)) {
-      return res.status(400).send('O nome do prato não pode conter números.');
+    if (!/^[A-Za-zÀ-ÿ\s]+$/.test(name)) {
+      return res.status(400).send('O nome do prato só pode conter letras e espaços.');
+    }
+
+    if (!/^[A-Za-zÀ-ÿ\s]+$/.test(category)) {
+      return res.status(400).send('A categoria só pode conter letras e espaços.');
     }
 
     if (!nutrition || nutrition.trim() === '') {
@@ -209,7 +233,7 @@ exports.postAddMenu = async (req, res) => {
     const meiaF = parseFloat(meia);
     const inteiraF = parseFloat(inteira);
     if (isNaN(meiaF) || isNaN(inteiraF) || meiaF < 0 || inteiraF < 0 || meiaF > inteiraF) {
-      return res.status(400).send('Verifica os preços: sem negativos, e meia dose < dose inteira.');
+      return res.status(400).send('Verifica os preços: sem negativos, e meia dose deve ser menor ou igual à dose inteira.');
     }
 
     restaurante.menu.push({
@@ -244,9 +268,12 @@ exports.postEditMenu = async (req, res) => {
       return res.status(404).send('Prato não encontrado');
     }
 
-    // Validações
-    if (/\d/.test(name)) {
-      return res.status(400).send('O nome do prato não pode conter números.');
+    if (!/^[A-Za-zÀ-ÿ\s]+$/.test(name)) {
+      return res.status(400).send('O nome do prato só pode conter letras e espaços.');
+    }
+
+    if (!/^[A-Za-zÀ-ÿ\s]+$/.test(category)) {
+      return res.status(400).send('A categoria só pode conter letras e espaços.');
     }
 
     if (!nutrition || nutrition.trim() === '') {
@@ -256,7 +283,7 @@ exports.postEditMenu = async (req, res) => {
     const meiaF = parseFloat(meia);
     const inteiraF = parseFloat(inteira);
     if (isNaN(meiaF) || isNaN(inteiraF) || meiaF < 0 || inteiraF < 0 || meiaF > inteiraF) {
-      return res.status(400).send('Verifica os preços: sem negativos, e meia dose < dose inteira.');
+      return res.status(400).send('Verifica os preços: sem negativos, e meia dose deve ser menor ou igual à dose inteira.');
     }
 
     const prato = restaurante.menu[index];
@@ -319,7 +346,21 @@ exports.getEditRestaurant = async (req, res) => {
 
 exports.postEditRestaurant = async (req, res) => {
   const { name, email, location } = req.body;
+
   try {
+    // Validações
+    if (!/^[A-Za-zÀ-ÿ\s]+$/.test(name)) {
+      return res.status(400).send('O nome do restaurante só pode conter letras e espaços.');
+    }
+
+    if (!/^[A-Za-zÀ-ÿ\s]+$/.test(location)) {
+      return res.status(400).send('A localização só pode conter letras e espaços.');
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).send('O email introduzido não é válido.');
+    }
+
     const restaurante = await Restaurant.findById(req.params.id);
     if (!restaurante) return res.status(404).send('Restaurante não encontrado');
 
@@ -334,6 +375,7 @@ exports.postEditRestaurant = async (req, res) => {
     res.status(500).send('Erro ao atualizar restaurante');
   }
 };
+
 
 exports.postDeleteRestaurant = async (req, res) => {
   try {
@@ -359,5 +401,13 @@ exports.validateRestaurant = async (req, res) => {
     res.status(500).send('Erro ao validar restaurante');
   }
 };
+
+exports.getRegister = (req, res) => {
+  res.render('restaurant/restaurantRegister', {
+    title: 'Registar Restaurante',
+    error: null
+  });
+};
+
 
 

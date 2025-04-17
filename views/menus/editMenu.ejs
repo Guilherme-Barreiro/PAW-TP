@@ -7,12 +7,12 @@
 
     <div class="mb-3">
       <label class="form-label">Nome do prato</label>
-      <input type="text" class="form-control" id="name" name="name" value="<%= prato.name %>" pattern="[A-Za-zÀ-ÿ\s]+" required>
+      <input type="text" class="form-control" id="name" name="name" value="<%= prato.name %>" pattern="[A-Za-zÀ-ÿ\s]+" required title="Só letras e espaços.">
     </div>
 
     <div class="mb-3">
       <label class="form-label">Categoria</label>
-      <select class="form-select" name="category" required>
+      <select class="form-select" name="category" id="category" required>
         <% ['Carne','Peixe','Vegetariano','Sobremesa'].forEach(opt => { %>
           <option value="<%= opt %>" <%= prato.category === opt ? 'selected' : '' %>><%= opt %></option>
         <% }) %>
@@ -39,7 +39,7 @@
     </div>
 
     <div class="mb-3">
-      <label for="nutrition" class="form-label">Informação Nutricional</label>
+      <label class="form-label">Informação Nutricional</label>
       <textarea class="form-control" name="nutrition" id="nutrition" rows="3" required><%= prato.nutrition %></textarea>
     </div>
 
@@ -65,26 +65,33 @@
 
 <script>
   document.getElementById('editForm').addEventListener('submit', function (e) {
+    const nome = document.getElementById('name').value.trim();
+    const categoria = document.getElementById('category').value.trim();
     const meia = parseFloat(document.getElementById('priceMeia').value);
     const inteira = parseFloat(document.getElementById('priceInteira').value);
-    const nome = document.getElementById('name').value;
     const nutritionText = document.getElementById('nutrition').value.trim();
 
-    if (/\d/.test(nome)) {
+    if (/[^A-Za-zÀ-ÿ\s]/.test(nome)) {
       e.preventDefault();
-      alert('O nome do prato não pode conter números.');
+      alert('O nome do prato só pode conter letras e espaços.');
       return;
     }
 
-    if (meia < 0 || inteira < 0 || meia > inteira) {
+    if (/[^A-Za-zÀ-ÿ\s]/.test(categoria)) {
       e.preventDefault();
-      alert('Corrige os preços inseridos.');
+      alert('A categoria só pode conter letras e espaços.');
       return;
     }
 
     if (!nutritionText) {
       e.preventDefault();
       alert('Por favor preenche a informação nutricional.');
+      return;
+    }
+
+    if (isNaN(meia) || isNaN(inteira) || meia < 0 || inteira < 0 || meia > inteira) {
+      e.preventDefault();
+      alert('Corrige os preços inseridos: sem negativos e meia dose menor ou igual à inteira.');
       return;
     }
   });

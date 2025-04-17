@@ -3,27 +3,27 @@
 <div class="container mt-5" style="max-width: 500px;">
   <h2 class="mb-4 text-center">Registar Restaurante</h2>
 
-  <form action="/restaurants/register" method="POST" class="card p-4 shadow-sm">
+  <form action="/restaurants/register" method="POST" class="card p-4 shadow-sm" id="restaurantForm">
     <div class="mb-3">
       <label for="name" class="form-label">Nome</label>
-      <input type="text" class="form-control" id="name" name="name" required>
+      <input type="text" class="form-control" id="name" name="name" required pattern="[A-Za-zÀ-ÿ\s]+" title="Só letras e espaços">
     </div>
-
+  
     <div class="mb-3">
       <label for="location" class="form-label">Localização</label>
-      <input type="text" class="form-control" id="location" name="location" required>
+      <input type="text" class="form-control" id="location" name="location" required pattern="[A-Za-zÀ-ÿ\s]+" title="Só letras e espaços">
     </div>    
-
+  
     <div class="mb-3">
       <label for="email" class="form-label">Email</label>
       <input type="email" class="form-control" id="email" name="email" required>
     </div>
-
+  
     <div class="mb-3">
       <label for="password" class="form-label">Senha</label>
       <input type="password" class="form-control" id="password" name="password" required>
     </div>
-
+  
     <button type="submit" class="btn btn-primary w-100">Registar</button>
   </form>
 
@@ -31,5 +31,35 @@
     <a href="/restaurants/list" class="text-decoration-none">← Voltar à lista</a>
   </div>
 </div>
+  
+  <<script>
+    document.getElementById('restaurantForm').addEventListener('submit', function (e) {
+      const name = document.getElementById('name').value;
+      const location = document.getElementById('location').value;
+      const email = document.getElementById('email').value;
+  
+      const nameRegex = /^[A-Za-zÀ-ÿ\s]+$/;
+      const locationRegex = /^[A-Za-zÀ-ÿ\s]+$/;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  
+      if (!nameRegex.test(name)) {
+        e.preventDefault();
+        alert('O nome do restaurante só pode conter letras e espaços.');
+        return;
+      }
+  
+      if (!locationRegex.test(location)) {
+        e.preventDefault();
+        alert('A localização só pode conter letras e espaços.');
+        return;
+      }
+  
+      if (!emailRegex.test(email)) {
+        e.preventDefault();
+        alert('O email introduzido não é válido.');
+        return;
+      }
+    });
+  </script>  
 
 <%- include('../partials/footer') %>

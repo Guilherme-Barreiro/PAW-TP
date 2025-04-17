@@ -1,4 +1,4 @@
-<%- include('partials/header') %>
+<%- include('../partials/header') %>
 
 <div class="container mt-5">
   <h2 class="mb-4 text-center">Editar Perfil</h2>
@@ -11,7 +11,7 @@
     <div class="alert alert-danger text-center"><%= error %></div>
   <% } %>
 
-  <form method="POST" action="/profile/edit" class="card p-4 shadow-sm mx-auto" style="max-width: 600px;" id="editProfileForm">
+  <form method="POST" action="/user/profile/edit" class="card p-4 shadow-sm mx-auto" style="max-width: 600px;" id="editProfileForm">
 
     <div class="mb-3">
       <label class="form-label">Nome de Utilizador</label>
@@ -64,7 +64,7 @@
   </form>
 
   <div class="text-center mt-3">
-    <a href="/profile" class="btn btn-outline-secondary">← Voltar</a>
+    <a href="/user/profile" class="btn btn-outline-secondary">← Voltar</a>
   </div>
 </div>
 
@@ -109,4 +109,4 @@
   });
 </script>
 
-<%- include('partials/footer') %>
+<%- include('../partials/footer') %>
