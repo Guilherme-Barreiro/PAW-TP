@@ -1,0 +1,13 @@
+<%- include('../partials/header') %>
+<div class="container mt-4">
+  <h1>Nova Categoria</h1>
+  <form method="POST" action="/categories">
+    <div class="mb-3">
+      <label for="name" class="form-label">Nome da Categoria</label>
+      <input type="text" name="name" class="form-control" required>
+    </div>
+    <button class="btn btn-success">Criar</button>
+    <a href="/categories" class="btn btn-secondary">Cancelar</a>
+  </form>
+</div>
+<%- include('../partials/footer') %>

@@ -1,0 +1,13 @@
+<%- include('../partials/header') %>
+<div class="container mt-4">
+  <h1>Editar Categoria</h1>
+  <form method="POST" action="/categories/<%= category._id %>">
+    <div class="mb-3">
+      <label for="name" class="form-label">Nome</label>
+      <input type="text" name="name" class="form-control" value="<%= category.name %>" required>
+    </div>
+    <button class="btn btn-primary">Atualizar</button>
+    <a href="/categories" class="btn btn-secondary">Cancelar</a>
+  </form>
+</div>
+<%- include('../partials/footer') %>
