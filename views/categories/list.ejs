@@ -1,17 +1,27 @@
 <%- include('../partials/header') %>
 <div class="container mt-4">
   <h1>Categorias</h1>
-  <a href="/categories/new" class="btn btn-success mb-3">Nova Categoria</a>
+  <a href="/categories/new" class="btn btn-primary mb-3">Nova Categoria</a>
   <table class="table">
     <thead>
-      <tr><th>Nome</th><th>Ações</th></tr>
+      <tr>
+        <th>Nome</th>
+        <th>Ações</th>
+      </tr>
     </thead>
     <tbody>
+      <% categoriasFixas.forEach(cat => { %>
+        <tr>
+          <td><%= cat %> <span class="badge bg-secondary">Fixa</span></td>
+          <td>—</td>
+        </tr>
+      <% }) %>
+
       <% categories.forEach(cat => { %>
         <tr>
           <td><%= cat.name %></td>
           <td>
-            <a href="/categories/<%= cat._id %>/edit" class="btn btn-sm btn-primary">Editar</a>
+            <a href="/categories/<%= cat._id %>/edit" class="btn btn-sm btn-warning">Editar</a>
             <form method="POST" action="/categories/<%= cat._id %>/delete" class="d-inline">
               <button class="btn btn-sm btn-danger" onclick="return confirm('Tem a certeza?')">Remover</button>
             </form>

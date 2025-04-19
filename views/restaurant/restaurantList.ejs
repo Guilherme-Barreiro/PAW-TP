@@ -7,17 +7,16 @@
     <div class="col-md-2">
       <input type="text" class="form-control" name="name" placeholder="Nome" value="<%= filtros?.name || '' %>">
     </div>
-  
+    
     <div class="col-md-2">
       <select name="category" class="form-select">
         <option value="">Categoria</option>
-        <option value="Carne" <%= filtros?.category === 'Carne' ? 'selected' : '' %>>Carne</option>
-        <option value="Peixe" <%= filtros?.category === 'Peixe' ? 'selected' : '' %>>Peixe</option>
-        <option value="Vegetariano" <%= filtros?.category === 'Vegetariano' ? 'selected' : '' %>>Vegetariano</option>
-        <option value="Sobremesa" <%= filtros?.category === 'Sobremesa' ? 'selected' : '' %>>Sobremesa</option>
+        <% categorias.forEach(cat => { %>
+          <option value="<%= cat %>" <%= filtros?.category === cat ? 'selected' : '' %>><%= cat %></option>
+        <% }) %>
       </select>
     </div>
-  
+    
     <div class="col-md-2">
       <input type="text" class="form-control" name="location" placeholder="Localização" value="<%= filtros?.location || '' %>">
     </div>

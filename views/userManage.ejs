@@ -19,9 +19,11 @@
           <td><%= user.username %></td>
           <td><%= user.role %></td>
           <td>
-            <form action="/users/<%= user._id %>/delete" method="POST" onsubmit="return confirm('Tens a certeza que queres remover este utilizador?');">
-              <button class="btn btn-sm btn-danger" type="submit">Remover</button>
-            </form>
+            <% if (user.role !== 'admin') { %>
+              <form action="/users/<%= user._id %>/delete" method="POST" onsubmit="return confirm('Tens a certeza que queres remover este utilizador?');">
+                <button class="btn btn-sm btn-danger" type="submit">Remover</button>
+              </form>
+            <% } %>
           </td>
         </tr>
       <% }) %>

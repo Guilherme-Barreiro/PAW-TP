@@ -1,4 +1,5 @@
 const Restaurant = require('../models/Restaurant');
+const Category = require('../models/Category'); 
 const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
@@ -41,9 +42,10 @@ exports.postRegister = async (req, res) => {
       email,
       password: hashedPassword,
       location,
-      validado: false
+      validado: false,
+      createdBy: req.user._id
     });
-
+    
     await novoRestaurante.save();
     res.redirect('/restaurants/list');
   } catch (err) {
@@ -57,7 +59,6 @@ exports.getList = async (req, res) => {
     const { name, category, location, min, max } = req.query;
 
     const filtro = {};
-
     if (name) filtro.name = { $regex: name, $options: 'i' };
     if (category) filtro['menu.category'] = category;
     if (location) filtro.location = { $regex: location, $options: 'i' };
@@ -69,11 +70,20 @@ exports.getList = async (req, res) => {
     }
 
     const restaurantes = await Restaurant.find(filtro);
+
+    const categoriasDB = await Category.find({}).select('name -_id');
+    const categoriasUnicas = categoriasDB.map(cat => cat.name);
+
+    const categoriasFixas = ["Carne", "Peixe", "Vegetariano", "Sobremesa"];
+    const categorias = [...new Set([...categoriasFixas, ...categoriasUnicas])];
+
     res.render('restaurant/restaurantList', {
       restaurantes,
-      title: 'Lista de restaurantes',
-      filtros: req.query 
+      categorias,
+      filtros: req.query,
+      title: 'Lista de restaurantes'
     });
+
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao carregar restaurantes');
@@ -204,7 +214,6 @@ exports.viewMenu = async (req, res) => {
     res.status(500).send('Erro ao carregar os pratos');
   }
 };
-
 
 exports.postAddMenu = async (req, res) => {
   const { name, category, description, nutrition, meia, inteira } = req.body;
@@ -376,7 +385,6 @@ exports.postEditRestaurant = async (req, res) => {
   }
 };
 
-
 exports.postDeleteRestaurant = async (req, res) => {
   try {
     await Restaurant.findByIdAndDelete(req.params.id);
@@ -408,6 +416,3 @@ exports.getRegister = (req, res) => {
     error: null
   });
 };
-
-
-

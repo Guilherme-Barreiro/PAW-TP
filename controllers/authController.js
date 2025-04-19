@@ -339,11 +339,7 @@ exports.postForgotPassword = async (req, res) => {
   }
 };
 
-
 // RENDER DASHBOARD
 exports.getDashboard = (req, res) => {
   res.render('dashboard', { title: 'Dashboard' });
 };
-
-
-

@@ -1,10 +1,19 @@
 const Category = require('../models/Category');
 
 exports.list = async (req, res) => {
-  const categories = await Category.find().sort({ name: 1 });
-  res.render('categories/list', { categories });
-};
+  try {
+    const categories = await Category.find().sort({ name: 1 });
+    const categoriasFixas = ["Carne", "Peixe", "Vegetariano", "Sobremesa"];
 
+    res.render('categories/list', { 
+      categories,
+      categoriasFixas
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao carregar categorias');
+  }
+};
 exports.showCreateForm = (req, res) => {
   res.render('categories/new');
 };
