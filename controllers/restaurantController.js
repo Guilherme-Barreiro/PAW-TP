@@ -3,6 +3,7 @@ const Category = require('../models/Category');
 const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
+const { getNutritionalInfo } = require('../utils/spoonacular');
 
 const parseNutri = (val) => {
   const num = parseFloat(val);
@@ -12,30 +13,30 @@ const parseNutri = (val) => {
 exports.postRegister = async (req, res) => {
   const { name, email, password, location } = req.body;
 
+  // ✅ Verifica se o utilizador está autenticado
+  if (!req.user || !req.user._id) {
+    return res.status(401).send('Utilizador não autenticado');
+  }
+
   try {
-    // Nome: apenas letras e espaços
     if (!/^[A-Za-zÀ-ÿ\s]+$/.test(name)) {
       return res.status(400).send('O nome do restaurante só pode conter letras e espaços.');
     }
 
-    // Localização: apenas letras e espaços
     if (!/^[A-Za-zÀ-ÿ\s]+$/.test(location)) {
       return res.status(400).send('A localização só pode conter letras e espaços.');
     }
 
-    // Email: formato válido
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return res.status(400).send('O email introduzido não é válido.');
     }
 
-    // Hash da password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     const restauranteExistente = await Restaurant.findOne({ email });
-
     if (restauranteExistente) {
-       return res.status(400).send('Já existe um restaurante com este email.');
+      return res.status(400).send('Já existe um restaurante com este email.');
     }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const novoRestaurante = new Restaurant({
       name,
@@ -43,9 +44,9 @@ exports.postRegister = async (req, res) => {
       password: hashedPassword,
       location,
       validado: false,
-      createdBy: req.user._id
+      createdBy: req.user._id // ✅ AQUI está a ligação com o utilizador autenticado
     });
-    
+
     await novoRestaurante.save();
     res.redirect('/restaurants/list');
   } catch (err) {
@@ -216,7 +217,7 @@ exports.viewMenu = async (req, res) => {
 };
 
 exports.postAddMenu = async (req, res) => {
-  const { name, category, description, nutrition, meia, inteira } = req.body;
+  const { name, category, description, meia, inteira } = req.body;
   const image = req.file ? req.file.filename : '';
 
   try {
@@ -235,15 +236,17 @@ exports.postAddMenu = async (req, res) => {
       return res.status(400).send('A categoria só pode conter letras e espaços.');
     }
 
-    if (!nutrition || nutrition.trim() === '') {
-      return res.status(400).send('Informação nutricional obrigatória.');
-    }
-
     const meiaF = parseFloat(meia);
     const inteiraF = parseFloat(inteira);
+
     if (isNaN(meiaF) || isNaN(inteiraF) || meiaF < 0 || inteiraF < 0 || meiaF > inteiraF) {
       return res.status(400).send('Verifica os preços: sem negativos, e meia dose deve ser menor ou igual à dose inteira.');
     }
+
+    const nutritionData = await getNutritionalInfo(name);
+    const nutrition = nutritionData
+      ? `Calorias: ${nutritionData.calories?.value} ${nutritionData.calories?.unit}, Proteínas: ${nutritionData.protein?.value} ${nutritionData.protein?.unit}, Gordura: ${nutritionData.fat?.value} ${nutritionData.fat?.unit}`
+      : 'Informação nutricional não disponível.';
 
     restaurante.menu.push({
       name,
@@ -266,16 +269,15 @@ exports.postAddMenu = async (req, res) => {
 };
 
 exports.postEditMenu = async (req, res) => {
-  const { name, category, description, nutrition, meia, inteira } = req.body;
-  const imageFile = req.file ? req.file.filename : null;
+  const { name, category, description, meia, inteira } = req.body;
+  const image = req.file ? req.file.filename : null;
 
   try {
-    const index = parseInt(req.params.pratoIndex);
     const restaurante = await Restaurant.findById(req.params.id);
+    if (!restaurante) return res.status(404).send('Restaurante não encontrado');
 
-    if (!restaurante || isNaN(index) || !restaurante.menu[index]) {
-      return res.status(404).send('Prato não encontrado');
-    }
+    const prato = restaurante.menu[req.params.pratoIndex];
+    if (!prato) return res.status(404).send('Prato não encontrado');
 
     if (!/^[A-Za-zÀ-ÿ\s]+$/.test(name)) {
       return res.status(400).send('O nome do prato só pode conter letras e espaços.');
@@ -285,25 +287,27 @@ exports.postEditMenu = async (req, res) => {
       return res.status(400).send('A categoria só pode conter letras e espaços.');
     }
 
-    if (!nutrition || nutrition.trim() === '') {
-      return res.status(400).send('Informação nutricional obrigatória.');
-    }
-
     const meiaF = parseFloat(meia);
     const inteiraF = parseFloat(inteira);
+
     if (isNaN(meiaF) || isNaN(inteiraF) || meiaF < 0 || inteiraF < 0 || meiaF > inteiraF) {
       return res.status(400).send('Verifica os preços: sem negativos, e meia dose deve ser menor ou igual à dose inteira.');
     }
 
-    const prato = restaurante.menu[index];
+    const nomeAlterado = name !== prato.name;
+
     prato.name = name;
     prato.category = category;
     prato.description = description;
-    prato.nutrition = nutrition;
-    prato.price = { meia: meiaF, inteira: inteiraF };
+    prato.price.meia = meiaF;
+    prato.price.inteira = inteiraF;
+    if (image) prato.image = image;
 
-    if (imageFile) {
-      prato.image = imageFile;
+    if (nomeAlterado) {
+      const nutritionData = await getNutritionalInfo(name);
+      prato.nutrition = nutritionData
+        ? `Calorias: ${nutritionData.calories?.value} ${nutritionData.calories?.unit}, Proteínas: ${nutritionData.protein?.value} ${nutritionData.protein?.unit}, Gordura: ${nutritionData.fat?.value} ${nutritionData.fat?.unit}`
+        : 'Informação nutricional não disponível.';
     }
 
     await restaurante.save();

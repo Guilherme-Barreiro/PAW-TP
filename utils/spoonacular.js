@@ -1,18 +1,19 @@
 const axios = require('axios');
-const API_KEY = process.env.SPOONACULAR_API_KEY; // define no .env
 
-exports.getNutritionalInfo = async (nomeDoPrato) => {
+const getNutritionalInfo = async (title) => {
   try {
-    const response = await axios.get(`https://api.spoonacular.com/recipes/guessNutrition`, {
+    const response = await axios.get('https://api.spoonacular.com/recipes/guessNutrition', {
       params: {
-        title: nomeDoPrato,
-        apiKey: API_KEY
-      }
+        title,
+        apiKey: process.env.SPOONACULAR_API_KEY,
+      },
     });
 
     return response.data;
-  } catch (err) {
-    console.error('Erro ao buscar info nutricional:', err.message);
+  } catch (error) {
+    console.error('Erro ao obter dados nutricionais:', error.message);
     return null;
   }
 };
+
+module.exports = { getNutritionalInfo };

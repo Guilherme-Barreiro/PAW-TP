@@ -5,20 +5,27 @@ const User = require('../models/User');
 const JWT_SECRET = process.env.JWT_SECRET;
 
 // Middleware: Verifica token da sessão
-exports.verifyToken = (req, res, next) => {
+exports.verifyToken = async (req, res, next) => {
   const token = req.cookies.token;
 
   if (!token) return res.redirect('/user/login');
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded;
+
+    // 🔥 Buscar o utilizador completo da base de dados
+    const user = await User.findById(decoded.id);
+
+    if (!user) return res.redirect('/user/login');
+
+    req.user = user; // ✅ Agora sim, vai conter _id, role, etc.
     next();
   } catch (err) {
     console.error('Token inválido:', err);
     return res.redirect('/user/login');
   }
 };
+
 
 // RENDER LOGIN
 exports.getLogin = (req, res) => {
