@@ -350,3 +350,11 @@ exports.postForgotPassword = async (req, res) => {
 exports.getDashboard = (req, res) => {
   res.render('dashboard', { title: 'Dashboard' });
 };
+
+// Middleware: Verifica se é admin
+exports.isAdmin = (req, res, next) => {
+  if (req.user && req.user.role === 'admin') {
+    return next();
+  }
+  return res.redirect('/'); // ou uma página 403, por exemplo
+};

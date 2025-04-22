@@ -420,3 +420,23 @@ exports.getRegister = (req, res) => {
     error: null
   });
 };
+
+exports.listaValidacoes = async (req, res) => {
+  try {
+    const restaurantes = await Restaurant.find({ validado: false });
+    res.render('admin/validar', { restaurantes });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao carregar restaurantes');
+  }
+};
+
+exports.validarRestaurante = async (req, res) => {
+  try {
+    await Restaurant.findByIdAndUpdate(req.params.id, { validado: true });
+    res.redirect('/admin/validar');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao validar restaurante');
+  }
+};

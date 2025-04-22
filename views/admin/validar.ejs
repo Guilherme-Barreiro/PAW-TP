@@ -1,0 +1,36 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-4">
+  <h1>Validar Restaurantes</h1>
+
+  <% if (restaurantes.length === 0) { %>
+    <p class="text-muted">Todos os restaurantes estão validados 🎉</p>
+  <% } else { %>
+    <table class="table mt-3 table-hover text-center">
+      <thead class="table-dark">
+        <tr>
+          <th>Nome</th>
+          <th>Email</th>
+          <th>Localização</th>
+          <th>Ação</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% restaurantes.forEach(rest => { %>
+          <tr>
+            <td><%= rest.name %></td>
+            <td><%= rest.email %></td>
+            <td><%= rest.location || '-' %></td>
+            <td>
+              <form method="POST" action="/admin/validar/<%= rest._id %>">
+                <button class="btn btn-success btn-sm">Validar</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>
