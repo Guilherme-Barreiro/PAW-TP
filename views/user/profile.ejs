@@ -1,59 +1,81 @@
 <%- include('../partials/header') %>
 
 <div class="container mt-5">
-  <div class="card shadow-lg mx-auto" style="max-width: 600px;">
-    <div class="card-header bg-dark text-white">
-      <h4 class="mb-0">Perfil do Utilizador</h4>
-    </div>
-    <div class="card-body">
-      <p><strong>Nome de Utilizador:</strong> <%= user.username %></p>
-
-      <% if (user.nomeCompleto) { %>
-        <p><strong>Nome Completo:</strong> <%= user.nomeCompleto %></p>
-      <% } %>
-
-      <% if (user.email) { %>
-        <p><strong>Email:</strong> <%= user.email %></p>
-      <% } %>
-
-      <% if (user.morada) { %>
-        <p><strong>Morada:</strong> <%= user.morada %></p>
-      <% } %>
-
-      <% if (user.telefone) { %>
-        <p><strong>Telefone:</strong> <%= user.telefone %></p>
-      <% } %>
-
-      <% if (user.nif) { %>
-        <p><strong>NIF:</strong> <%= user.nif %></p>
-      <% } %>
-
-      <% if (user.dataNascimento) { %>
-        <p><strong>Data de Nascimento:</strong> <%= new Date(user.dataNascimento).toLocaleDateString() %></p>
-      <% } %>
-
-      <p><strong>Tipo de Conta:</strong> <span class="badge bg-secondary"><%= user.role %></span></p>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card shadow-lg mb-4">
+        <div class="card-header bg-dark text-white">
+          <h4 class="mb-0">Perfil do Utilizador</h4>
+        </div>
+        <div class="card-body">
+          <p><strong>Nome de Utilizador:</strong> <%= user.username %></p>
+          <% if (user.nomeCompleto) { %>
+            <p><strong>Nome Completo:</strong> <%= user.nomeCompleto %></p>
+          <% } %>
+          <% if (user.email) { %>
+            <p><strong>Email:</strong> <%= user.email %></p>
+          <% } %>
+          <% if (user.morada) { %>
+            <p><strong>Morada:</strong> <%= user.morada %></p>
+          <% } %>
+          <% if (user.telefone) { %>
+            <p><strong>Telefone:</strong> <%= user.telefone %></p>
+          <% } %>
+          <% if (user.nif) { %>
+            <p><strong>NIF:</strong> <%= user.nif %></p>
+          <% } %>
+          <% if (user.dataNascimento) { %>
+            <p><strong>Data de Nascimento:</strong> <%= new Date(user.dataNascimento).toLocaleDateString() %></p>
+          <% } %>
+          <p><strong>Tipo de Conta:</strong> <span class="badge bg-secondary"><%= user.role %></span></p>
+        </div>
+      </div>
     </div>
 
-    <hr class="m-0">
-
-    <div class="card-body">
-      <h5>Histórico de Encomendas</h5>
-      <% if (user.historicoEncomendas && user.historicoEncomendas.length > 0) { %>
-        <ul>
-          <% user.historicoEncomendas.forEach(encomenda => { %>
-            <li><%= encomenda %></li>
-          <% }) %>
-        </ul>
-      <% } else { %>
-        <p class="text-muted">Sem encomendas registadas.</p>
-      <% } %>
+    <div class="col-md-6">
+      <div class="card shadow-lg">
+        <div class="card-header bg-success text-white">
+          <h4 class="mb-0">Restaurantes Criados</h4>
+        </div>
+        <div class="card-body">
+          <% if (user.restaurantesCriados && user.restaurantesCriados.length > 0) { %>
+            <ul class="list-group">
+              <% user.restaurantesCriados.forEach(rest => { %>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <span><strong><%= rest.name %></strong> - <%= rest.status %></span>
+                  <div>
+                    <% if (rest.status === 'validado') { %>
+                      <span class="badge bg-success">Validado</span>
+                    <% } else if (rest.status === 'pendente') { %>
+                      <span class="badge bg-warning text-dark">Pendente</span>
+                    <% } else { %>
+                      <span class="badge bg-danger">Recusado</span>
+                    <% } %>                    
+                  </div>
+                </li>
+              <% }) %>
+            </ul>
+          <% } else { %>
+            <p class="text-muted">Ainda não criaste nenhum restaurante.</p>
+          <% } %>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <div class="card-footer text-center">
-      <a href="/user/profile/edit" class="btn btn-warning me-2">
+  <div class="d-flex justify-content-between mt-4">
+    <div>
+      <a href="/user/profile/edit" class="btn btn-warning">
         <i class="fas fa-edit me-1"></i> Editar Perfil
       </a>
+      <a href="/restaurants/register" class="btn btn-success ms-2">
+        <i class="fas fa-plus me-1"></i> Criar Restaurante
+      </a>
+    </div>
+    <div>
+      <% if (user.role === 'admin') { %>
+        <a href="/admin/validar" class="btn btn-outline-danger me-2">Validar Restaurantes</a>
+      <% } %>
       <a href="/" class="btn btn-outline-primary">← Voltar ao início</a>
     </div>
   </div>

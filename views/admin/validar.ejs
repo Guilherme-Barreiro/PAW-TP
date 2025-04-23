@@ -10,22 +10,28 @@
       <thead class="table-dark">
         <tr>
           <th>Nome</th>
-          <th>Email</th>
-          <th>Localização</th>
-          <th>Ação</th>
+<th>Email</th>
+<th>Localização</th>
+<th>Criado por</th> <!-- novo -->
+<th>Ação</th>
+
         </tr>
       </thead>
       <tbody>
         <% restaurantes.forEach(rest => { %>
           <tr>
             <td><%= rest.name %></td>
-            <td><%= rest.email %></td>
-            <td><%= rest.location || '-' %></td>
-            <td>
-              <form method="POST" action="/admin/validar/<%= rest._id %>">
-                <button class="btn btn-success btn-sm">Validar</button>
-              </form>
-            </td>
+<td><%= rest.email %></td>
+<td><%= rest.location || '-' %></td>
+<td><%= rest.createdBy?.username || 'Anónimo' %></td> <!-- novo -->
+<td>
+  <form method="POST" action="/admin/validar/<%= rest._id %>">
+    <button class="btn btn-success btn-sm">Validar</button>
+  </form>
+  <form method="POST" action="/admin/recusar/<%= rest._id %>" style="display:inline-block">
+    <button class="btn btn-danger btn-sm ms-1">Recusar</button>
+  </form>  
+</td>
           </tr>
         <% }) %>
       </tbody>

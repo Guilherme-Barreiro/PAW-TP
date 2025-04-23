@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
+const Restaurant = require('../models/Restaurant');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -190,12 +191,27 @@ exports.logout = (req, res) => {
 };
 
 // PERFIL
-exports.getProfile = (req, res) => {
-  const user = req.session.user;
-  if (!user) return res.redirect('/user/login');
-  const successMessage = req.session.successMessage || null;
-  req.session.successMessage = null;
-  res.render('user/profile', { user, successMessage });
+exports.getProfile = async (req, res) => {
+  const sessionUser = req.session.user;
+  if (!sessionUser) return res.redirect('/user/login');
+
+  try {
+    // Buscar restaurantes associados ao utilizador
+    const restaurantesCriados = await Restaurant.find({ createdBy: sessionUser._id });
+
+    const user = {
+      ...sessionUser,
+      restaurantesCriados
+    };
+
+    const successMessage = req.session.successMessage || null;
+    req.session.successMessage = null;
+
+    res.render('user/profile', { user, successMessage });
+  } catch (err) {
+    console.error('Erro ao buscar perfil e restaurantes:', err);
+    res.status(500).send('Erro ao carregar perfil');
+  }
 };
 
 // EDIT PROFILE (GET)
@@ -351,10 +367,26 @@ exports.getDashboard = (req, res) => {
   res.render('dashboard', { title: 'Dashboard' });
 };
 
+// Middleware: Verifica se está autenticado
+exports.isAuthenticated = (req, res, next) => {
+  if (req.session?.user) return next();
+  return res.redirect('/user/login');
+};
+
+// Middleware: Verifica se é um utilizador cliente
+exports.isUser = (req, res, next) => {
+  if (req.session?.user?.role === 'cliente') return next();
+  return res.status(403).send('Acesso reservado a utilizadores.');
+};
+
+// Middleware: Verifica se é um restaurante e está validado
+exports.isRestaurant = (req, res, next) => {
+  if (req.session?.user?.role === 'restaurante' && req.session.user.validado) return next();
+  return res.status(403).send('Acesso reservado a restaurantes validados.');
+};
+
 // Middleware: Verifica se é admin
 exports.isAdmin = (req, res, next) => {
-  if (req.user && req.user.role === 'admin') {
-    return next();
-  }
-  return res.redirect('/'); // ou uma página 403, por exemplo
+  if (req.session?.user?.role === 'admin') return next();
+  return res.status(403).send('Acesso reservado ao administrador.');
 };

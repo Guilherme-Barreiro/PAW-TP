@@ -5,6 +5,12 @@ const path = require('path');
 const bcrypt = require('bcryptjs');
 const { getNutritionalInfo } = require('../utils/spoonacular');
 
+const isOwnerOfRestaurant = (req, res, restaurante) => {
+  if (!restaurante.createdBy || restaurante.createdBy.toString() !== req.session.user._id.toString()) {
+    return res.status(403).send('Acesso negado: não és o proprietário deste restaurante.');
+  }
+};
+
 const parseNutri = (val) => {
   const num = parseFloat(val);
   return !isNaN(num) && num >= 0 ? num : null;
@@ -13,8 +19,7 @@ const parseNutri = (val) => {
 exports.postRegister = async (req, res) => {
   const { name, email, password, location } = req.body;
 
-  // ✅ Verifica se o utilizador está autenticado
-  if (!req.user || !req.user._id) {
+  if (!req.session.user || !req.session.user._id) {
     return res.status(401).send('Utilizador não autenticado');
   }
 
@@ -43,23 +48,24 @@ exports.postRegister = async (req, res) => {
       email,
       password: hashedPassword,
       location,
-      validado: false,
-      createdBy: req.user._id // ✅ AQUI está a ligação com o utilizador autenticado
+      status: 'pendente',
+      createdBy: req.session.user._id
     });
 
     await novoRestaurante.save();
-    res.redirect('/restaurants/list');
+    res.redirect('/user/profile');
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao registar restaurante');
   }
 };
 
+
 exports.getList = async (req, res) => {
   try {
     const { name, category, location, min, max } = req.query;
 
-    const filtro = {};
+    const filtro = { status: 'validado' };
     if (name) filtro.name = { $regex: name, $options: 'i' };
     if (category) filtro['menu.category'] = category;
     if (location) filtro.location = { $regex: location, $options: 'i' };
@@ -71,11 +77,9 @@ exports.getList = async (req, res) => {
     }
 
     const restaurantes = await Restaurant.find(filtro);
-
     const categoriasDB = await Category.find({}).select('name -_id');
     const categoriasUnicas = categoriasDB.map(cat => cat.name);
-
-    const categoriasFixas = ["Carne", "Peixe", "Vegetariano", "Sobremesa"];
+    const categoriasFixas = ['Carne', 'Peixe', 'Vegetariano', 'Sobremesa'];
     const categorias = [...new Set([...categoriasFixas, ...categoriasUnicas])];
 
     res.render('restaurant/restaurantList', {
@@ -84,18 +88,17 @@ exports.getList = async (req, res) => {
       filtros: req.query,
       title: 'Lista de restaurantes'
     });
-
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao carregar restaurantes');
   }
 };
 
-
 exports.getAddMenu = async (req, res) => {
   try {
     const restaurante = await Restaurant.findById(req.params.id);
     if (!restaurante) return res.status(404).send('Restaurante não encontrado');
+    isOwnerOfRestaurant(req, res, restaurante);
     res.render('menus/addMenu', { restaurante, title: 'Adicionar novo prato' });
   } catch (err) {
     console.error(err);
@@ -107,6 +110,12 @@ exports.getManage = async (req, res) => {
   try {
     const restaurante = await Restaurant.findById(req.params.id);
     if (!restaurante) return res.status(404).send('Restaurante não encontrado');
+    isOwnerOfRestaurant(req, res, restaurante);
+
+    if (restaurante.status !== 'validado') {
+      return res.status(403).send('Restaurante ainda não foi validado pelo administrador.');
+    }
+
     res.render('restaurant/restaurantManage', { restaurante, title: 'Gerir restaurante' });
   } catch (err) {
     console.error(err);
@@ -121,7 +130,7 @@ exports.getEditMenu = async (req, res) => {
     if (!restaurante || isNaN(index) || !restaurante.menu[index]) {
       return res.status(404).send('Prato não encontrado');
     }
-
+    isOwnerOfRestaurant(req, res, restaurante);
     const prato = restaurante.menu[index];
     res.render('menus/editMenu', {
       restauranteId: restaurante._id,
@@ -129,12 +138,12 @@ exports.getEditMenu = async (req, res) => {
       prato,
       title: 'Editar Prato'
     });
-
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao carregar prato para edição');
   }
 };
+
 
 exports.getFilteredList = async (req, res) => {
   try {
@@ -170,11 +179,13 @@ exports.viewPrato = async (req, res) => {
   try {
     const restaurante = await Restaurant.findById(req.params.id);
     const index = parseInt(req.params.pratoIndex);
+
     if (!restaurante || isNaN(index) || !restaurante.menu[index]) {
       return res.status(404).send('Prato não encontrado');
     }
 
     const prato = restaurante.menu[index];
+
     res.render('restaurant/viewPrato', {
       prato,
       restauranteId: restaurante._id,
@@ -187,6 +198,7 @@ exports.viewPrato = async (req, res) => {
     res.status(500).send('Erro ao carregar o prato');
   }
 };
+
 
 exports.viewMenu = async (req, res) => {
   try {
@@ -223,6 +235,7 @@ exports.postAddMenu = async (req, res) => {
   try {
     const restaurante = await Restaurant.findById(req.params.id);
     if (!restaurante) return res.status(404).send('Restaurante não encontrado');
+    isOwnerOfRestaurant(req, res, restaurante);
 
     if (restaurante.menu.length >= 10) {
       return res.status(400).send('Este restaurante já tem o máximo de 10 pratos.');
@@ -275,6 +288,7 @@ exports.postEditMenu = async (req, res) => {
   try {
     const restaurante = await Restaurant.findById(req.params.id);
     if (!restaurante) return res.status(404).send('Restaurante não encontrado');
+    isOwnerOfRestaurant(req, res, restaurante);
 
     const prato = restaurante.menu[req.params.pratoIndex];
     if (!prato) return res.status(404).send('Prato não encontrado');
@@ -326,6 +340,7 @@ exports.postRemoveMenu = async (req, res) => {
     if (!restaurante || isNaN(index) || !restaurante.menu[index]) {
       return res.status(404).send('Prato não encontrado');
     }
+    isOwnerOfRestaurant(req, res, restaurante);
 
     const prato = restaurante.menu[index];
 
@@ -350,6 +365,7 @@ exports.getEditRestaurant = async (req, res) => {
   try {
     const restaurante = await Restaurant.findById(req.params.id);
     if (!restaurante) return res.status(404).send('Restaurante não encontrado');
+    isOwnerOfRestaurant(req, res, restaurante);
     res.render('restaurant/editRestaurant', { restaurante, title: 'Editar Restaurante' });
   } catch (err) {
     console.error(err);
@@ -376,6 +392,7 @@ exports.postEditRestaurant = async (req, res) => {
 
     const restaurante = await Restaurant.findById(req.params.id);
     if (!restaurante) return res.status(404).send('Restaurante não encontrado');
+    isOwnerOfRestaurant(req, res, restaurante);
 
     restaurante.name = name;
     restaurante.email = email;
@@ -391,6 +408,9 @@ exports.postEditRestaurant = async (req, res) => {
 
 exports.postDeleteRestaurant = async (req, res) => {
   try {
+    const restaurante = await Restaurant.findById(req.params.id);
+    if (!restaurante) return res.status(404).send('Restaurante não encontrado');
+    isOwnerOfRestaurant(req, res, restaurante);
     await Restaurant.findByIdAndDelete(req.params.id);
     res.redirect('/restaurants/list');
   } catch (err) {
@@ -415,6 +435,10 @@ exports.validateRestaurant = async (req, res) => {
 };
 
 exports.getRegister = (req, res) => {
+  if (!req.session.user || req.session.user.role !== 'cliente') {
+    return res.status(403).send('Apenas utilizadores autenticados podem criar um restaurante.');
+  }
+
   res.render('restaurant/restaurantRegister', {
     title: 'Registar Restaurante',
     error: null
@@ -423,7 +447,7 @@ exports.getRegister = (req, res) => {
 
 exports.listaValidacoes = async (req, res) => {
   try {
-    const restaurantes = await Restaurant.find({ validado: false });
+    const restaurantes = await Restaurant.find({ status: 'pendente' }).populate('createdBy');
     res.render('admin/validar', { restaurantes });
   } catch (err) {
     console.error(err);
@@ -433,10 +457,31 @@ exports.listaValidacoes = async (req, res) => {
 
 exports.validarRestaurante = async (req, res) => {
   try {
-    await Restaurant.findByIdAndUpdate(req.params.id, { validado: true });
+    const restaurante = await Restaurant.findById(req.params.id);
+    if (!restaurante) return res.status(404).send('Restaurante não encontrado');
+
+    restaurante.validado = true;
+    restaurante.status = 'validado'; // ✅ Aqui está o que faltava
+    await restaurante.save();
+
     res.redirect('/admin/validar');
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao validar restaurante');
   }
 };
+
+exports.recusarRestaurante = async (req, res) => {
+  try {
+    await Restaurant.findByIdAndUpdate(req.params.id, {
+      status: 'recusado',
+      validado: false
+    });
+    res.redirect('/admin/validar');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao recusar restaurante');
+  }
+};
+
+

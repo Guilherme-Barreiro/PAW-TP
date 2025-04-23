@@ -6,11 +6,13 @@
   <div class="mb-3">
     <h4><%= restaurante.name %></h4>
     <p><strong>Email:</strong> <%= restaurante.email %></p>
-    <p><strong>Validado:</strong> 
-      <% if (restaurante.validado) { %>
-        <span class="badge bg-success">Sim</span>
+    <p><strong>Estado:</strong> 
+      <% if (restaurante.status === 'validado') { %>
+        <span class="badge bg-success">Validado</span>
+      <% } else if (restaurante.status === 'pendente') { %>
+        <span class="badge bg-warning text-dark">Pendente</span>
       <% } else { %>
-        <span class="badge bg-danger">Não</span>
+        <span class="badge bg-danger">Recusado</span>
       <% } %>
     </p>
   </div>

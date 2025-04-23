@@ -3,14 +3,18 @@ const router = express.Router();
 const authController = require('../controllers/authController');
 const { verifyToken } = require('../controllers/authController');
 
+// Rotas públicas
 router.get('/login', authController.getLogin);
 router.post('/login', authController.postLogin);
+router.get('/register/type', (req, res) => {
+    res.render('user/typeRegister');
+  });  
 router.get('/register', authController.getRegister);
 router.post('/register', authController.postRegister);
 router.get('/forgot-password', authController.getForgotPassword);
 router.post('/forgot-password', authController.postForgotPassword);
 
-// Rotas protegidas, só acedidas através de login
+// Rotas protegidas (login necessário)
 router.get('/profile', verifyToken, authController.getProfile);
 router.get('/dashboard', verifyToken, authController.getDashboard);
 router.get('/logout', authController.logout);

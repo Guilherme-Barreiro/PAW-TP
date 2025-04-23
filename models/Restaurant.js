@@ -5,7 +5,11 @@ const restaurantSchema = new mongoose.Schema({
   location: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  validado: { type: Boolean, default: false },
+  status: {
+    type: String,
+    enum: ['pendente', 'validado', 'rejeitado'],
+    default: 'pendente'
+  },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

@@ -4,7 +4,7 @@ const Restaurant = require('../models/Restaurant');
 
 router.get('/', async (req, res) => {
   try {
-    const restaurantes = await Restaurant.find().limit(5);
+    const restaurantes = await Restaurant.find({ validado: true }).limit(5);
     res.render('index', { title: 'Página Inicial', restaurantes });
   } catch (err) {
     console.error(err);

@@ -1,18 +1,15 @@
-// routes/admin.js
 const express = require('express');
 const router = express.Router();
 
 const restaurantController = require('../controllers/restaurantController');
-const authController = require('../controllers/authController');
+const { verifyToken, isAdmin } = require('../controllers/authController');
 
-// Garante que o utilizador está autenticado E é admin
-router.use(authController.verifyToken);
-router.use(authController.isAdmin);
+// Acesso apenas a administradores
+router.use(verifyToken);
+router.use(isAdmin);
 
-// Listar restaurantes por validar
 router.get('/validar', restaurantController.listaValidacoes);
-
-// Validar restaurante (POST)
 router.post('/validar/:id', restaurantController.validarRestaurante);
+router.post('/recusar/:id', restaurantController.recusarRestaurante);
 
 module.exports = router;

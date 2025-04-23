@@ -1,27 +1,28 @@
 <%- include('../partials/header') %>
 
 <div class="container mt-5">
-  <div class="card shadow p-4">
-    <div class="row">
-      <div class="col-md-6">
-        <% if (prato.image) { %>
-          <img src="/images/pratos/<%= prato.image %>" alt="<%= prato.name %>" class="img-fluid rounded">
-        <% } else { %>
-          <span class="text-muted">Sem imagem</span>
-        <% } %>
-      </div>
-      <div class="col-md-6">
-        <h2><%= prato.name %></h2>
+  <div class="card shadow-lg">
+    <div class="card-header bg-primary text-white">
+      <h4 class="mb-0"><%= prato.name %></h4>
+    </div>
+    <div class="card-body row">
+      <% if (prato.image) { %>
+        <div class="col-md-4">
+          <img src="/images/pratos/<%= prato.image %>" alt="<%= prato.name %>" class="img-fluid rounded shadow-sm">
+        </div>
+      <% } %>
+      <div class="col-md-8">
         <p><strong>Categoria:</strong> <%= prato.category %></p>
         <p><strong>Descrição:</strong> <%= prato.description %></p>
-
-        <p><strong>Informação Nutricional:</strong> <%= prato.nutrition || '-' %></p>
-
-        <p><strong>Preço Meia Dose:</strong> €<%= prato.price?.meia?.toFixed(2) %></p>
-        <p><strong>Preço 1 Dose:</strong> €<%= prato.price?.inteira?.toFixed(2) %></p>
-
-        <a href="/restaurants/<%= restauranteId %>/manage" class="btn btn-outline-secondary mt-3">← Voltar</a>
+        <p><strong>Preço Meia Dose:</strong> €<%= prato.price.meia.toFixed(2) %></p>
+        <p><strong>Preço Dose Inteira:</strong> €<%= prato.price.inteira.toFixed(2) %></p>
+        <% if (prato.nutrition && prato.nutrition !== 'Informação nutricional não disponível.') { %>
+          <p><strong>Informação Nutricional:</strong> <%= prato.nutrition %></p>
+        <% } %>
       </div>
+    </div>
+    <div class="card-footer text-end">
+      <a href="/restaurants/<%= restauranteId %>/menu" class="btn btn-outline-primary">← Voltar ao menu</a>
     </div>
   </div>
 </div>
