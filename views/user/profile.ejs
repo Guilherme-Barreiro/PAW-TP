@@ -21,71 +21,91 @@
       </div>
     </div>
 
-    <!-- Cartão de Restaurantes Criados -->
-    <div class="col-md-6">
-      <div class="card shadow-lg mb-4">
-        <div class="card-header bg-success text-white">
-          <h4 class="mb-0">Restaurantes Criados</h4>
-        </div>
-        <div class="card-body">
-          <% if (user.restaurantesCriados && user.restaurantesCriados.length > 0) { %>
-            <ul class="list-group">
-              <% user.restaurantesCriados.forEach(rest => { %>
-                <li class="list-group-item">
-                  <strong><%= rest.name %></strong><br>
-                  <small><strong>Email:</strong> <%= rest.email %></small><br>
-                  <small><strong>Localização:</strong> <%= rest.location %></small><br>
-                  <% if (rest.status === 'validado') { %>
-                    <span class="badge bg-success mt-1">Validado</span>
-                  <% } else if (rest.status === 'pendente') { %>
-                    <span class="badge bg-warning text-dark mt-1">Pendente</span>
-                  <% } %>
-                </li>
-              <% }) %>
-            </ul>
-          <% } else { %>
-            <p class="text-muted">Ainda não criaste nenhum restaurante.</p>
-          <% } %>
+    <% if (user.role !== 'admin') { %>
+      <!-- Cartão de Restaurantes Criados -->
+      <div class="col-md-6">
+        <div class="card shadow-lg mb-4">
+          <div class="card-header bg-success text-white">
+            <h4 class="mb-0">Restaurantes Criados</h4>
+          </div>
+          <div class="card-body">
+            <% if (user.restaurantesCriados && user.restaurantesCriados.length > 0) { %>
+              <ul class="list-group">
+                <% user.restaurantesCriados.forEach(rest => { %>
+                  <li class="list-group-item">
+                    <strong><%= rest.name %></strong><br>
+                    <small><strong>Email:</strong> <%= rest.email %></small><br>
+                    <small><strong>Localização:</strong> <%= rest.location %></small><br>
+                    <% if (rest.status === 'validado') { %>
+                      <span class="badge bg-success mt-1">Validado</span>
+                    <% } else if (rest.status === 'pendente') { %>
+                      <span class="badge bg-warning text-dark mt-1">Pendente</span>
+                    <% } %>
+                  </li>
+                <% }) %>
+              </ul>
+            <% } else { %>
+              <p class="text-muted">Ainda não criaste nenhum restaurante.</p>
+            <% } %>
+          </div>
         </div>
       </div>
-    </div>
+    <% } %>
   </div>
 
-  <!-- Cartão: Histórico de Encomendas -->
-  <div class="row">
-    <div class="col-md-12">
-      <div class="card shadow-lg">
-        <div class="card-header text-white" style="background-color: #0d6efd;">
-          <h4 class="mb-0">📦 Histórico de Encomendas</h4>
-        </div>
-        <div class="card-body">
-          <% if (user.historicoEncomendas && user.historicoEncomendas.length > 0) { %>
-            <ul class="list-group">
-              <% user.historicoEncomendas.forEach(encomenda => { %>
-                <li class="list-group-item">Encomenda #<%= encomenda %></li>
-              <% }) %>
-            </ul>
-          <% } else { %>
-            <p class="text-muted">Sem encomendas registadas.</p>
-          <% } %>
+  <% if (user.role !== 'admin') { %>
+    <!-- Cartão: Histórico de Encomendas -->
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card shadow-lg">
+          <div class="card-header text-white" style="background-color: #0d6efd;">
+            <h4 class="mb-0">📦 Histórico de Encomendas</h4>
+          </div>
+          <div class="card-body">
+            <% if (user.historicoEncomendas && user.historicoEncomendas.length > 0) { %>
+              <ul class="list-group">
+                <% user.historicoEncomendas.forEach(encomenda => { %>
+                  <li class="list-group-item">Encomenda #<%= encomenda %></li>
+                <% }) %>
+              </ul>
+            <% } else { %>
+              <p class="text-muted">Sem encomendas registadas.</p>
+            <% } %>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  <% } %>
+
+  <% if (user.role === 'admin') { %>
+    <div class="row mt-4">
+      <div class="col-md-12">
+        <div class="card shadow-lg">
+          <div class="card-header text-white" style="background-color: #6c757d;">
+            <h4 class="mb-0">Visão de Administrador</h4>
+          </div>
+          <div class="card-body d-flex flex-wrap gap-2">
+            <a href="/admin/dashboard" class="btn btn-outline-primary">Dashboard</a>
+            <a href="/admin/validar" class="btn btn-outline-danger">Validar Restaurantes</a>
+            <a href="/users/manage" class="btn btn-outline-secondary">Gerir Utilizadores</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% } %>
 
   <div class="d-flex justify-content-between mt-4">
     <div>
       <a href="/user/profile/edit" class="btn btn-warning">
         <i class="fas fa-edit me-1"></i> Editar Perfil
       </a>
-      <a href="/restaurants/register" class="btn btn-success ms-2">
-        <i class="fas fa-plus me-1"></i> Criar Restaurante
-      </a>
+      <% if (user.role !== 'admin') { %>
+        <a href="/restaurants/register" class="btn btn-success ms-2">
+          <i class="fas fa-plus me-1"></i> Criar Restaurante
+        </a>
+      <% } %>
     </div>
     <div>
-      <% if (user.role === 'admin') { %>
-        <a href="/admin/validar" class="btn btn-outline-danger me-2">Validar Restaurantes</a>
-      <% } %>
       <a href="/" class="btn btn-outline-primary">&larr; Voltar ao início</a>
     </div>
   </div>
