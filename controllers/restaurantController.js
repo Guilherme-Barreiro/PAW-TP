@@ -7,8 +7,10 @@ const { getNutritionalInfo } = require('../utils/spoonacular');
 
 const isOwnerOfRestaurant = (req, res, restaurante) => {
   if (!restaurante.createdBy || restaurante.createdBy.toString() !== req.session.user._id.toString()) {
-    return res.status(403).send('Acesso negado: não és o proprietário deste restaurante.');
+    res.status(403).send('Acesso negado: não és o proprietário deste restaurante.');
+    return true;
   }
+  return false;
 };
 
 const parseNutri = (val) => {
@@ -98,8 +100,15 @@ exports.getAddMenu = async (req, res) => {
   try {
     const restaurante = await Restaurant.findById(req.params.id);
     if (!restaurante) return res.status(404).send('Restaurante não encontrado');
-    isOwnerOfRestaurant(req, res, restaurante);
-    res.render('menus/addMenu', { restaurante, title: 'Adicionar novo prato' });
+
+    if (isOwnerOfRestaurant(req, res, restaurante)) return;
+
+    const categories = await Category.find();
+    res.render('menus/addMenu', {
+      restaurante,
+      categories,
+      title: 'Adicionar novo prato'
+    });
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao carregar formulário de menu');
@@ -127,15 +136,21 @@ exports.getEditMenu = async (req, res) => {
   try {
     const restaurante = await Restaurant.findById(req.params.id);
     const index = parseInt(req.params.pratoIndex);
+
     if (!restaurante || isNaN(index) || !restaurante.menu[index]) {
       return res.status(404).send('Prato não encontrado');
     }
-    isOwnerOfRestaurant(req, res, restaurante);
+
+    if (isOwnerOfRestaurant(req, res, restaurante)) return;
+
     const prato = restaurante.menu[index];
+    const categories = await Category.find();
+
     res.render('menus/editMenu', {
       restauranteId: restaurante._id,
       pratoIndex: index,
       prato,
+      categories,
       title: 'Editar Prato'
     });
   } catch (err) {
@@ -143,7 +158,6 @@ exports.getEditMenu = async (req, res) => {
     res.status(500).send('Erro ao carregar prato para edição');
   }
 };
-
 
 exports.getFilteredList = async (req, res) => {
   try {

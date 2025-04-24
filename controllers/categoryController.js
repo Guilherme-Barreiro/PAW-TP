@@ -3,11 +3,9 @@ const Category = require('../models/Category');
 exports.list = async (req, res) => {
   try {
     const categories = await Category.find().sort({ name: 1 });
-    const categoriasFixas = ["Carne", "Peixe", "Vegetariano", "Sobremesa"];
 
     res.render('categories/list', { 
       categories,
-      categoriasFixas
     });
   } catch (err) {
     console.error(err);

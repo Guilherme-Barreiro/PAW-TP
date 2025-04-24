@@ -13,10 +13,11 @@
     <div class="mb-3">
       <label class="form-label">Categoria</label>
       <select class="form-select" name="category" id="category" required>
-        <% ['Carne','Peixe','Vegetariano','Sobremesa'].forEach(opt => { %>
-          <option value="<%= opt %>" <%= prato.category === opt ? 'selected' : '' %>><%= opt %></option>
+        <option value="">Escolhe uma categoria</option>
+        <% categories.forEach(cat => { %>
+          <option value="<%= cat.name %>" <%= prato.category === cat.name ? 'selected' : '' %>><%= cat.name %></option>
         <% }) %>
-      </select>
+      </select>      
     </div>
 
     <div class="mb-3">
