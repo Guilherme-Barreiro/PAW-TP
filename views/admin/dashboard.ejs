@@ -1,0 +1,70 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-5">
+  <h1 class="text-center mb-4">📊 Painel de Administração</h1>
+
+  <div class="row text-center mb-4">
+    <div class="col-md-4">
+      <div class="card shadow-sm p-3">
+        <h5>Total de Utilizadores</h5>
+        <p class="display-6"><%= totalUsers %></p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm p-3">
+        <h5>Total de Restaurantes</h5>
+        <p class="display-6"><%= totalRestaurants %></p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm p-3">
+        <h5>Total de Pratos</h5>
+        <p class="display-6"><%= totalDishes %></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card p-4 shadow-sm">
+    <h4 class="text-center mb-4">Distribuição Geral</h4>
+    <canvas id="adminChart" class="w-100" style="max-height: 400px;"></canvas>
+  </div>
+</div>
+
+<!-- Importa Chart.js via CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('adminChart').getContext('2d');
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Utilizadores', 'Restaurantes', 'Pratos'],
+      datasets: [{
+        label: 'Totais',
+        data: [
+          Number('<%= totalUsers %>'),
+          Number('<%= totalRestaurants %>'),
+          Number('<%= totalDishes %>')
+        ],
+        backgroundColor: ['#0d6efd', '#20c997', '#ffc107']
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        title: {
+          display: true,
+          text: 'Totais do Sistema'
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+</script>
+
+<%- include('../partials/footer') %>

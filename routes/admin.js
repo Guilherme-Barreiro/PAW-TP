@@ -9,6 +9,7 @@ router.use(verifyToken);
 router.use(isAdmin);
 
 router.get('/validar', restaurantController.listaValidacoes);
+router.get('/dashboard', restaurantController.getAdminDashboard);
 router.post('/validar/:id', restaurantController.validarRestaurante);
 router.post('/recusar/:id', restaurantController.recusarRestaurante);
 

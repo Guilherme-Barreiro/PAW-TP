@@ -18,7 +18,8 @@
               <p class="card-text"><%= prato.description %></p>
               <p><strong>Categoria:</strong> <%= prato.category %></p>
               <p><strong>Preço:</strong> €<%= prato.price?.meia?.toFixed(2) %> (Meia) | €<%= prato.price?.inteira?.toFixed(2) %> (Inteira)</p>
-            </div>
+              <p><strong>Informação Nutricional:</strong> <%= prato.nutrition %></p>
+            </div>            
           </div>
         </div>
       <% }) %>

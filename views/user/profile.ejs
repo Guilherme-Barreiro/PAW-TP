@@ -2,6 +2,7 @@
 
 <div class="container mt-5">
   <div class="row">
+    <!-- Cartão de Perfil -->
     <div class="col-md-6">
       <div class="card shadow-lg mb-4">
         <div class="card-header bg-dark text-white">
@@ -9,31 +10,20 @@
         </div>
         <div class="card-body">
           <p><strong>Nome de Utilizador:</strong> <%= user.username %></p>
-          <% if (user.nomeCompleto) { %>
-            <p><strong>Nome Completo:</strong> <%= user.nomeCompleto %></p>
-          <% } %>
-          <% if (user.email) { %>
-            <p><strong>Email:</strong> <%= user.email %></p>
-          <% } %>
-          <% if (user.morada) { %>
-            <p><strong>Morada:</strong> <%= user.morada %></p>
-          <% } %>
-          <% if (user.telefone) { %>
-            <p><strong>Telefone:</strong> <%= user.telefone %></p>
-          <% } %>
-          <% if (user.nif) { %>
-            <p><strong>NIF:</strong> <%= user.nif %></p>
-          <% } %>
-          <% if (user.dataNascimento) { %>
-            <p><strong>Data de Nascimento:</strong> <%= new Date(user.dataNascimento).toLocaleDateString() %></p>
-          <% } %>
+          <p><strong>Nome Completo:</strong> <%= user.nomeCompleto %></p>
+          <p><strong>Email:</strong> <%= user.email %></p>
+          <p><strong>Morada:</strong> <%= user.morada %></p>
+          <p><strong>Telefone:</strong> <%= user.telefone %></p>
+          <p><strong>NIF:</strong> <%= user.nif %></p>
+          <p><strong>Data de Nascimento:</strong> <%= new Date(user.dataNascimento).toLocaleDateString() %></p>
           <p><strong>Tipo de Conta:</strong> <span class="badge bg-secondary"><%= user.role %></span></p>
         </div>
       </div>
     </div>
 
+    <!-- Cartão de Restaurantes Criados -->
     <div class="col-md-6">
-      <div class="card shadow-lg">
+      <div class="card shadow-lg mb-4">
         <div class="card-header bg-success text-white">
           <h4 class="mb-0">Restaurantes Criados</h4>
         </div>
@@ -41,22 +31,42 @@
           <% if (user.restaurantesCriados && user.restaurantesCriados.length > 0) { %>
             <ul class="list-group">
               <% user.restaurantesCriados.forEach(rest => { %>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                  <span><strong><%= rest.name %></strong> - <%= rest.status %></span>
-                  <div>
-                    <% if (rest.status === 'validado') { %>
-                      <span class="badge bg-success">Validado</span>
-                    <% } else if (rest.status === 'pendente') { %>
-                      <span class="badge bg-warning text-dark">Pendente</span>
-                    <% } else { %>
-                      <span class="badge bg-danger">Recusado</span>
-                    <% } %>                    
-                  </div>
+                <li class="list-group-item">
+                  <strong><%= rest.name %></strong><br>
+                  <small><strong>Email:</strong> <%= rest.email %></small><br>
+                  <small><strong>Localização:</strong> <%= rest.location %></small><br>
+                  <% if (rest.status === 'validado') { %>
+                    <span class="badge bg-success mt-1">Validado</span>
+                  <% } else if (rest.status === 'pendente') { %>
+                    <span class="badge bg-warning text-dark mt-1">Pendente</span>
+                  <% } %>
                 </li>
               <% }) %>
             </ul>
           <% } else { %>
             <p class="text-muted">Ainda não criaste nenhum restaurante.</p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cartão: Histórico de Encomendas -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card shadow-lg">
+        <div class="card-header text-white" style="background-color: #0d6efd;">
+          <h4 class="mb-0">📦 Histórico de Encomendas</h4>
+        </div>
+        <div class="card-body">
+          <% if (user.historicoEncomendas && user.historicoEncomendas.length > 0) { %>
+            <ul class="list-group">
+              <% user.historicoEncomendas.forEach(encomenda => { %>
+                <li class="list-group-item">Encomenda #<%= encomenda %></li>
+              <% }) %>
+            </ul>
+          <% } else { %>
+            <p class="text-muted">Sem encomendas registadas.</p>
           <% } %>
         </div>
       </div>
@@ -76,7 +86,7 @@
       <% if (user.role === 'admin') { %>
         <a href="/admin/validar" class="btn btn-outline-danger me-2">Validar Restaurantes</a>
       <% } %>
-      <a href="/" class="btn btn-outline-primary">← Voltar ao início</a>
+      <a href="/" class="btn btn-outline-primary">&larr; Voltar ao início</a>
     </div>
   </div>
 </div>

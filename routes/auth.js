@@ -6,9 +6,6 @@ const { verifyToken } = require('../controllers/authController');
 // Rotas públicas
 router.get('/login', authController.getLogin);
 router.post('/login', authController.postLogin);
-router.get('/register/type', (req, res) => {
-    res.render('user/typeRegister');
-  });  
 router.get('/register', authController.getRegister);
 router.post('/register', authController.postRegister);
 router.get('/forgot-password', authController.getForgotPassword);

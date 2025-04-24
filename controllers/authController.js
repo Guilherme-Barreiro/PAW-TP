@@ -197,7 +197,11 @@ exports.getProfile = async (req, res) => {
 
   try {
     // Buscar restaurantes associados ao utilizador
-    const restaurantesCriados = await Restaurant.find({ createdBy: sessionUser._id });
+    const restaurantesCriados = await Restaurant.find({
+      createdBy: sessionUser._id,
+      status: { $in: ['pendente', 'validado'] }
+    });
+    ;
 
     const user = {
       ...sessionUser,

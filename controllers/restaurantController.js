@@ -1,5 +1,6 @@
 const Restaurant = require('../models/Restaurant');
-const Category = require('../models/Category'); 
+const Category = require('../models/Category');
+const User = require('../models/User'); 
 const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
@@ -475,8 +476,9 @@ exports.validarRestaurante = async (req, res) => {
     if (!restaurante) return res.status(404).send('Restaurante não encontrado');
 
     restaurante.validado = true;
-    restaurante.status = 'validado'; // ✅ Aqui está o que faltava
+    restaurante.status = 'validado'; 
     await restaurante.save();
+
 
     res.redirect('/admin/validar');
   } catch (err) {
@@ -497,5 +499,30 @@ exports.recusarRestaurante = async (req, res) => {
     res.status(500).send('Erro ao recusar restaurante');
   }
 };
+
+exports.getAdminDashboard = async (req, res) => {
+  try {
+    const totalUsers = await User.countDocuments();
+    const totalRestaurants = await Restaurant.countDocuments({ status: 'validado' });
+    const totalDishesAgg = await Restaurant.aggregate([
+      { $project: { menuSize: { $size: "$menu" } } },
+      { $group: { _id: null, total: { $sum: "$menuSize" } } }
+    ]);
+
+    const totalDishes = totalDishesAgg[0]?.total || 0;
+
+    res.render('admin/dashboard', {
+      title: 'Painel de Administração',
+      totalUsers,
+      totalRestaurants,
+      totalDishes
+    });
+  } catch (err) {
+    console.error('Erro no dashboard admin:', err);
+    res.status(500).send('Erro ao carregar dashboard');
+  }
+};
+
+
 
 
