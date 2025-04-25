@@ -1,6 +1,6 @@
 <%- include('../partials/header') %>
 
-<div class="container mt-4 text-center">
+<div class="container mt-4 text-center mt-5">
   <h1 class="mb-4 text-center" style="color: #2c3e50;">Restaurantes Registados</h1>
 
   <form method="GET" class="row g-3 mb-4 align-items-end">
@@ -38,10 +38,9 @@
         <tr>
           <th>#</th>
           <th>Nome</th>
-          <th>Email</th>
           <th>Localização</th>
           <th>Nº de pratos</th>
-          <th>Acções</th>
+          <th>Ações</th>
         </tr>
       </thead>
       <tbody class="text-center">
@@ -49,7 +48,6 @@
           <tr>
             <td><%= index + 1 %></td>
             <td><%= rest.name %></td>
-            <td><%= rest.email %></td>
             <td><%= rest.location || '-' %></td>
             <td><%= rest.menu.length %></td>
             <td>

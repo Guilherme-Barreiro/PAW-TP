@@ -6,7 +6,11 @@
     <div class="col-md-6">
       <div class="card shadow-lg mb-4">
         <div class="card-header bg-dark text-white">
-          <h4 class="mb-0">Perfil do Utilizador</h4>
+          <% if (user.role === 'admin') { %>
+            <h4 class="mb-0">Perfil do Big Boss</h4>
+          <% } else { %>
+            <h4 class="mb-0">Perfil do Utilizador</h4>
+          <% } %>
         </div>
         <div class="card-body">
           <p><strong>Nome de Utilizador:</strong> <%= user.username %></p>
@@ -21,8 +25,25 @@
       </div>
     </div>
 
+    <!-- Cartão de Cenas do admin bro -->
+    <% if (user.role === 'admin') { %>
+
+      <div class="col-md-6">
+        <div class="card shadow-lg mb-4">
+          <div class="card-header bg-success text-white">
+            <h4 class="mb-0">Visão de Administrador</h4>
+          </div>
+          <div class="card-body d-flex flex-wrap gap-2">
+            <a href="/admin/dashboard" class="btn btn-outline-primary">Dashboard</a>
+            <a href="/admin/validar" class="btn btn-outline-danger">Validar Restaurantes</a>
+            <a href="/users/manage" class="btn btn-outline-secondary">Gerir Utilizadores</a>
+          </div>
+        </div>
+      </div>
+    <% } %>
+
+    <!-- Cartão de Restaurantes Criados -->
     <% if (user.role !== 'admin') { %>
-      <!-- Cartão de Restaurantes Criados -->
       <div class="col-md-6">
         <div class="card shadow-lg mb-4">
           <div class="card-header bg-success text-white">
@@ -53,12 +74,12 @@
     <% } %>
   </div>
 
+  <!-- Cartão: Histórico de Encomendas -->
   <% if (user.role !== 'admin') { %>
-    <!-- Cartão: Histórico de Encomendas -->
     <div class="row">
       <div class="col-md-12">
         <div class="card shadow-lg">
-          <div class="card-header text-white" style="background-color: #0d6efd;">
+          <div class="card-header text-white" style="background-color: #2B1700;">
             <h4 class="mb-0">📦 Histórico de Encomendas</h4>
           </div>
           <div class="card-body">
@@ -71,23 +92,6 @@
             <% } else { %>
               <p class="text-muted">Sem encomendas registadas.</p>
             <% } %>
-          </div>
-        </div>
-      </div>
-    </div>
-  <% } %>
-
-  <% if (user.role === 'admin') { %>
-    <div class="row mt-4">
-      <div class="col-md-12">
-        <div class="card shadow-lg">
-          <div class="card-header text-white" style="background-color: #6c757d;">
-            <h4 class="mb-0">Visão de Administrador</h4>
-          </div>
-          <div class="card-body d-flex flex-wrap gap-2">
-            <a href="/admin/dashboard" class="btn btn-outline-primary">Dashboard</a>
-            <a href="/admin/validar" class="btn btn-outline-danger">Validar Restaurantes</a>
-            <a href="/users/manage" class="btn btn-outline-secondary">Gerir Utilizadores</a>
           </div>
         </div>
       </div>

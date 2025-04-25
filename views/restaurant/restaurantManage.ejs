@@ -5,7 +5,6 @@
 
   <div class="mb-3">
     <h4><%= restaurante.name %></h4>
-    <p><strong>Email:</strong> <%= restaurante.email %></p>
     <p><strong>Estado:</strong> 
       <% if (restaurante.status === 'validado') { %>
         <span class="badge bg-success">Validado</span>
@@ -17,7 +16,7 @@
     </p>
   </div>
 
-  <h5 class="mt-4">Pratos do Menu</h5>
+  <h5 class="mt-4" style="color: #222222">Pratos do Menu</h5>
   <div class="table-responsive">
     <table class="table table-bordered table-hover align-middle mt-2">
       <thead class="table-light">

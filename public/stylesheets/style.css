@@ -1,5 +1,5 @@
 body {
-  padding: 50px;
+  /* padding: 50px; */
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
@@ -31,6 +31,6 @@ h5 {
   margin-top: 20px;
   font-weight: bold;
   font-size: 18px;
-  color: #343a40;
+  color: #bbbbbb;
 }
 

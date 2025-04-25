@@ -20,7 +20,7 @@ const parseNutri = (val) => {
 };
 
 exports.postRegister = async (req, res) => {
-  const { name, email, password, location } = req.body;
+  const { name, location } = req.body;
 
   if (!req.session.user || !req.session.user._id) {
     return res.status(401).send('Utilizador não autenticado');
@@ -35,21 +35,8 @@ exports.postRegister = async (req, res) => {
       return res.status(400).send('A localização só pode conter letras e espaços.');
     }
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return res.status(400).send('O email introduzido não é válido.');
-    }
-
-    const restauranteExistente = await Restaurant.findOne({ email });
-    if (restauranteExistente) {
-      return res.status(400).send('Já existe um restaurante com este email.');
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     const novoRestaurante = new Restaurant({
       name,
-      email,
-      password: hashedPassword,
       location,
       status: 'pendente',
       createdBy: req.session.user._id
@@ -123,7 +110,7 @@ exports.getManage = async (req, res) => {
     isOwnerOfRestaurant(req, res, restaurante);
 
     if (restaurante.status !== 'validado') {
-      return res.status(403).send('Restaurante ainda não foi validado pelo administrador.');
+      return res.status(403).send('Restaurante ainda não foi validado por um administrador.');
     }
 
     res.render('restaurant/restaurantManage', { restaurante, title: 'Gerir restaurante' });
@@ -389,7 +376,7 @@ exports.getEditRestaurant = async (req, res) => {
 };
 
 exports.postEditRestaurant = async (req, res) => {
-  const { name, email, location } = req.body;
+  const { name, location } = req.body;
 
   try {
     // Validações
@@ -401,16 +388,11 @@ exports.postEditRestaurant = async (req, res) => {
       return res.status(400).send('A localização só pode conter letras e espaços.');
     }
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return res.status(400).send('O email introduzido não é válido.');
-    }
-
     const restaurante = await Restaurant.findById(req.params.id);
     if (!restaurante) return res.status(404).send('Restaurante não encontrado');
     isOwnerOfRestaurant(req, res, restaurante);
 
     restaurante.name = name;
-    restaurante.email = email;
     restaurante.location = location;
 
     await restaurante.save();

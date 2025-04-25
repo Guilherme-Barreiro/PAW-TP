@@ -32,7 +32,7 @@
                   <strong>Email:</strong> <%= rest.email %><br>
                   <strong>Pratos:</strong> <%= rest.menu.length %><br>
                   <strong>Status:</strong>
-                  <% if (rest.validado) { %>
+                  <% if (rest.status) { %>
                     <span class="badge bg-success">Validado</span>
                   <% } else { %>
                     <span class="badge bg-danger">Pendente</span>
@@ -47,19 +47,5 @@
   </div>
 </div>
 
-
-
-<div style="margin-left:60px; margin-top: 20px">
-  <h5>Links úteis</h5>
-  <a href="/user/login">/user/login</a><br><br>
-  <a href="/user/register">/user/register</a><br><br>
-  <a href="/users/manage">/users/manage</a><br><br>
-  <a href="/restaurants/list">/restaurants/list</a><br><br>
-  <a href="/restaurants/register">/restaurants/register</a><br><br>
-  <a href="/categories/new">/categories/new</a><br><br>
-  <a href="/categories/">/categories/listar</a><br><br>
-  <!-- <a href="aaaa">aaaa</a><br><br> -->
-
-</div>
 
 <%- include('partials/footer') %>
