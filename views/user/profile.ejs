@@ -27,20 +27,36 @@
 
     <!-- Cartão de Cenas do admin bro -->
     <% if (user.role === 'admin') { %>
-
       <div class="col-md-6">
         <div class="card shadow-lg mb-4">
-          <div class="card-header bg-success text-white">
+          <div class="card-header bg-dark text-white">
             <h4 class="mb-0">Visão de Administrador</h4>
           </div>
-          <div class="card-body d-flex flex-wrap gap-2">
-            <a href="/admin/dashboard" class="btn btn-outline-primary">Dashboard</a>
-            <a href="/admin/validar" class="btn btn-outline-danger">Validar Restaurantes</a>
-            <a href="/users/manage" class="btn btn-outline-secondary">Gerir Utilizadores</a>
+          <div class="card-body">
+            <p class="text-muted mb-4">Acesso rápido às funções administrativas do sistema:</p>
+    
+            <div class="d-grid gap-2 mb-3">
+              <a href="/admin/dashboard" class="btn btn-dark btn-lg">
+                <i class="bi bi-speedometer2"></i> Dashboard Principal
+              </a>
+              <a href="/admin/validar" class="btn btn-success btn-lg">
+                <i class="bi bi-check2-square"></i> Validar Restaurantes
+              </a>
+              <a href="/users/manage" class="btn btn-warning btn-lg">
+                <i class="bi bi-people"></i> Gerir Utilizadores
+              </a>              
+            </div>
+    
+            <hr>
+    
+            <p class="text-muted small">
+              Como administrador, tens permissões para validar novos restaurantes, gerir perfis de utilizadores, e monitorizar a atividade da plataforma.
+            </p>
           </div>
         </div>
       </div>
     <% } %>
+    
 
     <!-- Cartão de Restaurantes Criados -->
     <% if (user.role !== 'admin') { %>
@@ -115,4 +131,5 @@
   </div>
 </div>
 
+<div class="mt-5"></div>
 <%- include('../partials/footer') %>
