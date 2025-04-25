@@ -14,12 +14,11 @@ exports.verifyToken = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
 
-    // 🔥 Buscar o utilizador completo da base de dados
     const user = await User.findById(decoded.id);
 
     if (!user) return res.redirect('/user/login');
 
-    req.user = user; // ✅ Agora sim, vai conter _id, role, etc.
+    req.user = user;
     next();
   } catch (err) {
     console.error('Token inválido:', err);
@@ -28,7 +27,7 @@ exports.verifyToken = async (req, res, next) => {
 };
 
 
-// RENDER LOGIN
+// LOGIN
 exports.getLogin = (req, res) => {
   res.render('user/login', { error: null, showError: false, title: 'Login' });
 };
@@ -154,7 +153,12 @@ exports.postRegister = async (req, res) => {
         error: 'A data de nascimento não pode ser no futuro.'
       });
     }
-
+    if (isNaN(dataNasc.getTime()) || dataNasc.getFullYear() < 1900) {
+      return res.render('user/register', {
+        error: 'Hmmmmmm, estranho teres mais de 125 anos. Deveras duvidoso.'
+      });
+    }
+    
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new User({

@@ -14,11 +14,7 @@ const userSchema = new mongoose.Schema({
   telefone: { type: String },
   dataNascimento: { type: Date },
   nif: { type: String, required: true, unique: true },
-
   historicoEncomendas: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }],
-
-  validado: { type: Boolean, default: false },
-  menus: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Menu' }]
 });
 
 module.exports = mongoose.model('User', userSchema);
