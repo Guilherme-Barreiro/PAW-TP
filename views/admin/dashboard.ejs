@@ -28,6 +28,22 @@
     <h4 class="text-center mb-4">Distribuição Geral</h4>
     <canvas id="adminChart" class="w-100" style="max-height: 400px;"></canvas>
   </div>
+
+  <div class="card mt-5 p-4 shadow-sm">
+    <h4 class="text-center mb-4">Top Criadores de Restaurantes</h4>
+    <% if (topUsers.length > 0) { %>
+      <ul class="list-group list-group-flush">
+        <% topUsers.forEach(user => { %>
+          <li class="list-group-item d-flex justify-content-between">
+            <strong><%= user.username %></strong>
+            <span><%= user.totalRestaurantes %> restaurante(s)</span>
+          </li>
+        <% }) %>
+      </ul>
+    <% } else { %>
+      <p class="text-muted text-center">Ainda não existem dados suficientes.</p>
+    <% } %>
+  </div>
 </div>
 
 <!-- Importa Chart.js via CDN -->

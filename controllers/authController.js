@@ -67,6 +67,7 @@ exports.postLogin = async (req, res) => {
     });
 
     req.session.user = user;
+    req.session.successMessage = 'Login efetuado com sucesso!';
     res.redirect('/restaurants/list');
   } catch (err) {
     console.error(err);
@@ -174,6 +175,7 @@ exports.postRegister = async (req, res) => {
     });
 
     await newUser.save();
+    req.session.successMessage = 'Conta criada com sucesso! Já podes fazer login.';
     res.redirect('/user/login');
   } catch (err) {
     console.error(err);
@@ -183,16 +185,26 @@ exports.postRegister = async (req, res) => {
 
 // LOGOUT
 exports.logout = (req, res) => {
-  res.clearCookie('token');
   req.session.destroy(err => {
     if (err) {
       console.error('Erro ao terminar sessão:', err);
       return res.status(500).send('Erro ao fazer logout');
     }
-    res.clearCookie('connect.sid');
+
+    res.clearCookie('token');        // Remove o token JWT
+    res.clearCookie('connect.sid');   // Remove o cookie de sessão
+
+    req.session = null; // Prevenção extra
+
+    // Guarda mensagem de sucesso na sessão
+    req.sessionSuccess = 'Sessão terminada com sucesso!';
+
     res.redirect('/');
   });
 };
+
+
+
 
 // PERFIL
 exports.getProfile = async (req, res) => {
@@ -363,6 +375,7 @@ exports.postForgotPassword = async (req, res) => {
     user.password = hashed;
     await user.save();
 
+    req.session.successMessage = 'Senha atualizada com sucesso!';
     res.redirect('/user/login');
   } catch (err) {
     console.error(err);

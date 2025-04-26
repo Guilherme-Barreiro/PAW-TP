@@ -44,13 +44,23 @@ app.use(session({
 app.use((req, res, next) => {
   res.locals.session = req.session;
   res.locals.title = 'RestGest';
+
+  // 💬 Se existir mensagem de sucesso extra
+  if (req.sessionSuccess) {
+    res.locals.successMessage = req.sessionSuccess;
+    req.sessionSuccess = null;
+  }
+
   next();
 });
+
 
 // ✅ Middleware para flash messages
 app.use((req, res, next) => {
   res.locals.successMessage = req.session.successMessage || null;
+  res.locals.errorMessage = req.session.errorMessage || null;
   delete req.session.successMessage;
+  delete req.session.errorMessage;
   next();
 });
 

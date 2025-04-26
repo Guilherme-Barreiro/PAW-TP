@@ -48,6 +48,7 @@ exports.postRegister = async (req, res) => {
     });
 
     await novoRestaurante.save();
+    req.session.successMessage = 'Restaurante registado! Aguarde validação.';
     res.redirect('/user/profile');
   } catch (err) {
     console.error(err);
@@ -503,14 +504,25 @@ exports.getAdminDashboard = async (req, res) => {
       { $project: { menuSize: { $size: "$menu" } } },
       { $group: { _id: null, total: { $sum: "$menuSize" } } }
     ]);
-
     const totalDishes = totalDishesAgg[0]?.total || 0;
+
+    // ✅ Top Criadores de Restaurantes
+    const topUsers = await Restaurant.aggregate([
+      { $match: { status: 'validado' } },
+      { $group: { _id: "$createdBy", totalRestaurantes: { $sum: 1 } } },
+      { $sort: { totalRestaurantes: -1 } },
+      { $limit: 3 },
+      { $lookup: { from: "users", localField: "_id", foreignField: "_id", as: "user" } },
+      { $unwind: "$user" },
+      { $project: { username: "$user.username", totalRestaurantes: 1 } }
+    ]);
 
     res.render('admin/dashboard', {
       title: 'Painel de Administração',
       totalUsers,
       totalRestaurants,
-      totalDishes
+      totalDishes,
+      topUsers // Passa para o EJS
     });
   } catch (err) {
     console.error('Erro no dashboard admin:', err);
