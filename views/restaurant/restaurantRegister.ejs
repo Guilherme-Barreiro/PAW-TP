@@ -3,17 +3,46 @@
 <div class="container mt-5" style="max-width: 500px;">
   <h2 class="mb-4 text-center">Registar Restaurante</h2>
 
-  <form action="/restaurants/register" method="POST" class="card p-4 shadow-sm" id="restaurantForm">
+  <form action="/restaurants/register" method="POST" enctype="multipart/form-data" id="restaurantForm" class="card p-4 shadow-sm">
+    
+    <!-- PRIMEIRO: Escolha da Imagem -->
+    <div class="mb-3">
+      <label for="image" class="form-label">Imagem do Restaurante</label>
+      <input 
+        type="file" 
+        class="form-control" 
+        id="image" 
+        name="image" 
+        accept="image/*">
+    </div>
+
+    <!-- Nome do Restaurante -->
     <div class="mb-3">
       <label for="name" class="form-label">Nome</label>
-      <input type="text" class="form-control" id="name" name="name" required pattern="[A-Za-zÀ-ÿ\s]+" title="Só letras e espaços">
+      <input 
+        type="text" 
+        class="form-control" 
+        id="name" 
+        name="name" 
+        required 
+        pattern="[A-Za-zÀ-ÿ\s]+" 
+        title="Só letras e espaços.">
     </div>
-  
+
+    <!-- Localização do Restaurante -->
     <div class="mb-3">
       <label for="location" class="form-label">Localização</label>
-      <input type="text" class="form-control" id="location" name="location" required pattern="[A-Za-zÀ-ÿ\s]+" title="Só letras e espaços">
+      <input 
+        type="text" 
+        class="form-control" 
+        id="location" 
+        name="location" 
+        required 
+        pattern="[A-Za-zÀ-ÿ\s]+" 
+        title="Só letras e espaços.">
     </div>
-  
+
+    <!-- Botão Submeter -->
     <button type="submit" class="btn btn-primary w-100">Registar</button>
   </form>
 
@@ -21,28 +50,28 @@
     <a href="/restaurants/list" class="text-decoration-none">← Voltar à lista</a>
   </div>
 </div>
-  
-  <script>
-    document.getElementById('restaurantForm').addEventListener('submit', function (e) {
-      const name = document.getElementById('name').value;
-      const location = document.getElementById('location').value;
-  
-      const nameRegex = /^[A-Za-zÀ-ÿ\s]+$/;
-      const locationRegex = /^[A-Za-zÀ-ÿ\s]+$/;
-  
-      if (!nameRegex.test(name)) {
-        e.preventDefault();
-        alert('O nome do restaurante só pode conter letras e espaços.');
-        return;
-      }
-  
-      if (!locationRegex.test(location)) {
-        e.preventDefault();
-        alert('A localização só pode conter letras e espaços.');
-        return;
-      }
-      
-    });
-  </script>  
+
+<!-- Validação extra no cliente -->
+<script>
+  document.getElementById('restaurantForm').addEventListener('submit', function (e) {
+    const name = document.getElementById('name').value.trim();
+    const location = document.getElementById('location').value.trim();
+
+    const nameRegex = /^[A-Za-zÀ-ÿ\s]+$/;
+    const locationRegex = /^[A-Za-zÀ-ÿ\s]+$/;
+
+    if (!nameRegex.test(name)) {
+      e.preventDefault();
+      alert('O nome do restaurante só pode conter letras e espaços.');
+      return;
+    }
+
+    if (!locationRegex.test(location)) {
+      e.preventDefault();
+      alert('A localização só pode conter letras e espaços.');
+      return;
+    }
+  });
+</script>
 
 <%- include('../partials/footer') %>

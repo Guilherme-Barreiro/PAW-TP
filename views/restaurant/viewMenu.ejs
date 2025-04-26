@@ -1,5 +1,29 @@
 <%- include('../partials/header') %>
 
+<!-- Capa do Restaurante -->
+<div class="card mb-4 shadow-sm">
+  <% if (restaurante.image) { %>
+    <img src="/images/restaurantes/<%= restaurante.image %>" 
+         alt="<%= restaurante.name %>" 
+         class="card-img-top" 
+         style="height: 300px; object-fit: cover;">
+  <% } %>
+  <div class="card-body text-center">
+    <h2 class="card-title"><%= restaurante.name %></h2>
+    <p class="card-text"><strong>Localização:</strong> <%= restaurante.location %></p>
+    <p>
+      <strong>Estado:</strong> 
+      <% if (restaurante.status === 'validado') { %>
+        <span class="badge bg-success">Validado</span>
+      <% } else if (restaurante.status === 'pendente') { %>
+        <span class="badge bg-warning text-dark">Pendente</span>
+      <% } else { %>
+        <span class="badge bg-danger">Recusado</span>
+      <% } %>
+    </p>
+  </div>
+</div>
+
 <div class="container mt-5">
   <h2>Pratos de <%= restaurante.name %></h2>
 
@@ -11,7 +35,10 @@
         <div class="col-md-6 mb-4">
           <div class="card h-100">
             <% if (prato.image) { %>
-              <img src="/images/pratos/<%= prato.image %>" class="card-img-top" alt="<%= prato.name %>">
+              <img src="/images/pratos/<%= prato.image %>" 
+                alt="<%= prato.name %>" 
+                class="card-img-top" 
+                style="height: 250px; width: 100%; object-fit: cover;">
             <% } %>
             <div class="card-body">
               <h5 class="card-title"><%= prato.name %></h5>
@@ -22,7 +49,7 @@
             </div>            
           </div>
         </div>
-      <% }) %>
+      <% }) %>      
     </div>
   <% } %>
 

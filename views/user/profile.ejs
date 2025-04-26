@@ -59,60 +59,75 @@
     
 
     <!-- Cartão de Restaurantes Criados -->
-    <% if (user.role !== 'admin') { %>
-      <div class="col-md-6">
-        <div class="card shadow-lg mb-4">
-          <div class="card-header bg-success text-white">
-            <h4 class="mb-0">Restaurantes Criados</h4>
-          </div>
-          <div class="card-body">
-            <% if (user.restaurantesCriados && user.restaurantesCriados.length > 0) { %>
-              <ul class="list-group">
-                <% user.restaurantesCriados.forEach(rest => { %>
-                  <li class="list-group-item">
-                    <strong><%= rest.name %></strong><br>
-                    <small><strong>Email:</strong> <%= rest.email %></small><br>
-                    <small><strong>Localização:</strong> <%= rest.location %></small><br>
-                    <% if (rest.status === 'validado') { %>
-                      <span class="badge bg-success mt-1">Validado</span>
-                    <% } else if (rest.status === 'pendente') { %>
-                      <span class="badge bg-warning text-dark mt-1">Pendente</span>
-                    <% } %>
-                  </li>
-                <% }) %>
-              </ul>
-            <% } else { %>
-              <p class="text-muted">Ainda não criaste nenhum restaurante.</p>
-            <% } %>
-          </div>
-        </div>
+<% if (user.role !== 'admin') { %>
+  <div class="col-md-6">
+    <div class="card shadow-lg mb-4">
+      <div class="card-header bg-success text-white">
+        <h4 class="mb-0">Restaurantes Criados</h4>
       </div>
-    <% } %>
-  </div>
-
-  <!-- Cartão: Histórico de Encomendas -->
-  <% if (user.role !== 'admin') { %>
-    <div class="row">
-      <div class="col-md-12">
-        <div class="card shadow-lg">
-          <div class="card-header text-white" style="background-color: #2B1700;">
-            <h4 class="mb-0">📦 Histórico de Encomendas</h4>
-          </div>
-          <div class="card-body">
-            <% if (user.historicoEncomendas && user.historicoEncomendas.length > 0) { %>
-              <ul class="list-group">
-                <% user.historicoEncomendas.forEach(encomenda => { %>
-                  <li class="list-group-item">Encomenda #<%= encomenda %></li>
-                <% }) %>
-              </ul>
-            <% } else { %>
-              <p class="text-muted">Sem encomendas registadas.</p>
-            <% } %>
-          </div>
-        </div>
+      <div class="card-body">
+        <% if (user.restaurantesCriados && user.restaurantesCriados.length > 0) { %>
+          <% user.restaurantesCriados.forEach(rest => { %>
+            <div class="row align-items-center mb-3">
+              <div class="col-8">
+                <strong><%= rest.name %></strong><br>
+                <small><strong>Localização:</strong> <%= rest.location %></small><br>
+                <small>
+                  <% if (rest.status === 'validado') { %>
+                    <span class="badge bg-success">Validado</span>
+                  <% } else if (rest.status === 'pendente') { %>
+                    <span class="badge bg-warning text-dark">Pendente</span>
+                  <% } else { %>
+                    <span class="badge bg-danger">Recusado</span>
+                  <% } %>
+                </small>
+              </div>
+              <div class="col-4 text-center">
+                <% if (rest.status === 'validado' && rest.image) { %> 
+                  <img src="/images/restaurantes/<%= rest.image %>" alt="<%= rest.name %>" class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover;">
+                <% } else { %>
+                  <span class="text-muted small fst-italic">Imagem disponível após validação</span>
+                <% } %>                
+              </div>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <p class="text-muted">Ainda não criaste nenhum restaurante.</p>
+        <% } %>
       </div>
     </div>
-  <% } %>
+  </div>
+<% } %>
+
+<!-- Cartão: Histórico de Encomendas -->
+<% if (user.role !== 'admin') { %>
+  <div class="col-md-12">
+    <div class="card shadow-lg mb-4">
+      <div class="card-header text-white" style="background-color: #2B1700;">
+        <h4 class="mb-0">
+          <i class="bi bi-box-seam-fill me-2"></i> Histórico de Encomendas
+        </h4>
+      </div>
+      <div class="card-body text-center">
+        <% if (user.historicoEncomendas && user.historicoEncomendas.length > 0) { %>
+          <ul class="list-group list-group-flush">
+            <% user.historicoEncomendas.forEach(encomenda => { %>
+              <li class="list-group-item">
+                📦 Encomenda #<%= encomenda %>
+              </li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <div class="p-4">
+            <i class="bi bi-cart-x-fill" style="font-size: 3rem; color: #6c757d;"></i>
+            <p class="mt-3 text-muted fst-italic">Ainda não realizaste nenhuma encomenda.</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+<% } %>
+
 
   <div class="d-flex justify-content-between mt-4">
     <div>

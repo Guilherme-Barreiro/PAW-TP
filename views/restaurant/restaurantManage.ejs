@@ -1,71 +1,81 @@
 <%- include('../partials/header') %>
 
-<main class="container mt-5 flex-grow-1 d-flex flex-column">
-  <h2 class="mb-4">Gestão do Restaurante</h2>
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">Gestão do Restaurante</h2>
 
-  <div class="mb-3">
-    <h4><%= restaurante.name %></h4>
-    <p><strong>Estado:</strong> 
-      <% if (restaurante.status === 'validado') { %>
-        <span class="badge bg-success">Validado</span>
-      <% } else if (restaurante.status === 'pendente') { %>
-        <span class="badge bg-warning text-dark">Pendente</span>
+  <div class="row">
+    <div class="col-md-8">
+      <h5>Pratos do Menu</h5>
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle mt-2">
+          <thead class="table-light">
+            <tr>
+              <th>#</th>
+              <th>Nome</th>
+              <th>Categoria</th>
+              <th>Meia Dose (€)</th>
+              <th>1 Dose (€)</th>
+              <th>Imagem</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (restaurante.menu.length === 0) { %>
+              <tr>
+                <td colspan="7" class="text-center">Nenhum prato registado.</td>
+              </tr>
+            <% } %>
+            <% restaurante.menu.forEach((prato, index) => { %>
+              <tr>
+                <td><%= index + 1 %></td>
+                <td><%= prato.name %></td>
+                <td><%= prato.category %></td>
+                <td>€<%= prato.price?.meia?.toFixed(2) %></td>
+                <td>€<%= prato.price?.inteira?.toFixed(2) %></td>
+                <td>
+                  <% if (prato.image) { %>
+                    <img src="/images/pratos/<%= prato.image %>" alt="<%= prato.name %>" width="80" class="img-thumbnail" style="object-fit: cover;">
+                  <% } else { %>
+                    <span class="text-muted">Sem imagem</span>
+                  <% } %>
+                </td>
+                <td>
+                  <a href="/restaurants/<%= restaurante._id %>/edit-menu/<%= index %>" class="btn btn-warning btn-sm">Editar</a>
+                  <form action="/restaurants/<%= restaurante._id %>/remove-menu/<%= index %>" method="POST" class="d-inline" onsubmit="return confirm('Tem a certeza que deseja remover este prato?');">
+                    <button type="submit" class="btn btn-danger btn-sm">Remover</button>
+                  </form>
+                  <a href="/restaurants/<%= restaurante._id %>/menu/<%= index %>" class="btn btn-info btn-sm">Ver</a>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="text-center mt-3">
+        <a href="/restaurants/<%= restaurante._id %>/add-menu" class="btn btn-success">Adicionar Prato</a>
+      </div>
+    </div>
+
+    <!-- DIREITA: Info do Restaurante -->
+    <div class="col-md-4 text-center">
+      <% if (restaurante.image) { %>
+        <img src="/images/restaurantes/<%= restaurante.image %>" alt="<%= restaurante.name %>" class="img-thumbnail mb-3" style="width: 250px; height: 250px; object-fit: cover;">
       <% } else { %>
-        <span class="badge bg-danger">Recusado</span>
+        <span class="text-muted">Sem imagem</span>
       <% } %>
-    </p>
-  </div>
-
-  <h5 class="mt-4" style="color: #222222">Pratos do Menu</h5>
-  <div class="table-responsive">
-    <table class="table table-bordered table-hover align-middle mt-2">
-      <thead class="table-light">
-        <tr>
-          <th>#</th>
-          <th>Nome</th>
-          <th>Categoria</th>
-          <th>Meia Dose (€)</th>
-          <th>1 Dose (€)</th>
-          <th>Imagem</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% if (restaurante.menu.length === 0) { %>
-          <tr>
-            <td colspan="7" class="text-center">Nenhum prato registado.</td>
-          </tr>
+      <h4 class="mt-2"><%= restaurante.name %></h4>
+      <p><strong>Estado:</strong>
+        <% if (restaurante.status === 'validado') { %>
+          <span class="badge bg-success">Validado</span>
+        <% } else if (restaurante.status === 'pendente') { %>
+          <span class="badge bg-warning text-dark">Pendente</span>
+        <% } else { %>
+          <span class="badge bg-danger">Recusado</span>
         <% } %>
-        <% restaurante.menu.forEach((prato, index) => { %>
-          <tr>
-            <td><%= index + 1 %></td>
-            <td><%= prato.name %></td>
-            <td><%= prato.category %></td>
-            <td>€<%= prato.price?.meia?.toFixed(2) %></td>
-            <td>€<%= prato.price?.inteira?.toFixed(2) %></td>
-            <td>
-              <% if (prato.image) { %>
-                <img src="/images/pratos/<%= prato.image %>" alt="<%= prato.name %>" width="80" class="img-thumbnail">
-              <% } else { %>
-                <span class="text-muted">Sem imagem</span>
-              <% } %>
-            </td>
-            <td>
-              <a href="/restaurants/<%= restaurante._id %>/edit-menu/<%= index %>" class="btn btn-warning btn-sm">Editar</a>
-              <form action="/restaurants/<%= restaurante._id %>/remove-menu/<%= index %>" method="POST" class="d-inline" onsubmit="return confirm('Tem a certeza que deseja remover este prato?');">
-                <button type="submit" class="btn btn-danger btn-sm">Remover</button>
-              </form>
-              <a href="/restaurants/<%= restaurante._id %>/menu/<%= index %>" class="btn btn-info btn-sm">Ver</a>
-            </td>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
+      </p>
+    </div>
   </div>
-
-  <div class="text-center mt-4">
-    <a href="/restaurants/<%= restaurante._id %>/add-menu" class="btn btn-success">Adicionar Prato</a>
-  </div>
-</main>
+</div>
 
 <%- include('../partials/footer') %>

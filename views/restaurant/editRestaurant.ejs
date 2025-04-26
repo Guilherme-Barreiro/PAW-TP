@@ -1,52 +1,80 @@
 <%- include('../partials/header') %>
 
-<div class="container mt-4">
-  <h1>Editar Restaurante</h1>
-  
-  <form method="POST" id="editRestaurantForm">
+<div class="container mt-4" style="max-width: 500px;">
+  <h2 class="mb-4 text-center">Editar Restaurante</h2>
+
+  <form method="POST" action="/restaurants/<%= restaurante._id %>/edit" enctype="multipart/form-data" id="editRestaurantForm" class="card p-4 shadow-sm">
+    
+    <!-- PRIMEIRO: Imagem Atual -->
+    <div class="mb-3 text-center">
+      <% if (restaurante.image) { %>
+        <img src="/images/restaurantes/<%= restaurante.image %>" alt="<%= restaurante.name %>" class="img-thumbnail mb-2" style="width: 150px; height: 150px; object-fit: cover;">
+      <% } else { %>
+        <span class="text-muted">Sem imagem</span>
+      <% } %>
+    </div>
+
+    <!-- ALTERAR Imagem -->
     <div class="mb-3">
-      <label class="form-label">Nome</label>
+      <label for="image" class="form-label">Alterar Imagem do Restaurante</label>
+      <input 
+        type="file" 
+        class="form-control" 
+        id="image" 
+        name="image" 
+        accept="image/*">
+    </div>
+
+    <!-- Nome do Restaurante -->
+    <div class="mb-3">
+      <label for="name" class="form-label">Nome</label>
       <input 
         type="text" 
         class="form-control" 
-        name="name" 
         id="name" 
+        name="name" 
         value="<%= restaurante.name %>" 
         required 
         pattern="[A-Za-zÀ-ÿ\s]+" 
-        title="Só letras e espaços.">
+        title="Só letras e espaços">
     </div>
 
+    <!-- Localização -->
     <div class="mb-3">
-      <label class="form-label">Localização</label>
+      <label for="location" class="form-label">Localização</label>
       <input 
         type="text" 
         class="form-control" 
-        name="location" 
         id="location" 
+        name="location" 
         value="<%= restaurante.location %>" 
         required 
         pattern="[A-Za-zÀ-ÿ\s]+" 
-        title="Só letras e espaços.">
+        title="Só letras e espaços">
     </div>
 
-    <button type="submit" class="btn btn-success">Guardar Alterações</button>
-    <a href="/restaurants/list" class="btn btn-secondary">Cancelar</a>
+    <!-- Botões -->
+    <button type="submit" class="btn btn-success w-100">Guardar Alterações</button>
+    <a href="/restaurants/list" class="btn btn-secondary w-100 mt-2">Cancelar</a>
   </form>
 </div>
 
+<!-- Validação Cliente -->
 <script>
   document.getElementById('editRestaurantForm').addEventListener('submit', function (e) {
-    const name = document.getElementById('name').value;
-    const location = document.getElementById('location').value;
+    const name = document.getElementById('name').value.trim();
+    const location = document.getElementById('location').value.trim();
 
-    if (/[^A-Za-zÀ-ÿ\s]/.test(name)) {
+    const nameRegex = /^[A-Za-zÀ-ÿ\s]+$/;
+    const locationRegex = /^[A-Za-zÀ-ÿ\s]+$/;
+
+    if (!nameRegex.test(name)) {
       e.preventDefault();
       alert('O nome do restaurante só pode conter letras e espaços.');
       return;
     }
 
-    if (/[^A-Za-zÀ-ÿ\s]/.test(location)) {
+    if (!locationRegex.test(location)) {
       e.preventDefault();
       alert('A localização só pode conter letras e espaços.');
       return;

@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const restaurantSchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true },
   location: { type: String, required: true },
+  image: { type: String, default: 'default-restaurant.png' },
   status: {
     type: String,
     enum: ['pendente', 'validado', 'rejeitado'],

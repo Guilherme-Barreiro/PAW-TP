@@ -5,6 +5,8 @@ const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const { getNutritionalInfo } = require('../utils/spoonacular');
+const uploadRestaurants = require('../utils/multerConfigRestaurants'); 
+
 
 const isOwnerOfRestaurant = (req, res, restaurante) => {
   if (!restaurante.createdBy || restaurante.createdBy.toString() !== req.session.user._id.toString()) {
@@ -19,8 +21,10 @@ const parseNutri = (val) => {
   return !isNaN(num) && num >= 0 ? num : null;
 };
 
+
 exports.postRegister = async (req, res) => {
   const { name, location } = req.body;
+  const image = req.file ? req.file.filename : 'default-restaurant.png'; 
 
   if (!req.session.user || !req.session.user._id) {
     return res.status(401).send('Utilizador não autenticado');
@@ -38,6 +42,7 @@ exports.postRegister = async (req, res) => {
     const novoRestaurante = new Restaurant({
       name,
       location,
+      image,
       status: 'pendente',
       createdBy: req.session.user._id
     });
@@ -377,6 +382,7 @@ exports.getEditRestaurant = async (req, res) => {
 
 exports.postEditRestaurant = async (req, res) => {
   const { name, location } = req.body;
+  const image = req.file ? req.file.filename : null; // 🆕 Capturar a nova imagem se houver upload
 
   try {
     // Validações
@@ -390,10 +396,17 @@ exports.postEditRestaurant = async (req, res) => {
 
     const restaurante = await Restaurant.findById(req.params.id);
     if (!restaurante) return res.status(404).send('Restaurante não encontrado');
+
     isOwnerOfRestaurant(req, res, restaurante);
 
+    // Atualizar os campos
     restaurante.name = name;
     restaurante.location = location;
+
+    if (image) {
+      restaurante.image = image; // Se foi feito upload, atualiza imagem
+    }
+    // Se não houver nova imagem enviada, continua a imagem antiga automaticamente
 
     await restaurante.save();
     res.redirect('/restaurants/list');
