@@ -26,18 +26,29 @@
         <% restaurantes.forEach(rest => { %>
           <div class="col-md-4 mb-4">
             <div class="card h-100 shadow-sm">
-              <div class="card-body">
+              <div class="diagonal-image-container">
+                <% if (rest.menu.length > 1 && rest.menu[0].image && rest.menu[1].image) { %>
+                  <img src="/images/pratos/<%= rest.menu[0].image %>" class="diagonal-image top" alt="Prato 1">
+                  <img src="/images/pratos/<%= rest.menu[1].image %>" class="diagonal-image bottom" alt="Prato 2">
+                <% } else if (rest.menu.length > 0 && rest.menu[0].image) { %>
+                  <img src="/images/pratos/<%= rest.menu[0].image %>" class="card-img-top" alt="Prato de <%= rest.name %>">
+                <% } else { %>
+                  <img src="/images/sem-imagem.jpg" class="card-img-top" alt="Sem imagem disponível">
+                <% } %>
+              </div>              
+              <div class="card-body d-flex flex-column">
                 <h5 class="card-title"><%= rest.name %></h5>
-                <p class="card-text">
-                  <strong>Email:</strong> <%= rest.email %><br>
+                <p class="card-text mb-4">
                   <strong>Pratos:</strong> <%= rest.menu.length %><br>
-                  <strong>Status:</strong>
+                  <strong>Localização:</strong> <%= rest.location %><br>
+                  <!-- <strong>Status:</strong>
                   <% if (rest.status) { %>
                     <span class="badge bg-success">Validado</span>
                   <% } else { %>
                     <span class="badge bg-danger">Pendente</span>
-                  <% } %>
+                  <% } %> -->
                 </p>
+                <a href="/restaurants/<%= rest._id %>/menu" class="btn btn-primary mt-auto">Ver Restaurante</a>
               </div>
             </div>
           </div>
@@ -45,6 +56,7 @@
       </div>
     <% } %>    
   </div>
+  
 </div>
 
 

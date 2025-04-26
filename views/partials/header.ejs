@@ -15,7 +15,7 @@
   <div class="container-fluid px-4">
     <nav class="navbar navbar-expand-lg navbar-dark">
       <a class="navbar-brand" href="/">
-        <i class="bi bi-house-door-fill"></i> <!-- Ícone casa -->
+        <i class="bi bi-house-door-fill"></i>
       </a>
 
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -26,24 +26,35 @@
         <ul class="navbar-nav me-auto">
           <li class="nav-item">
             <a class="nav-link" href="/restaurants/list">
-              <i class="bi bi-egg-fried"></i> Restaurantes <!-- Ícone comida -->
+              <i class="bi bi-egg-fried"></i> Restaurantes
             </a>
           </li>
         </ul>
 
         <ul class="navbar-nav ms-auto">
-          <% if (session && session.user) { %>
+          <% if (!session || !session.user) { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/user/login">
+              <i class="bi bi-box-arrow-in-right"></i> Login
+            </a>
+          </li>            
+          <li class="nav-item">
+            <a class="nav-link" href="/user/register">
+              <i class="bi bi-person-plus"></i> Criar Conta
+            </a>
+          </li>
+          <% } else { %>            
             <li class="nav-item">
               <a class="nav-link" href="/user/profile">
-                <i class="bi bi-person-circle"></i> Perfil <!-- Ícone avatar -->
+                <i class="bi bi-person-circle"></i> Perfil
               </a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/user/logout">
-                <i class="bi bi-box-arrow-right"></i> Logout <!-- Ícone sair -->
+                <i class="bi bi-box-arrow-right"></i> Logout
               </a>
             </li>
-          <% } %>
+            <% } %>
         </ul>
       </div>
     </nav>
