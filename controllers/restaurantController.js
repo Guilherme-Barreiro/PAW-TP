@@ -35,9 +35,9 @@ exports.postRegister = async (req, res) => {
       return res.status(400).send('O nome do restaurante só pode conter letras e espaços.');
     }
 
-    if (!/^[A-Za-zÀ-ÿ\s]+$/.test(location)) {
-      return res.status(400).send('A localização só pode conter letras e espaços.');
-    }
+    // if (!/^[A-Za-zÀ-ÿ\s]+$/.test(location)) {
+    //   return res.status(400).send('A localização só pode conter letras e espaços.');
+    // }
 
     const novoRestaurante = new Restaurant({
       name,
@@ -390,9 +390,9 @@ exports.postEditRestaurant = async (req, res) => {
       return res.status(400).send('O nome do restaurante só pode conter letras e espaços.');
     }
 
-    if (!/^[A-Za-zÀ-ÿ\s]+$/.test(location)) {
-      return res.status(400).send('A localização só pode conter letras e espaços.');
-    }
+    // if (!/^[A-Za-zÀ-ÿ\s]+$/.test(location)) {
+    //   return res.status(400).send('A localização só pode conter letras e espaços.');
+    // }
 
     const restaurante = await Restaurant.findById(req.params.id);
     if (!restaurante) return res.status(404).send('Restaurante não encontrado');

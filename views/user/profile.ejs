@@ -34,28 +34,34 @@
           </div>
           <div class="card-body">
             <p class="text-muted mb-4">Acesso rápido às funções administrativas do sistema:</p>
-
-            <div class="d-grid gap-2 mb-3">
+            <div class="d-grid mb-3">
               <a href="/admin/dashboard" class="btn btn-dark btn-lg">
                 <i class="bi bi-speedometer2"></i> Dashboard Principal
               </a>
+            </div>
+            <div class="d-grid mb-3">
               <a href="/admin/validar" class="btn btn-success btn-lg">
                 <i class="bi bi-check2-square"></i> Validar Restaurantes
               </a>
-              <a href="/users/manage" class="btn btn-warning btn-lg">
+            </div>
+            <div class="d-flex gap-3 mb-3">
+              <a href="/users/manage" class="btn btn-warning btn-lg flex-fill">
                 <i class="bi bi-people"></i> Gerir Utilizadores
               </a>
+              <a href="/categories/" class="btn btn-warning btn-lg flex-fill">
+                <i class="bi bi-pencil"></i> Gerir Categorias
+              </a>
             </div>
-
             <hr>
-
             <p class="text-muted small">
-              Como administrador, tens permissões para validar novos restaurantes, gerir perfis de utilizadores, e monitorizar a atividade da plataforma.
+              Como administrador, tens permissões para validar novos restaurantes, gerir perfis de utilizadores e categorias, e monitorizar a atividade da plataforma.
             </p>
           </div>
         </div>
       </div>
     <% } %>
+    
+    
 
     <!-- Cartão de Restaurantes Criados -->
     <% if (user.role !== 'admin') { %>
