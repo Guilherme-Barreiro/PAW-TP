@@ -48,7 +48,6 @@ exports.postRegister = async (req, res) => {
     });
 
     await novoRestaurante.save();
-    req.session.successMessage = 'Restaurante registado! Aguarde validação.';
     res.redirect('/user/profile');
   } catch (err) {
     console.error(err);
@@ -410,7 +409,8 @@ exports.postEditRestaurant = async (req, res) => {
     // Se não houver nova imagem enviada, continua a imagem antiga automaticamente
 
     await restaurante.save();
-    res.redirect('/restaurants/list');
+res.redirect('/restaurants/list');
+
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao atualizar restaurante');
@@ -500,35 +500,54 @@ exports.getAdminDashboard = async (req, res) => {
   try {
     const totalUsers = await User.countDocuments();
     const totalRestaurants = await Restaurant.countDocuments({ status: 'validado' });
+
     const totalDishesAgg = await Restaurant.aggregate([
       { $project: { menuSize: { $size: "$menu" } } },
       { $group: { _id: null, total: { $sum: "$menuSize" } } }
     ]);
     const totalDishes = totalDishesAgg[0]?.total || 0;
 
-    // ✅ Top Criadores de Restaurantes
-    const topUsers = await Restaurant.aggregate([
-      { $match: { status: 'validado' } },
-      { $group: { _id: "$createdBy", totalRestaurantes: { $sum: 1 } } },
-      { $sort: { totalRestaurantes: -1 } },
-      { $limit: 3 },
-      { $lookup: { from: "users", localField: "_id", foreignField: "_id", as: "user" } },
-      { $unwind: "$user" },
-      { $project: { username: "$user.username", totalRestaurantes: 1 } }
+    const topUsers = await User.aggregate([
+      { $lookup: { from: 'restaurants', localField: '_id', foreignField: 'createdBy', as: 'restaurantes' }},
+      { $project: { username: 1, totalRestaurantes: { $size: "$restaurantes" } }},
+      { $sort: { totalRestaurantes: -1 }},
+      { $limit: 5 }
     ]);
+    
+    const topRestaurants = await Restaurant.aggregate([
+      { $project: { name: 1, totalPratos: { $size: "$menu" } }},
+      { $sort: { totalPratos: -1 }},
+      { $limit: 5 }
+    ]);
+    
+    const expensiveRestaurants = await Restaurant.aggregate([
+      { $unwind: "$menu" },
+      { $group: {
+        _id: "$_id",
+        name: { $first: "$name" },
+        avgPrice: { $avg: "$menu.price.inteira" }
+      }},
+      { $sort: { avgPrice: -1 }},
+      { $limit: 5 }
+    ]);    
 
     res.render('admin/dashboard', {
       title: 'Painel de Administração',
       totalUsers,
       totalRestaurants,
       totalDishes,
-      topUsers // Passa para o EJS
+      topUsers, // Adiciona topUsers para passar para o gráfico
+      topRestaurants,
+      expensiveRestaurants
     });
+    
   } catch (err) {
     console.error('Erro no dashboard admin:', err);
     res.status(500).send('Erro ao carregar dashboard');
   }
 };
+
+
 
 
 

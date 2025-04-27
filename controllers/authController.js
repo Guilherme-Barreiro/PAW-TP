@@ -29,7 +29,11 @@ exports.verifyToken = async (req, res, next) => {
 
 // LOGIN
 exports.getLogin = (req, res) => {
-  res.render('user/login', { error: null, showError: false, title: 'Login' });
+  res.render('user/login', { 
+    error: null, 
+    showError: false, 
+    title: 'Login' 
+  });
 };
 
 // AUTENTICAÇÃO
@@ -67,7 +71,6 @@ exports.postLogin = async (req, res) => {
     });
 
     req.session.user = user;
-    req.session.successMessage = 'Login efetuado com sucesso!';
     res.redirect('/restaurants/list');
   } catch (err) {
     console.error(err);
@@ -175,7 +178,6 @@ exports.postRegister = async (req, res) => {
     });
 
     await newUser.save();
-    req.session.successMessage = 'Conta criada com sucesso! Já podes fazer login.';
     res.redirect('/user/login');
   } catch (err) {
     console.error(err);
@@ -196,14 +198,11 @@ exports.logout = (req, res) => {
 
     req.session = null; // Prevenção extra
 
-    // Guarda mensagem de sucesso na sessão
     req.sessionSuccess = 'Sessão terminada com sucesso!';
 
     res.redirect('/');
   });
 };
-
-
 
 
 // PERFIL
@@ -316,7 +315,6 @@ exports.postEditProfile = async (req, res) => {
 
     await user.save();
     req.session.user = user;
-    req.session.successMessage = 'Perfil atualizado com sucesso!';
     res.redirect('/user/profile');
   } catch (err) {
     console.error(err);
@@ -375,7 +373,6 @@ exports.postForgotPassword = async (req, res) => {
     user.password = hashed;
     await user.save();
 
-    req.session.successMessage = 'Senha atualizada com sucesso!';
     res.redirect('/user/login');
   } catch (err) {
     console.error(err);
