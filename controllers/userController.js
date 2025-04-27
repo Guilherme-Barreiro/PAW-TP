@@ -1,5 +1,7 @@
 const User = require('../models/User');
 
+// Renderiza a página para gerir utilizadores que estejam autenticados à base de dados
+
 exports.getManage = async (req, res) => {
   try {
     const users = await User.find();
@@ -9,6 +11,8 @@ exports.getManage = async (req, res) => {
     res.status(500).send('Erro ao carregar utilizadores');
   }
 };
+
+// Esta função retira o utilizador da base de dados
 
 exports.postDelete = async (req, res) => {
   try {

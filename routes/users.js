@@ -4,7 +4,7 @@ const userController = require('../controllers/userController');
 const { verifyToken, isAdmin } = require('../controllers/authController');
 
 router.use(verifyToken);
-router.use(isAdmin); // Protege todas as rotas abaixo
+router.use(isAdmin); 
 
 router.get('/manage', userController.getManage);
 router.post('/:id/delete', userController.postDelete);

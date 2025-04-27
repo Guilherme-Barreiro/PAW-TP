@@ -1,4 +1,8 @@
+// Requer que esteja ligado à base de dados do MongoDB
+
 const mongoose = require('mongoose');
+
+// Modelo de um utilizador
 
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },

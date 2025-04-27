@@ -10,6 +10,8 @@ const session = require('express-session');
 
 const app = express();
 
+// Importa as routes necessárias
+
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const restaurantsRouter = require('./routes/restaurants');
@@ -17,16 +19,16 @@ const authRoutes = require('./routes/auth');
 const categoryRoutes = require('./routes/categories');
 const adminRoutes = require('./routes/admin');
 
-// Conexão à base de dados MongoDB
+// Liga à base de dados do MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('✅ Ligado ao MongoDB Atlas!'))
   .catch(err => console.error('❌ Erro ao ligar ao MongoDB:', err));
 
-// Configuração das views
+// Configura as views
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// Middlewares globais
+// Middlewares default
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

@@ -1,4 +1,8 @@
+// Conexão à base de dados do MongoDB
+
 const mongoose = require('mongoose');
+
+// Modelo de um restaurante
 
 const restaurantSchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true },

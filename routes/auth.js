@@ -11,7 +11,7 @@ router.post('/register', authController.postRegister);
 router.get('/forgot-password', authController.getForgotPassword);
 router.post('/forgot-password', authController.postForgotPassword);
 
-// Rotas protegidas (login necessário)
+// Rotas protegidas (só podem ser acedidas através do login)
 router.get('/profile', verifyToken, authController.getProfile);
 router.get('/dashboard', verifyToken, authController.getDashboard);
 router.get('/logout', authController.logout);

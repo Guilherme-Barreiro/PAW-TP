@@ -7,6 +7,7 @@ const bcrypt = require('bcryptjs');
 const { getNutritionalInfo } = require('../utils/spoonacular');
 const uploadRestaurants = require('../utils/multerConfigRestaurants'); 
 
+// Verifica se o utilizador é o dono do restaurante
 
 const isOwnerOfRestaurant = (req, res, restaurante) => {
   if (!restaurante.createdBy || restaurante.createdBy.toString() !== req.session.user._id.toString()) {
@@ -16,11 +17,14 @@ const isOwnerOfRestaurant = (req, res, restaurante) => {
   return false;
 };
 
+// Esta função converte a informação nutricional para um número
+
 const parseNutri = (val) => {
   const num = parseFloat(val);
   return !isNaN(num) && num >= 0 ? num : null;
 };
 
+// Registo de um novo restaurante
 
 exports.postRegister = async (req, res) => {
   const { name, location } = req.body;
@@ -55,6 +59,7 @@ exports.postRegister = async (req, res) => {
   }
 };
 
+// Lista todos os restaurantes validados podendo usar filtros ou não, de acordo com a preferência do utilizador
 
 exports.getList = async (req, res) => {
   try {
@@ -89,6 +94,8 @@ exports.getList = async (req, res) => {
   }
 };
 
+// Esta função permite adicionar um novo prato ao restaurante
+
 exports.getAddMenu = async (req, res) => {
   try {
     const restaurante = await Restaurant.findById(req.params.id);
@@ -108,6 +115,8 @@ exports.getAddMenu = async (req, res) => {
   }
 };
 
+// Mostra a página para gerir o restaurante
+
 exports.getManage = async (req, res) => {
   try {
     const restaurante = await Restaurant.findById(req.params.id);
@@ -124,6 +133,8 @@ exports.getManage = async (req, res) => {
     res.status(500).send('Erro ao carregar gestão do restaurante');
   }
 };
+
+// Função que permite editar o menu do restaurante 
 
 exports.getEditMenu = async (req, res) => {
   try {
@@ -151,6 +162,8 @@ exports.getEditMenu = async (req, res) => {
     res.status(500).send('Erro ao carregar prato para edição');
   }
 };
+
+// Esta função lista de acordo com os filtros aplicados pelo utilizador (nome, localização, preço minimo, preço maximo)
 
 exports.getFilteredList = async (req, res) => {
   try {
@@ -182,6 +195,8 @@ exports.getFilteredList = async (req, res) => {
   }
 };
 
+// Página para visualizar um prato específico
+
 exports.viewPrato = async (req, res) => {
   try {
     const restaurante = await Restaurant.findById(req.params.id);
@@ -206,6 +221,7 @@ exports.viewPrato = async (req, res) => {
   }
 };
 
+// Esta função permite visualizar o menu do restaurante
 
 exports.viewMenu = async (req, res) => {
   try {
@@ -234,6 +250,8 @@ exports.viewMenu = async (req, res) => {
     res.status(500).send('Erro ao carregar os pratos');
   }
 };
+
+// Adiciona um novo prato ao menu do restaurante
 
 exports.postAddMenu = async (req, res) => {
   const { name, category, description, meia, inteira } = req.body;
@@ -287,6 +305,8 @@ exports.postAddMenu = async (req, res) => {
     res.status(500).send('Erro ao adicionar prato');
   }
 };
+
+// Atualiza um prato que já exista no menu do restaurante
 
 exports.postEditMenu = async (req, res) => {
   const { name, category, description, meia, inteira } = req.body;
@@ -368,6 +388,8 @@ exports.postRemoveMenu = async (req, res) => {
   }
 };
 
+// Esta função permite editar dados assoaciados ao restaurante
+
 exports.getEditRestaurant = async (req, res) => {
   try {
     const restaurante = await Restaurant.findById(req.params.id);
@@ -382,10 +404,10 @@ exports.getEditRestaurant = async (req, res) => {
 
 exports.postEditRestaurant = async (req, res) => {
   const { name, location } = req.body;
-  const image = req.file ? req.file.filename : null; // 🆕 Capturar a nova imagem se houver upload
+  const image = req.file ? req.file.filename : null; 
 
   try {
-    // Validações
+
     if (!/^[A-Za-zÀ-ÿ\s]+$/.test(name)) {
       return res.status(400).send('O nome do restaurante só pode conter letras e espaços.');
     }
@@ -399,14 +421,14 @@ exports.postEditRestaurant = async (req, res) => {
 
     isOwnerOfRestaurant(req, res, restaurante);
 
-    // Atualizar os campos
+
     restaurante.name = name;
     restaurante.location = location;
 
     if (image) {
-      restaurante.image = image; // Se foi feito upload, atualiza imagem
+      restaurante.image = image;
     }
-    // Se não houver nova imagem enviada, continua a imagem antiga automaticamente
+  
 
     await restaurante.save();
 res.redirect('/restaurants/list');
@@ -416,6 +438,8 @@ res.redirect('/restaurants/list');
     res.status(500).send('Erro ao atualizar restaurante');
   }
 };
+
+// Permite eliminar um restaurante
 
 exports.postDeleteRestaurant = async (req, res) => {
   try {
@@ -429,6 +453,8 @@ exports.postDeleteRestaurant = async (req, res) => {
     res.status(500).send('Erro ao eliminar restaurante');
   }
 };
+
+// Esta função permite validar ou não validar um restaurante
 
 exports.validateRestaurant = async (req, res) => {
   try {
@@ -445,6 +471,8 @@ exports.validateRestaurant = async (req, res) => {
   }
 };
 
+// Mostra o formulário para a criação de um novo restaurante
+
 exports.getRegister = (req, res) => {
   if (!req.session.user || req.session.user.role !== 'cliente') {
     return res.status(403).send('Apenas utilizadores autenticados podem criar um restaurante.');
@@ -456,6 +484,8 @@ exports.getRegister = (req, res) => {
   });
 };
 
+// Lista todos os restaurantes que aguardam resposta pelo admin para serem válidos ou invalidados 
+
 exports.listaValidacoes = async (req, res) => {
   try {
     const restaurantes = await Restaurant.find({ status: 'pendente' }).populate('createdBy');
@@ -465,6 +495,8 @@ exports.listaValidacoes = async (req, res) => {
     res.status(500).send('Erro ao carregar restaurantes');
   }
 };
+
+// Esta função valida o restaurante
 
 exports.validarRestaurante = async (req, res) => {
   try {
@@ -483,6 +515,8 @@ exports.validarRestaurante = async (req, res) => {
   }
 };
 
+// Esta função não valida o restaurante 
+
 exports.recusarRestaurante = async (req, res) => {
   try {
     await Restaurant.findByIdAndUpdate(req.params.id, {
@@ -495,6 +529,8 @@ exports.recusarRestaurante = async (req, res) => {
     res.status(500).send('Erro ao recusar restaurante');
   }
 };
+
+// Renderiza a dashboard do administrador com os gráficos criados
 
 exports.getAdminDashboard = async (req, res) => {
   try {
@@ -536,7 +572,7 @@ exports.getAdminDashboard = async (req, res) => {
       totalUsers,
       totalRestaurants,
       totalDishes,
-      topUsers, // Adiciona topUsers para passar para o gráfico
+      topUsers, 
       topRestaurants,
       expensiveRestaurants
     });

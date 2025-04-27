@@ -3,10 +3,9 @@ const router = express.Router();
 const categoryController = require('../controllers/categoryController');
 const { verifyToken, isAdmin } = require('../controllers/authController');
 
-// ✅ Público: ver categorias
 router.get('/', categoryController.list);
 
-// ✅ Protegido: apenas admin pode gerir categorias
+// Rotas protegidas (apenas o admin pode aceder a estas rotas)
 router.use(verifyToken);
 router.use(isAdmin);
 

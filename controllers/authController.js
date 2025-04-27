@@ -5,7 +5,8 @@ const Restaurant = require('../models/Restaurant');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
-// Middleware: Verifica token da sessão
+// Este é um Middleware e verifica o token JWT nos cookies e liga o utilizador à request
+
 exports.verifyToken = async (req, res, next) => {
   const token = req.cookies.token;
 
@@ -27,7 +28,8 @@ exports.verifyToken = async (req, res, next) => {
 };
 
 
-// LOGIN
+// Cria a página de login
+
 exports.getLogin = (req, res) => {
   res.render('user/login', { 
     error: null, 
@@ -36,7 +38,8 @@ exports.getLogin = (req, res) => {
   });
 };
 
-// AUTENTICAÇÃO
+// Valida as credenciais, cria a sessão e a sua respetiva token JWT
+
 exports.postLogin = async (req, res) => {
   const { username, password } = req.body;
 
@@ -82,12 +85,15 @@ exports.postLogin = async (req, res) => {
   }
 };
 
-// RENDER REGISTO
+// Mostra a página de registo
+
 exports.getRegister = (req, res) => {
   res.render('user/register', { error: null });
 };
 
-// REGISTO DE CONTA COM VALIDAÇÕES
+// Lê o registo de um novo utilizador
+// Só prossegue caso os dados estejam todos corretos e validados de acordo com o tipo de dados
+
 exports.postRegister = async (req, res) => {
   const {
     username,
@@ -157,9 +163,9 @@ exports.postRegister = async (req, res) => {
         error: 'A data de nascimento não pode ser no futuro.'
       });
     }
-    if (isNaN(dataNasc.getTime()) || dataNasc.getFullYear() < 1900) {
+    if (isNaN(dataNasc.getTime()) || dataNasc.getFullYear() < 1910) {
       return res.render('user/register', {
-        error: 'Hmmmmmm, estranho teres mais de 125 anos. Deveras duvidoso.'
+        error: 'Hmmmmmm, estranho teres mais de 115 anos. Deveras duvidoso.'
       });
     }
     
@@ -185,7 +191,8 @@ exports.postRegister = async (req, res) => {
   }
 };
 
-// LOGOUT
+// Esta função termina a sessão do utilizador e limpa as cookies redirecionando depois para a página principal
+
 exports.logout = (req, res) => {
   req.session.destroy(err => {
     if (err) {
@@ -193,10 +200,10 @@ exports.logout = (req, res) => {
       return res.status(500).send('Erro ao fazer logout');
     }
 
-    res.clearCookie('token');        // Remove o token JWT
-    res.clearCookie('connect.sid');   // Remove o cookie de sessão
+    res.clearCookie('token');       
+    res.clearCookie('connect.sid');  
 
-    req.session = null; // Prevenção extra
+    req.session = null; 
 
     req.sessionSuccess = 'Sessão terminada com sucesso!';
 
@@ -205,13 +212,13 @@ exports.logout = (req, res) => {
 };
 
 
-// PERFIL
+// Função que mostra o perfil associado ao utilizador que iniciou sessão
+
 exports.getProfile = async (req, res) => {
   const sessionUser = req.session.user;
   if (!sessionUser) return res.redirect('/user/login');
 
   try {
-    // Buscar restaurantes associados ao utilizador
     const restaurantesCriados = await Restaurant.find({
       createdBy: sessionUser._id,
       status: { $in: ['pendente', 'validado'] }
@@ -233,14 +240,16 @@ exports.getProfile = async (req, res) => {
   }
 };
 
-// EDIT PROFILE (GET)
+// Esta função mostra a página para editar o perfil
+
 exports.getEditProfile = (req, res) => {
   const user = req.session.user;
   if (!user) return res.redirect('/user/login');
   res.render('user/editProfile', { user, error: null, successMessage: null });
 };
 
-// EDIT PROFILE (POST)
+// Verifica os novos dados alterados pelo utilizador e atualiza caso esteja de acordo com o tipo de dados
+
 exports.postEditProfile = async (req, res) => {
   const userId = req.session.user._id;
   const {
@@ -322,6 +331,8 @@ exports.postEditProfile = async (req, res) => {
   }
 };
 
+// Esta função mostra a página de recuperação da palavra passe
+
 exports.getForgotPassword = (req, res) => {
   res.render('user/forgotPassword', {
     title: 'Recuperar Senha',
@@ -331,6 +342,9 @@ exports.getForgotPassword = (req, res) => {
     email: ''
   });
 };
+
+// Esta verifica se o utilizador introduziu corretamente o seu nome e email
+// Procede depois para a nova password
 
 exports.postForgotPassword = async (req, res) => {
   const { username, email, novaSenha, confirmarSenha } = req.body;
@@ -349,7 +363,6 @@ exports.postForgotPassword = async (req, res) => {
     }
 
     if (!novaSenha || !confirmarSenha) {
-      // Se está na primeira parte do processo, só com username/email
       return res.render('user/forgotPassword', {
         title: 'Recuperar Senha',
         showForm: true,
@@ -380,30 +393,46 @@ exports.postForgotPassword = async (req, res) => {
   }
 };
 
-// RENDER DASHBOARD
+// Esta função mostra o dashboard do admin
+
 exports.getDashboard = (req, res) => {
   res.render('dashboard', { title: 'Dashboard' });
 };
 
-// Middleware: Verifica se está autenticado
+// Middleware para verificar se o utilizador está autenticado
+
 exports.isAuthenticated = (req, res, next) => {
   if (req.session?.user) return next();
   return res.redirect('/user/login');
 };
 
-// Middleware: Verifica se é um utilizador cliente
+// Middleware para verificar se o utilizador é do tipo cliente
 exports.isUser = (req, res, next) => {
   if (req.session?.user?.role === 'cliente') return next();
   return res.status(403).send('Acesso reservado a utilizadores.');
 };
 
-// Middleware: Verifica se é um restaurante e está validado
-exports.isRestaurant = (req, res, next) => {
-  if (req.session?.user?.role === 'restaurante' && req.session.user.validado) return next();
-  return res.status(403).send('Acesso reservado a restaurantes validados.');
+// Middleware para verificar se o utilizador criou um restaurante que está validado
+exports.isRestaurant = async (req, res, next) => {
+  try {
+    const restaurante = await Restaurant.findOne({
+      createdBy: req.session.user._id,
+      validado: true,
+      status: 'validado'
+    });
+
+    if (!restaurante) {
+      return res.status(403).send('Acesso reservado a utilizadores com restaurante validado.');
+    }
+
+    next();
+  } catch (err) {
+    console.error('Erro ao verificar restaurante:', err);
+    res.status(500).send('Erro interno ao verificar restaurante');
+  }
 };
 
-// Middleware: Verifica se é admin
+// Middleware para verificar se o utilizador é do tipo admin
 exports.isAdmin = (req, res, next) => {
   if (req.session?.user?.role === 'admin') return next();
   return res.status(403).send('Acesso reservado ao administrador.');

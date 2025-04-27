@@ -4,8 +4,7 @@
   <h2 class="mb-4 text-center">Editar Restaurante</h2>
 
   <form method="POST" action="/restaurants/<%= restaurante._id %>/edit" enctype="multipart/form-data" id="editRestaurantForm" class="card p-4 shadow-sm">
-    
-    <!-- PRIMEIRO: Imagem Atual -->
+
     <div class="mb-3 text-center">
       <% if (restaurante.image) { %>
         <img src="/images/restaurantes/<%= restaurante.image %>" alt="<%= restaurante.name %>" class="img-thumbnail mb-2" style="width: 150px; height: 150px; object-fit: cover;">
@@ -14,7 +13,6 @@
       <% } %>
     </div>
 
-    <!-- ALTERAR Imagem -->
     <div class="mb-3">
       <label for="image" class="form-label">Alterar Imagem do Restaurante</label>
       <input 
@@ -25,7 +23,6 @@
         accept="image/*">
     </div>
 
-    <!-- Nome do Restaurante -->
     <div class="mb-3">
       <label for="name" class="form-label">Nome</label>
       <input 
@@ -39,7 +36,6 @@
         title="Só letras e espaços">
     </div>
 
-    <!-- Localização -->
     <div class="mb-3">
       <label for="location" class="form-label">Localização</label>
       <input 
@@ -53,13 +49,11 @@
         title="Só letras e espaços">
     </div>
 
-    <!-- Botões -->
     <button type="submit" class="btn btn-success w-100">Guardar Alterações</button>
     <a href="/restaurants/list" class="btn btn-secondary w-100 mt-2">Cancelar</a>
   </form>
 </div>
 
-<!-- Validação Cliente -->
 <script>
   document.getElementById('editRestaurantForm').addEventListener('submit', function (e) {
     const name = document.getElementById('name').value.trim();
