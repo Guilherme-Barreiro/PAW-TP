@@ -29,16 +29,19 @@
     <canvas id="adminChart" class="w-100" style="max-height: 400px;"></canvas>
   </div>
 
+  <!-- Top Criadores -->
   <div class="card mt-5 p-4 shadow-sm">
     <h4 class="text-center mb-4">Top Criadores de Restaurantes</h4>
     <canvas id="topCreatorsChart" class="w-100" style="max-height: 400px;"></canvas>
   </div>
 
+  <!-- Restaurantes com mais pratos -->
   <div class="card mt-5 p-4 shadow-sm">
     <h4 class="text-center mb-4">Restaurantes com Mais Pratos</h4>
     <canvas id="topRestaurantDishesChart" class="w-100" style="max-height: 400px;"></canvas>
   </div>
 
+  <!-- Restaurantes mais caros -->
   <div class="card mt-5 p-4 shadow-sm">
     <h4 class="text-center mb-4">Restaurantes Mais Caros (Média dos Pratos)</h4>
     <canvas id="expensiveRestaurantsChart" class="w-100" style="max-height: 400px;"></canvas>
@@ -46,8 +49,10 @@
 
 </div>
 
+<!-- Importa Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+  // Gráfico de Distribuição Geral (Total de Utilizadores, Restaurantes e Pratos)
   const ctx = document.getElementById('adminChart').getContext('2d');
 
   new Chart(ctx, {
@@ -81,16 +86,17 @@
     }
   });
 
+  // Gráfico Top Criadores de Restaurantes (Horizontal Bar)
   const topCreatorsCtx = document.getElementById('topCreatorsChart').getContext('2d');
 
   new Chart(topCreatorsCtx, {
-    type: 'bar',
+    type: 'bar', // Barra horizontal
     data: {
-      labels: <%- JSON.stringify(topUsers.map(user => user.username)) %>, 
+      labels: <%- JSON.stringify(topUsers.map(user => user.username)) %>,
       datasets: [{
         label: 'Número de Restaurantes Criados',
-        data: <%- JSON.stringify(topUsers.map(user => user.totalRestaurantes)) %>, 
-        backgroundColor: ['#0d6efd', '#ffc107', '#28a745', '#dc3545', '#17a2b8'] 
+        data: <%- JSON.stringify(topUsers.map(user => user.totalRestaurantes)) %>,
+        backgroundColor: ['#0d6efd', '#ffc107', '#28a745', '#dc3545', '#17a2b8']
       }]
     },
     options: {
@@ -100,21 +106,22 @@
         title: { display: true, text: 'Top Criadores de Restaurantes' }
       },
       scales: {
-        x: { beginAtZero: true } 
+        x: { beginAtZero: true } // Começa a escala do eixo X em 0
       }
     }
   });
 
+  // Gráfico Restaurantes com Mais Pratos (Doughnut)
   const topRestaurantDishesCtx = document.getElementById('topRestaurantDishesChart').getContext('2d');
 
   new Chart(topRestaurantDishesCtx, {
     type: 'doughnut',
     data: {
-      labels: <%- JSON.stringify(topRestaurants.map(rest => rest.name)) %>, 
+      labels: <%- JSON.stringify(topRestaurants.map(rest => rest.name)) %>, // Lista dos nomes dos restaurantes
       datasets: [{
         label: 'Número de Pratos',
-        data: <%- JSON.stringify(topRestaurants.map(rest => rest.totalPratos)) %>, 
-        backgroundColor: ['#ff5733', '#c70039', '#900c3f', '#581845', '#1d3557'] 
+        data: <%- JSON.stringify(topRestaurants.map(rest => rest.totalPratos)) %>, // Número de pratos por restaurante
+        backgroundColor: ['#ff5733', '#c70039', '#900c3f', '#581845', '#1d3557'] // Diferentes cores para cada barra
       }]
     },
     options: {
@@ -126,17 +133,18 @@
     }
   });
 
+  // Gráfico Restaurantes Mais Caros (Line)
   const expensiveRestaurantsCtx = document.getElementById('expensiveRestaurantsChart').getContext('2d');
 
   new Chart(expensiveRestaurantsCtx, {
-    type: 'line', 
+    type: 'line', // Gráfico de linha
     data: {
-      labels: <%- JSON.stringify(expensiveRestaurants.map(rest => rest.name)) %>, 
+      labels: <%- JSON.stringify(expensiveRestaurants.map(rest => rest.name)) %>, // Lista dos nomes dos restaurantes mais caros
       datasets: [{
         label: 'Preço Médio (€)',
-        data: <%- JSON.stringify(expensiveRestaurants.map(rest => rest.avgPrice.toFixed(2))) %>, 
-        backgroundColor: 'rgba(75, 192, 192, 0.2)', 
-        borderColor: 'rgba(75, 192, 192, 1)', 
+        data: <%- JSON.stringify(expensiveRestaurants.map(rest => rest.avgPrice.toFixed(2))) %>, // Preço médio por restaurante
+        backgroundColor: 'rgba(75, 192, 192, 0.2)', // Cor de fundo
+        borderColor: 'rgba(75, 192, 192, 1)', // Cor da linha
         fill: true
       }]
     },
@@ -147,7 +155,7 @@
         title: { display: true, text: 'Restaurantes Mais Caros' }
       },
       scales: {
-        y: { beginAtZero: true }
+        y: { beginAtZero: true } // Começa a escala do eixo Y em 0
       }
     }
   });
