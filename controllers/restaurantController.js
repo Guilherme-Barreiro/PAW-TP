@@ -64,11 +64,10 @@ exports.postRegister = async (req, res) => {
 exports.getList = async (req, res) => {
   try {
     const { name, category, location, min, max } = req.query;
+    const sessionUser = req.session.user;
 
-    const filtro = {
-      status: 'validado',
-      createdBy: req.session.user._id
-    };
+    let filtro = { status: 'validado' };
+
     if (name) filtro.name = { $regex: name, $options: 'i' };
     if (category) filtro['menu.category'] = category;
     if (location) filtro.location = { $regex: location, $options: 'i' };
@@ -79,7 +78,20 @@ exports.getList = async (req, res) => {
       if (max) filtro['menu.price.inteira'].$lte = parseFloat(max);
     }
 
-    const restaurantes = await Restaurant.find(filtro);
+    let restaurantes = [];
+
+    if (sessionUser) {
+      const criouRestaurantes = await Restaurant.exists({ createdBy: sessionUser._id });
+
+      if (criouRestaurantes) {
+        filtro.createdBy = sessionUser._id; 
+      }
+
+      restaurantes = await Restaurant.find(filtro);
+    } else {
+      restaurantes = await Restaurant.find(filtro);
+    }
+
     const categoriasDB = await Category.find({}).select('name -_id');
     const categorias = categoriasDB.map(cat => cat.name);
 
