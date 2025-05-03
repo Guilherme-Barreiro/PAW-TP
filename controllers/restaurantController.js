@@ -1,11 +1,11 @@
 const Restaurant = require('../models/Restaurant');
 const Category = require('../models/Category');
-const User = require('../models/User'); 
+const User = require('../models/User');
 const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const { getNutritionalInfo } = require('../utils/spoonacular');
-const uploadRestaurants = require('../utils/multerConfigRestaurants'); 
+const uploadRestaurants = require('../utils/multerConfigRestaurants');
 
 // Verifica se o utilizador é o dono do restaurante
 
@@ -28,7 +28,7 @@ const parseNutri = (val) => {
 
 exports.postRegister = async (req, res) => {
   const { name, location } = req.body;
-  const image = req.file ? req.file.filename : 'default-restaurant.png'; 
+  const image = req.file ? req.file.filename : 'default-restaurant.png';
 
   if (!req.session.user || !req.session.user._id) {
     return res.status(401).send('Utilizador não autenticado');
@@ -65,7 +65,10 @@ exports.getList = async (req, res) => {
   try {
     const { name, category, location, min, max } = req.query;
 
-    const filtro = { status: 'validado' };
+    const filtro = {
+      status: 'validado',
+      createdBy: req.session.user._id
+    };
     if (name) filtro.name = { $regex: name, $options: 'i' };
     if (category) filtro['menu.category'] = category;
     if (location) filtro.location = { $regex: location, $options: 'i' };
@@ -78,9 +81,7 @@ exports.getList = async (req, res) => {
 
     const restaurantes = await Restaurant.find(filtro);
     const categoriasDB = await Category.find({}).select('name -_id');
-    const categoriasUnicas = categoriasDB.map(cat => cat.name);
-    const categoriasFixas = ['Carne', 'Peixe', 'Vegetariano', 'Sobremesa'];
-    const categorias = [...new Set([...categoriasFixas, ...categoriasUnicas])];
+    const categorias = categoriasDB.map(cat => cat.name);
 
     res.render('restaurant/restaurantList', {
       restaurantes,
@@ -404,7 +405,7 @@ exports.getEditRestaurant = async (req, res) => {
 
 exports.postEditRestaurant = async (req, res) => {
   const { name, location } = req.body;
-  const image = req.file ? req.file.filename : null; 
+  const image = req.file ? req.file.filename : null;
 
   try {
 
@@ -428,10 +429,10 @@ exports.postEditRestaurant = async (req, res) => {
     if (image) {
       restaurante.image = image;
     }
-  
+
 
     await restaurante.save();
-res.redirect('/restaurants/list');
+    res.redirect('/restaurants/list');
 
   } catch (err) {
     console.error(err);
@@ -504,7 +505,7 @@ exports.validarRestaurante = async (req, res) => {
     if (!restaurante) return res.status(404).send('Restaurante não encontrado');
 
     restaurante.validado = true;
-    restaurante.status = 'validado'; 
+    restaurante.status = 'validado';
     await restaurante.save();
 
 
@@ -544,39 +545,41 @@ exports.getAdminDashboard = async (req, res) => {
     const totalDishes = totalDishesAgg[0]?.total || 0;
 
     const topUsers = await User.aggregate([
-      { $lookup: { from: 'restaurants', localField: '_id', foreignField: 'createdBy', as: 'restaurantes' }},
-      { $project: { username: 1, totalRestaurantes: { $size: "$restaurantes" } }},
-      { $sort: { totalRestaurantes: -1 }},
+      { $lookup: { from: 'restaurants', localField: '_id', foreignField: 'createdBy', as: 'restaurantes' } },
+      { $project: { username: 1, totalRestaurantes: { $size: "$restaurantes" } } },
+      { $sort: { totalRestaurantes: -1 } },
       { $limit: 5 }
     ]);
-    
+
     const topRestaurants = await Restaurant.aggregate([
-      { $project: { name: 1, totalPratos: { $size: "$menu" } }},
-      { $sort: { totalPratos: -1 }},
+      { $project: { name: 1, totalPratos: { $size: "$menu" } } },
+      { $sort: { totalPratos: -1 } },
       { $limit: 5 }
     ]);
-    
+
     const expensiveRestaurants = await Restaurant.aggregate([
       { $unwind: "$menu" },
-      { $group: {
-        _id: "$_id",
-        name: { $first: "$name" },
-        avgPrice: { $avg: "$menu.price.inteira" }
-      }},
-      { $sort: { avgPrice: -1 }},
+      {
+        $group: {
+          _id: "$_id",
+          name: { $first: "$name" },
+          avgPrice: { $avg: "$menu.price.inteira" }
+        }
+      },
+      { $sort: { avgPrice: -1 } },
       { $limit: 5 }
-    ]);    
+    ]);
 
     res.render('admin/dashboard', {
       title: 'Painel de Administração',
       totalUsers,
       totalRestaurants,
       totalDishes,
-      topUsers, 
+      topUsers,
       topRestaurants,
       expensiveRestaurants
     });
-    
+
   } catch (err) {
     console.error('Erro no dashboard admin:', err);
     res.status(500).send('Erro ao carregar dashboard');
