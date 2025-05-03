@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   role: {
     type: String,
-    enum: ['cliente', 'admin'],
+    enum: ['cliente', 'admin', 'employee'],
     required: true
   },
   email: { type: String, required: true, unique: true },
@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema({
   dataNascimento: { type: Date },
   nif: { type: String, required: true, unique: true },
   historicoEncomendas: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }],
+  restaurant: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' },
 });
 
 module.exports = mongoose.model('User', userSchema);
