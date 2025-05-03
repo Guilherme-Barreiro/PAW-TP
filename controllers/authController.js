@@ -437,3 +437,9 @@ exports.isAdmin = (req, res, next) => {
   if (req.session?.user?.role === 'admin') return next();
   return res.status(403).send('Acesso reservado ao administrador.');
 };
+
+// Middleware para verificar se o utilizador é um empregado
+exports.isEmployee = (req, res, next) => {
+  if (req.session?.user?.role === 'employee') return next();
+  return res.status(403).send('Acesso reservado a empregados.');
+};

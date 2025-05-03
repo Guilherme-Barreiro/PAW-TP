@@ -1,0 +1,38 @@
+<%- include('../partials/header') %>
+
+<h2>Meus Pedidos</h2>
+
+<table border="1">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Restaurante</th>
+      <th>Data</th>
+      <th>Itens</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if (orders.length === 0) { %>
+      <tr><td colspan="4">Nenhum pedido encontrado.</td></tr>
+    <% } else { %>
+      <% orders.forEach((order, index) => { %>
+        <tr>
+          <td><%= index + 1 %></td>
+          <td><%= order.restaurant.name %></td>
+          <td><%= order.createdAt.toLocaleString() %></td>
+          <td>
+            <ul>
+              <% order.items.forEach(item => { %>
+                <li><%= item.quantity %> x <%= item.dish.name %> @ <%= item.dish.price.toFixed(2) %> €</li>
+              <% }) %>
+            </ul>
+          </td>
+        </tr>
+      <% }) %>
+    <% } %>
+  </tbody>
+</table>
+
+<a href="/orders/create">Criar novo pedido</a>
+
+<%- include('../partials/footer') %>

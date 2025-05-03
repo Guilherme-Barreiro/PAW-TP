@@ -1,0 +1,50 @@
+<%- include('../partials/header') %>
+
+    <h2>Criar Novo Pedido</h2>
+
+    <form action="/orders/create" method="POST">
+        <div id="items-container">
+            <div class="item">
+                <label>Prato:</label>
+                <select name="items[0][dish]" required>
+                    <% dishes.forEach(dish=> { %>
+                        <option value="<%= dish._id %>">
+                            <%= dish.name %> - <%= dish.price.toFixed(2) %> €
+                        </option>
+                        <% }) %>
+                </select>
+
+                <label>Quantidade:</label>
+                <input type="number" name="items[0][quantity]" min="1" value="1" required>
+            </div>
+        </div>
+
+        <button type="button" onclick="addItem()">Adicionar Item</button>
+        <button type="submit">Criar Pedido</button>
+    </form>
+
+    <script>
+        let itemIndex = 1;
+        const dishesOptions = `<%= dishes.map(d => 
+    \`<option value="\${d._id}">\${d.name} - \${d.price.toFixed(2)} €</option>\`
+  ).join('') %>`;
+
+        function addItem() {
+            const container = document.getElementById('items-container');
+            const itemDiv = document.createElement('div');
+            itemDiv.classList.add('item');
+            itemDiv.innerHTML = `
+      <label>Prato:</label>
+      <select name="items[${itemIndex}][dish]" required>
+        ${dishesOptions}
+      </select>
+
+      <label>Quantidade:</label>
+      <input type="number" name="items[${itemIndex}][quantity]" min="1" value="1" required>
+    `;
+            container.appendChild(itemDiv);
+            itemIndex++;
+        }
+    </script>
+
+    <%- include('../partials/footer') %>
