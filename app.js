@@ -18,6 +18,7 @@ const restaurantsRouter = require('./routes/restaurants');
 const authRoutes = require('./routes/auth');
 const categoryRoutes = require('./routes/categories');
 const adminRoutes = require('./routes/admin');
+const employeeRoutes = require('./routes/employee');
 
 // Liga à base de dados do MongoDB
 mongoose.connect(process.env.MONGO_URI)
@@ -56,6 +57,7 @@ app.use('/restaurants', restaurantsRouter);
 app.use('/user', authRoutes);
 app.use('/categories', categoryRoutes);
 app.use('/admin', adminRoutes);
+app.use('/employees', employeeRoutes);
 
 // Erro 404
 app.use(function(req, res, next) {

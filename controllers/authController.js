@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const Restaurant = require('../models/Restaurant');
+const Employee = require('../models/Employee');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -438,8 +439,64 @@ exports.isAdmin = (req, res, next) => {
   return res.status(403).send('Acesso reservado ao administrador.');
 };
 
-// Middleware para verificar se o utilizador é um empregado
-exports.isEmployee = (req, res, next) => {
-  if (req.session?.user?.role === 'employee') return next();
-  return res.status(403).send('Acesso reservado a empregados.');
+//funções para o funcionário
+exports.getEmployeeLogin = (req, res) => {
+  res.render('employee/login', {
+    error: null,
+    title: 'Login Funcionário'
+  });
+};
+
+exports.postEmployeeLogin = async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    const employee = await Employee.findOne({ username });
+    if (!employee) {
+      return res.render('employee/login', {
+        error: 'Funcionário não encontrado.',
+        title: 'Login Funcionário'
+      });
+    }
+
+    const isMatch = await bcrypt.compare(password, employee.password);
+    if (!isMatch) {
+      return res.render('employee/login', {
+        error: 'Palavra-passe incorreta.',
+        title: 'Login Funcionário'
+      });
+    }
+
+    const token = jwt.sign(
+      { id: employee._id, role: 'employee' },
+      JWT_SECRET,
+      { expiresIn: '2h' }
+    );
+
+    res.cookie('employeeToken', token, {
+      httpOnly: true,
+      maxAge: 2 * 60 * 60 * 1000
+    });
+
+    req.session.employee = employee;
+    res.redirect('/employees/dashboard'); // ajustar conforme o teu destino final
+  } catch (err) {
+    console.error(err);
+    res.render('employee/login', {
+      error: 'Erro ao autenticar.',
+      title: 'Login Funcionário'
+    });
+  }
+};
+
+exports.employeeLogout = (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      console.error('Erro ao terminar sessão:', err);
+      return res.status(500).send('Erro ao fazer logout');
+    }
+
+    res.clearCookie('employeeToken');
+    res.redirect('/employees/login');
+  });
 };
