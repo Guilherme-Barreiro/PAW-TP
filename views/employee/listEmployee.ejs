@@ -1,0 +1,43 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-5">
+  <h1>Funcionários</h1>
+
+  <a href="/employee/createEmployee" class="btn btn-primary mb-3">Nooovo Funcionário</a>
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <% if (funcionarios && funcionarios.length > 0) { %>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Restaurantes</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% funcionarios.forEach(func => { %>
+              <tr>
+                <td><%= func.username %></td>
+                <td><%= func.email %></td>
+                <td><%= func.restaurants.map(r => r.name).join(', ') %></td>
+                <td>
+                  <a href="/employee/<%= func._id %>/edit" class="btn btn-sm btn-warning">Editar</a>
+                  <form method="POST" action="/employee/<%= func._id %>/delete" class="d-inline">
+                    <button class="btn btn-sm btn-danger" onclick="return confirm('Tem a certeza?')">Remover</button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <p class="text-muted">Ainda não existem funcionários associados.</p>
+      <% } %>
+    </div>
+  </div>
+</div>
+<div class="mb-5"></div>
+<%- include('../partials/footer') %>

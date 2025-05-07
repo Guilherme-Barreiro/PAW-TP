@@ -57,7 +57,7 @@ app.use('/restaurants', restaurantsRouter);
 app.use('/user', authRoutes);
 app.use('/categories', categoryRoutes);
 app.use('/admin', adminRoutes);
-app.use('/employees', employeeRoutes);
+app.use('/employee', employeeRoutes);
 
 // Erro 404
 app.use(function(req, res, next) {

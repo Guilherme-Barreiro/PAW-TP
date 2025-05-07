@@ -10,16 +10,12 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 exports.verifyToken = async (req, res, next) => {
   const token = req.cookies.token;
-
   if (!token) return res.redirect('/user/login');
-
   try {
+
     const decoded = jwt.verify(token, JWT_SECRET);
-
     const user = await User.findById(decoded.id);
-
     if (!user) return res.redirect('/user/login');
-
     req.user = user;
     next();
   } catch (err) {
@@ -479,7 +475,7 @@ exports.postEmployeeLogin = async (req, res) => {
     });
 
     req.session.employee = employee;
-    res.redirect('/employees/dashboard'); // ajustar conforme o teu destino final
+    res.redirect('/employees/dashboard');
   } catch (err) {
     console.error(err);
     res.render('employee/login', {
@@ -499,4 +495,25 @@ exports.employeeLogout = (req, res) => {
     res.clearCookie('employeeToken');
     res.redirect('/employees/login');
   });
+};
+
+exports.isOwner = async (req, res, next) => {
+  console.log('[isOwner] user na sessão:', req.session.user); // <-- aqui
+
+  try {
+    const restaurantes = await Restaurant.find({
+      createdBy: req.session.user._id
+    });
+
+    if (restaurantes.length > 0) {
+      console.log('[isOwner] Acesso permitido');
+      return next();
+    }
+
+    console.log('[isOwner] Sem restaurantes encontrados');
+    return res.status(403).send('Acesso reservado a donos de restaurante.');
+  } catch (err) {
+    console.error('Erro no middleware isOwner:', err);
+    return res.status(500).send('Erro ao verificar permissões.');
+  }
 };

@@ -1,7 +1,6 @@
 const User = require('../models/User');
 
 // Renderiza a página para gerir utilizadores que estejam autenticados à base de dados
-
 exports.getManage = async (req, res) => {
   try {
     const users = await User.find();

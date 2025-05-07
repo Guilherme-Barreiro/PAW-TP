@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
 const { verifyToken } = require('../controllers/authController');
-const { verifyEmployeeToken } = require('../controllers/EmployeeController');
+const { verifyEmployeeToken } = require('../controllers/employeeController');
 
 // Rotas públicas
 router.get('/login', authController.getLogin);
