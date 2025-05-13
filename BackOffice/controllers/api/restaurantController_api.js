@@ -1,7 +1,8 @@
 const Restaurant = require('../../models/Restaurant');
 const Category = require('../../models/Category');
+const User = require('../../models/User');
 
-// GET /api/restaurants - Listar todos
+// GET /api/restaurants
 exports.getAll = async (req, res) => {
   try {
     const restaurants = await Restaurant.find();
@@ -11,7 +12,7 @@ exports.getAll = async (req, res) => {
   }
 };
 
-// GET /api/restaurants/:id - Buscar por ID
+// GET /api/restaurants/:id
 exports.getOne = async (req, res) => {
   try {
     const restaurant = await Restaurant.findById(req.params.id);
@@ -22,7 +23,7 @@ exports.getOne = async (req, res) => {
   }
 };
 
-// POST /api/restaurants - Criar novo
+// POST /api/restaurants
 exports.create = async (req, res) => {
   try {
     const newRestaurant = new Restaurant(req.body);
@@ -33,7 +34,7 @@ exports.create = async (req, res) => {
   }
 };
 
-// PUT /api/restaurants/:id - Atualizar
+// PUT /api/restaurants/:id
 exports.update = async (req, res) => {
   try {
     const updated = await Restaurant.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -44,7 +45,7 @@ exports.update = async (req, res) => {
   }
 };
 
-// DELETE /api/restaurants/:id - Apagar
+// DELETE /api/restaurants/:id
 exports.remove = async (req, res) => {
   try {
     const deleted = await Restaurant.findByIdAndDelete(req.params.id);
@@ -55,7 +56,7 @@ exports.remove = async (req, res) => {
   }
 };
 
-// GET /api/restaurants/:id/menu - Ver menu do restaurante
+// GET /api/restaurants/:id/menu
 exports.getMenu = async (req, res) => {
   try {
     const restaurant = await Restaurant.findById(req.params.id);
@@ -66,7 +67,7 @@ exports.getMenu = async (req, res) => {
   }
 };
 
-// POST /api/restaurants/:id/menu - Adicionar prato
+// POST /api/restaurants/:id/menu
 exports.addDish = async (req, res) => {
   try {
     const restaurant = await Restaurant.findById(req.params.id);
@@ -81,12 +82,14 @@ exports.addDish = async (req, res) => {
   }
 };
 
-// PUT /api/restaurants/:id/menu/:index - Editar prato por índice
+// PUT /api/restaurants/:id/menu/:index
 exports.updateDish = async (req, res) => {
   try {
     const { id, index } = req.params;
     const restaurant = await Restaurant.findById(id);
-    if (!restaurant || !restaurant.menu[index]) return res.status(404).json({ error: 'Prato não encontrado.' });
+    if (!restaurant || !restaurant.menu[index]) {
+      return res.status(404).json({ error: 'Prato não encontrado.' });
+    }
 
     restaurant.menu[index] = req.body;
     await restaurant.save();
@@ -97,12 +100,14 @@ exports.updateDish = async (req, res) => {
   }
 };
 
-// DELETE /api/restaurants/:id/menu/:index - Remover prato
+// DELETE /api/restaurants/:id/menu/:index
 exports.removeDish = async (req, res) => {
   try {
     const { id, index } = req.params;
     const restaurant = await Restaurant.findById(id);
-    if (!restaurant || !restaurant.menu[index]) return res.status(404).json({ error: 'Prato não encontrado.' });
+    if (!restaurant || !restaurant.menu[index]) {
+      return res.status(404).json({ error: 'Prato não encontrado.' });
+    }
 
     restaurant.menu.splice(index, 1);
     await restaurant.save();
@@ -113,6 +118,7 @@ exports.removeDish = async (req, res) => {
   }
 };
 
+// GET /api/restaurants/filter
 exports.filterRestaurants = async (req, res) => {
   try {
     const { name, category, location, min, max } = req.query;
@@ -131,11 +137,11 @@ exports.filterRestaurants = async (req, res) => {
     const restaurantes = await Restaurant.find(filtro);
     res.json(restaurantes);
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: 'Erro ao aplicar filtros.' });
   }
 };
 
+// PUT /api/restaurants/:id/validate
 exports.validateRestaurant = async (req, res) => {
   try {
     const restaurant = await Restaurant.findById(req.params.id);
@@ -150,6 +156,7 @@ exports.validateRestaurant = async (req, res) => {
   }
 };
 
+// PUT /api/restaurants/:id/reject
 exports.rejectRestaurant = async (req, res) => {
   try {
     const restaurant = await Restaurant.findById(req.params.id);
@@ -164,6 +171,7 @@ exports.rejectRestaurant = async (req, res) => {
   }
 };
 
+// GET /api/restaurants/owner/:ownerId
 exports.getByOwner = async (req, res) => {
   try {
     const { ownerId } = req.params;
@@ -174,6 +182,7 @@ exports.getByOwner = async (req, res) => {
   }
 };
 
+// GET /api/restaurants/pending
 exports.getPending = async (req, res) => {
   try {
     const pending = await Restaurant.find({ status: 'pendente' });
@@ -183,11 +192,78 @@ exports.getPending = async (req, res) => {
   }
 };
 
+// GET /api/restaurants/validated
 exports.getValidated = async (req, res) => {
   try {
     const validados = await Restaurant.find({ status: 'validado' });
     res.json(validados);
   } catch (err) {
     res.status(500).json({ error: 'Erro ao buscar restaurantes validados.' });
+  }
+};
+
+// POST /api/restaurants/:id/menu/:index/image
+exports.uploadDishImage = async (req, res) => {
+  try {
+    const { id, index } = req.params;
+    const restaurant = await Restaurant.findById(id);
+    if (!restaurant || !restaurant.menu[index]) {
+      return res.status(404).json({ error: 'Prato ou restaurante não encontrado.' });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ error: 'Nenhum ficheiro enviado.' });
+    }
+
+    restaurant.menu[index].image = req.file.filename;
+    await restaurant.save();
+
+    res.json({ message: 'Imagem atualizada com sucesso.', image: req.file.filename });
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao atualizar imagem do prato.' });
+  }
+};
+
+// GET /api/admin/dashboard
+exports.adminDashboard = async (req, res) => {
+  try {
+    const totalRestaurants = await Restaurant.countDocuments({ status: 'validado' });
+
+    const totalDishesAgg = await Restaurant.aggregate([
+      { $project: { count: { $size: "$menu" } } },
+      { $group: { _id: null, total: { $sum: "$count" } } }
+    ]);
+    const totalDishes = totalDishesAgg[0]?.total || 0;
+
+    const totalUsers = await User.countDocuments();
+
+    res.json({
+      success: true,
+      data: {
+        totalRestaurants,
+        totalDishes,
+        totalUsers,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Erro ao carregar dashboard.' });
+  }
+};
+
+// GET /api/restaurants/:id/menu/:index - Buscar prato por índice
+exports.getDishByIndex = async (req, res) => {
+  try {
+    const { id, index } = req.params;
+    const restaurante = await Restaurant.findById(id);
+    if (!restaurante) return res.status(404).json({ error: 'Restaurante não encontrado.' });
+
+    const idx = parseInt(index);
+    if (isNaN(idx) || !restaurante.menu[idx]) {
+      return res.status(404).json({ error: 'Prato não encontrado.' });
+    }
+
+    res.json({ prato: restaurante.menu[idx] });
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao buscar o prato.' });
   }
 };

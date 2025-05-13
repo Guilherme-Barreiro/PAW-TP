@@ -20,6 +20,9 @@ const categoryRoutes = require('./routes/categories');
 const adminRoutes = require('./routes/admin');
 const employeeRoutes = require('./routes/employee');
 const restaurantApiRoutes = require('./routes/api/restaurants_api');
+const categoryApiRoutes = require('./routes/api/categories');
+const authApiRoutes = require('./routes/api/auth_api');
+const userApiRoutes = require('./routes/api/users_api');
 
 // Liga à base de dados do MongoDB
 mongoose.connect(process.env.MONGO_URI)
@@ -60,6 +63,9 @@ app.use('/categories', categoryRoutes);
 app.use('/admin', adminRoutes);
 app.use('/employee', employeeRoutes);
 app.use('/api/restaurants', restaurantApiRoutes);
+app.use('/api/categories', categoryApiRoutes);
+app.use('/api/auth', authApiRoutes);
+app.use('/api/users', userApiRoutes);
 
 // Erro 404
 app.use(function(req, res, next) {
