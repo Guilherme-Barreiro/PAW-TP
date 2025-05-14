@@ -7,6 +7,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const session = require('express-session');
+const cors = require('cors');
 
 const app = express();
 
@@ -20,10 +21,10 @@ const categoryRoutes = require('./routes/categories');
 const adminRoutes = require('./routes/admin');
 const employeeRoutes = require('./routes/employee');
 const restaurantApiRoutes = require('./routes/api/restaurants_api');
-const categoryApiRoutes = require('./routes/api/categories');
+const categoryApiRoutes = require('./routes/api/categories_api');
 const authApiRoutes = require('./routes/api/auth_api');
 const userApiRoutes = require('./routes/api/users_api');
-const orderApiRoutes = require('./routes/api/orders_api');
+const orderApiRoutes = require('./routes/api/order_api');
 
 // Liga à base de dados do MongoDB
 mongoose.connect(process.env.MONGO_URI)
@@ -54,6 +55,13 @@ app.use((req, res, next) => {
   res.locals.title = 'RestGest';
   next();
 });
+
+app.use(cors({
+  origin: 'http://localhost:4200',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 
 // Rotas
 app.use('/', indexRouter);

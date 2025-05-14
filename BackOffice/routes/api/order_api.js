@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 const orderController = require('../../controllers/api/orderController_api');
 
-// Criar novo pedido (apenas para empregados autenticados)
-router.post('/', orderController.createOrder);
+// Criar novo pedido
+router.post('/', orderController.create);
 
-// Listar pedidos do funcionário
-router.get('/', orderController.listOrders);
+// Listar pedidos
+router.get('/', orderController.getAll);
 
 module.exports = router;

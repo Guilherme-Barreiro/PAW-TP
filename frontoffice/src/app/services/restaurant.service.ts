@@ -1,0 +1,31 @@
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class RestaurantService {
+  private apiUrl = 'http://localhost:3000/api/restaurants';
+
+  constructor(private http: HttpClient) {}
+
+  // ✅ Buscar restaurantes criados por este utilizador (owner)
+  getRestaurantsByOwner(ownerId: string): Observable<any[]> {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    return this.http.get<any[]>(`${this.apiUrl}/owner/${ownerId}`, { headers });
+  }
+
+  // ✅ Buscar restaurante por ID específico
+  getRestaurantById(id: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
+  }
+
+  // ✅ Buscar todos os restaurantes (se necessário)
+  getAllRestaurants(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl);
+  }
+}

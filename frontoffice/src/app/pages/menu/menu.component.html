@@ -1,1 +1,11 @@
-<p>menu works!</p>
+<div class="container mt-4">
+  <h2 class="mb-4 text-primary">🍽️ Menu do Restaurante</h2>
+  <div *ngFor="let dish of dishes" class="card mb-3 shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title">{{ dish.name }}</h5>
+      <p class="card-text">{{ dish.description }}</p>
+      <p class="card-text fw-bold">💰 Preço: {{ dish.price?.inteira }} €</p>
+      <button (click)="addToCart(dish)" class="btn btn-success btn-sm">Adicionar ao Carrinho</button>
+    </div>
+  </div>
+</div>
