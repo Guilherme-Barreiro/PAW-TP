@@ -18,19 +18,23 @@ exports.create = async (req, res) => {
     const { items } = req.body;
 
     const populatedItems = items.map(item => {
-  const prato = restaurant.menu.id(item.dish); // <- aqui o fix
-  if (!prato) throw new Error(`Prato ${item.dish} não encontrado no menu.`);
-  return {
-    dish: prato._id,
-    name: prato.name,
-    price: prato.price?.inteira ?? 0,
-    quantity: item.quantity,
-    subtotal: (prato.price?.inteira ?? 0) * item.quantity
-  };
-});
+      const prato = restaurant.menu.id(item.dish); // <- aqui o fix
+      if (!prato) throw new Error(`Prato ${item.dish} não encontrado no menu.`);
+      return {
+        dish: prato._id,
+        name: prato.name,
+        price: prato.price?.inteira ?? 0,
+        quantity: item.quantity,
+        subtotal: (prato.price?.inteira ?? 0) * item.quantity
+      };
+    });
 
 
     const total = populatedItems.reduce((sum, item) => sum + item.subtotal, 0);
+
+    if (total <= 0) {
+      return res.status(400).json({ error: 'O total do pedido deve ser maior que zero.' });
+    }
 
     const newOrder = new Order({
       restaurant: restaurant._id,
