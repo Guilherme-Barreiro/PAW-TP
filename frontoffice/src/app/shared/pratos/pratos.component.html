@@ -1,0 +1,13 @@
+<div class="card h-100 shadow-sm">
+  <img
+    [src]="imageBaseUrl + prato.image"
+    class="card-img-top"
+    [alt]="prato.name"
+    style="height: 180px; object-fit: cover;"
+  />
+  <div class="card-body">
+    <h5 class="card-title">{{ prato.name }}</h5>
+    <p class="card-text">{{ prato.description || 'Sem descrição.' }}</p>
+    <p class="fw-bold">💰 {{ prato.price?.inteira || '0.00' }} €</p>
+  </div>
+</div>

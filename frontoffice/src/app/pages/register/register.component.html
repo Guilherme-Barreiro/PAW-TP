@@ -1,1 +1,61 @@
-<p>register works!</p>
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow-lg p-4">
+        <h2 class="text-center text-success mb-3">🍽️ Criar Conta</h2>
+
+        <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+        <div *ngIf="success" class="alert alert-success">{{ success }}</div>
+
+        <form (ngSubmit)="register()">
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="username" [(ngModel)]="form.username" name="username" required />
+            <label for="username">Nome de Utilizador</label>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input type="password" class="form-control" id="password" [(ngModel)]="form.password" name="password" required />
+            <label for="password">Senha</label>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="nomeCompleto" [(ngModel)]="form.nomeCompleto" name="nomeCompleto" required />
+            <label for="nomeCompleto">Nome Completo</label>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="email" [(ngModel)]="form.email" name="email" required />
+            <label for="email">Email</label>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="morada" [(ngModel)]="form.morada" name="morada" required />
+            <label for="morada">Morada</label>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="telefone" [(ngModel)]="form.telefone" name="telefone" required />
+            <label for="telefone">Telefone (9 dígitos)</label>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="nif" [(ngModel)]="form.nif" name="nif" required />
+            <label for="nif">NIF (9 dígitos)</label>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input type="date" class="form-control" id="dataNascimento" [(ngModel)]="form.dataNascimento" name="dataNascimento" required />
+            <label for="dataNascimento">Data de Nascimento</label>
+          </div>
+
+          <button type="submit" class="btn btn-success w-100">Criar Conta</button>
+        </form>
+
+        <p class="text-center mt-3">
+          Já tens conta?
+          <a class="text-primary" (click)="goToLogin()">Faz login aqui</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

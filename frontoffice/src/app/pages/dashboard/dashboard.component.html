@@ -1,0 +1,34 @@
+<div class="container mt-5">
+  <h2 class="text-primary mb-4">🎉 Bem-vindo, {{ user.nomeCompleto || user.username }}</h2>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <a routerLink="/menu" class="btn btn-outline-primary w-100 py-3">
+        🍽️ Gerir Menu
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a routerLink="/cart" class="btn btn-outline-success w-100 py-3">
+        🛒 Carrinho de Compras
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a routerLink="/order" class="btn btn-outline-dark w-100 py-3">
+        📦 Ver Pedidos
+      </a>
+    </div>
+  </div>
+
+  <div *ngIf="user.role === 'cliente' && restaurantes.length > 0">
+    <h4 class="text-secondary">🍴 Restaurantes Associados</h4>
+    <ul class="list-group mt-2">
+      <li *ngFor="let r of restaurantes" class="list-group-item">
+        <strong>{{ r.name }}</strong> — {{ r.status }}
+      </li>
+    </ul>
+  </div>
+
+  <div *ngIf="user.role === 'cliente' && restaurantes.length === 0" class="text-muted mt-3">
+    Nenhum restaurante associado.
+  </div>
+</div>

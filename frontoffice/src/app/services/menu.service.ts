@@ -17,9 +17,7 @@ export class MenuService {
     Authorization: `Bearer ${token}`
   });
 
-  return this.http.get<any[]>(`http://localhost:3000/api/restaurants/${restaurantId}/menu`, {
-    headers
-  });
+  return this.http.get<any[]>(`http://localhost:3000/api/restaurants/${restaurantId}/menu`, { headers });
 }
 
 }

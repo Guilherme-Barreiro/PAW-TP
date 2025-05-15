@@ -1,25 +1,27 @@
-<div class="min-h-screen flex items-center justify-center bg-gray-100">
-  <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-    <h2 class="text-2xl font-bold mb-6 text-center text-green-700">Iniciar Sessão</h2>
-    
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+  <div class="card shadow p-4 w-100" style="max-width: 400px;">
+    <h2 class="text-center text-success mb-4">🍽️ PAW Food Hub</h2>
+    <h4 class="text-center mb-3">Iniciar Sessão</h4>
+
     <form (ngSubmit)="login()">
-      <div class="mb-4">
-        <label class="block mb-1 text-sm font-semibold">Utilizador</label>
-        <input [(ngModel)]="username" name="username" class="w-full border rounded px-3 py-2" required />
+      <div class="mb-3">
+        <label for="username" class="form-label">Utilizador</label>
+        <input [(ngModel)]="username" name="username" class="form-control" required />
       </div>
 
-      <div class="mb-4">
-        <label class="block mb-1 text-sm font-semibold">Senha</label>
-        <input type="password" [(ngModel)]="password" name="password" class="w-full border rounded px-3 py-2" required />
+      <div class="mb-3">
+        <label for="password" class="form-label">Senha</label>
+        <input type="password" [(ngModel)]="password" name="password" class="form-control" required />
       </div>
 
-      <div *ngIf="error" class="text-red-600 text-sm mb-4">
-        {{ error }}
-      </div>
+      <div *ngIf="error" class="alert alert-danger py-2">{{ error }}</div>
 
-      <button type="submit" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition">
-        Entrar
-      </button>
+      <button type="submit" class="btn btn-success w-100">Entrar</button>
     </form>
+
+    <div class="text-center mt-3">
+  <span class="text-muted">Não tens conta?</span><br />
+  <a routerLink="/register" class="btn btn-primary w-100 mt-2">Criar Conta</a>
+</div>
   </div>
 </div>

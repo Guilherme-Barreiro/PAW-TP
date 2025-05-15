@@ -1,30 +1,31 @@
-const express = require('express');
-const router = express.Router();
-const authController = require('../../controllers/api/authController_api');
+    const express = require('express');
+    const router = express.Router();
+    const jwt = require('jsonwebtoken');
+    const authController = require('../../controllers/api/authController_api');
 
-// ROTAS PARA CLIENTES
+    // ✅ importa a função diretamente do controller
+    const { verifyToken } = authController;
 
-// POST /api/auth/login - Login de cliente
-router.post('/login', authController.login);
+    // ROTAS PARA CLIENTES
 
-// POST /api/auth/register - Registo de cliente
-router.post('/register', authController.register);
+    // POST /api/auth/login - Login de cliente
+    router.post('/login', authController.login);
 
-// GET /api/auth/profile - Perfil do utilizador autenticado
-router.get('/profile', authController.getProfile);
+    // POST /api/auth/register - Registo de cliente
+    router.post('/register', authController.register);
 
-// PUT /api/auth/profile - Editar perfil do utilizador autenticado
-router.put('/profile', authController.editProfile);
+    router.get('/profile', verifyToken, authController.getProfile);
+    router.put('/profile', verifyToken, authController.editProfile);
 
-// POST /api/auth/forgot-password - Recuperar palavra-passe
-router.post('/forgot-password', authController.forgotPassword);
+    // POST /api/auth/forgot-password - Recuperar palavra-passe
+    router.post('/forgot-password', authController.forgotPassword);
 
-// ROTAS PARA FUNCIONÁRIOS
+    // ROTAS PARA FUNCIONÁRIOS
 
-// POST /api/auth/employee/login - Login de funcionário
-router.post('/employee/login', authController.employeeLogin);
+    // POST /api/auth/employee/login - Login de funcionário
+    router.post('/employee/login', authController.employeeLogin);
 
-// (Opcional: mais tarde podes criar um endpoint GET /employee/profile ou dashboard se precisares)
+    // (Opcional: mais tarde podes criar um endpoint GET /employee/profile ou dashboard se precisares)
 
-// EXPORTAR ROTAS
-module.exports = router;
+    // EXPORTAR ROTAS
+    module.exports = router;

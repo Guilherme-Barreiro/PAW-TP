@@ -6,6 +6,21 @@ const Employee = require('../../models/Employee');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
+exports.verifyToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader?.split(' ')[1];
+
+  if (!token) return res.status(401).json({ error: 'Token não fornecido.' });
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    return res.status(403).json({ error: 'Token inválido ou expirado.' });
+  }
+};
+
 // Login de utilizador (cliente)
 exports.login = async (req, res) => {
   const { username, password } = req.body;
@@ -69,10 +84,19 @@ exports.getProfile = async (req, res) => {
 // Editar perfil
 exports.editProfile = async (req, res) => {
   const { nomeCompleto, email, morada, telefone, dataNascimento, nif } = req.body;
+
   try {
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ error: 'Utilizador não encontrado.' });
 
+    // 🔒 Verificar duplicados (excluindo o próprio utilizador)
+    const existingNif = await User.findOne({ nif, _id: { $ne: req.user.id } });
+    if (existingNif) return res.status(400).json({ error: 'NIF já está em uso.' });
+
+    const existingTel = await User.findOne({ telefone, _id: { $ne: req.user.id } });
+    if (existingTel) return res.status(400).json({ error: 'Telefone já está em uso.' });
+
+    // Atualização dos dados
     user.nomeCompleto = nomeCompleto;
     user.email = email;
     user.morada = morada;
@@ -83,6 +107,7 @@ exports.editProfile = async (req, res) => {
     await user.save();
     res.json({ message: 'Perfil atualizado com sucesso', user });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Erro ao atualizar perfil.' });
   }
 };

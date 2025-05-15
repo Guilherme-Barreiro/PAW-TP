@@ -1,0 +1,73 @@
+<div class="container-fluid mt-4 px-4">
+  <!-- Filtros -->
+  <div class="row mb-4">
+    <div class="col-md-6 mb-2">
+      <input
+        class="form-control"
+        placeholder="Pesquisar por nome..."
+        [(ngModel)]="searchName"
+        (ngModelChange)="applyFilters()" />
+    </div>
+    <div class="col-md-6">
+      <input
+        class="form-control"
+        placeholder="Filtrar por localização..."
+        [(ngModel)]="searchLocation"
+        (ngModelChange)="applyFilters()" />
+    </div>
+  </div>
+
+  <!-- Restaurantes (em grelha de 3 por linha) -->
+  <div class="row">
+    <div *ngFor="let r of filteredRestaurants" class="col-sm-12 col-md-6 col-lg-4 mb-4">
+      <div class="card h-100 shadow-sm">
+       <img
+  [src]="r.image ? imageBaseUrl + r.image : 'https://source.unsplash.com/400x200/?restaurant'"
+  class="card-img-top"
+  alt="Imagem Restaurante"
+  style="height: 220px; object-fit: cover; border-radius: 0;" />
+
+
+        <div class="card-body">
+          <h5 class="card-title">{{ r.name }}</h5>
+          <p><strong>Localização:</strong> {{ r.location || 'N/D' }}</p>
+          <p><strong>Descrição:</strong> {{ r.description || 'Sem descrição disponível.' }}</p>
+
+          <!-- Botão toggle -->
+          <button
+            class="btn btn-outline-success btn-sm w-100 mt-3"
+            (click)="togglePratos(r._id)">
+            {{ expandedRestaurantes[r._id] ? 'Esconder Pratos' : 'Ver Pratos 🍽️' }}
+          </button>
+
+          <!-- Lista de pratos (visível quando expandido) -->
+<div *ngIf="expandedRestaurantes[r._id]" class="mt-3">
+  <ng-container *ngIf="pratosPorRestaurante[r._id] && pratosPorRestaurante[r._id].length > 0; else nenhumPrato">
+    <h6 class="text-primary">Pratos:</h6>
+    <ul class="list-unstyled">
+      <li *ngFor="let p of pratosPorRestaurante[r._id]" class="mb-2">
+        <div class="d-flex align-items-center">
+          <img
+            [src]="dishImageBaseUrl + p.image"
+            alt="{{ p.name }}"
+            class="me-2"
+            style="width: 60px; height: 40px; object-fit: cover;" />
+          <div>
+            <div class="fw-bold">{{ p.name }}</div>
+            <div class="text-muted">{{ p.price?.inteira }} €</div>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </ng-container>
+
+  <ng-template #nenhumPrato>
+    <div class="text-muted">Nenhum prato disponível.</div>
+  </ng-template>
+</div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

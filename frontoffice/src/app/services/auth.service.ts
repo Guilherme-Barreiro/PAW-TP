@@ -68,14 +68,19 @@ isAuthenticated(): boolean {
 
   // 📦 Decodifica o token JWT armazenado
   private decodeToken(): any {
-    const token = localStorage.getItem(this.tokenKey);
-    if (!token) return null;
+  if (typeof window === 'undefined') return null; // ⚠️ ambiente server-side
+  const token = localStorage.getItem('token');
+  if (!token) return null;
 
-    try {
-      return jwtDecode(token);
-    } catch (error) {
-      console.error('Erro ao decodificar token:', error);
-      return null;
-    }
+  try {
+    return jwtDecode(token);
+  } catch {
+    return null;
   }
+}
+
+getUser(): any {
+  return this.decodeToken(); // Usa a função privada existente
+}
+
 }

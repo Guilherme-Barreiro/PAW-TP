@@ -1,13 +1,16 @@
-// src/app/pages/home/home.component.ts
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RestaurantComponent } from '../../shared/restaurant/restaurant.component';
 
 @Component({
-  selector: 'app-home',
   standalone: true,
-  imports: [CommonModule],
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  selector: 'app-home',
+  imports: [CommonModule, RestaurantComponent],
+  template: `
+    <div class="text-center mt-4">
+      <h2 class="text-success">🍽️ Restaurantes Disponíveis</h2>
+    </div>
+    <app-restaurant></app-restaurant>
+  `
 })
 export class HomeComponent {}

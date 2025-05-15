@@ -1,0 +1,10 @@
+.card-img-top {
+  height: 180px;
+  object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  .card-img-top {
+    height: 150px;
+  }
+}
