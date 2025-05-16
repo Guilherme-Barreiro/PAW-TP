@@ -1,0 +1,7 @@
+<div>
+  <p><strong>Current status:</strong> {{ status }}</p>
+  <select [(ngModel)]="selectedStatus">
+    <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+  </select>
+  <button (click)="changeStatus()">Update Status</button>
+</div>

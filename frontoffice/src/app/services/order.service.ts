@@ -33,4 +33,17 @@ export class OrderService {
 
     return this.http.post(this.apiUrl, orderPayload, { headers });
   }
+  updateOrderStatus(orderId: string, status: string): Observable<any> {
+    const token = localStorage.getItem('token');
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    });
+
+    const payload = { status };
+
+    return this.http.patch(`${this.apiUrl}/${orderId}/status`, payload, { headers });
+  }
 }
+

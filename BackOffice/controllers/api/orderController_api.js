@@ -73,3 +73,33 @@ exports.getAll = async (req, res) => {
     res.status(500).send('Erro ao listar pedidos.');
   }
 };
+
+exports.updateStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const validStatuses = ['pending', 'preparing', 'shipped', 'delivered'];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ error: 'Invalid status' });
+    }
+
+    const order = await Order.findById(id);
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    // Verifica se o user é restaurante (simplificado)
+    if (!req.user || req.user.role !== 'restaurant') {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    order.status = status;
+    await order.save();
+
+    return res.json({ message: 'Order status updated', order });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'Server error' });
+  }
+};
