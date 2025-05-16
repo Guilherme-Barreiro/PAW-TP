@@ -12,6 +12,8 @@ const cors = require('cors');
 const app = express();
 
 // Importa as routes necessárias
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./swagger/swagger');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -76,6 +78,8 @@ app.use('/api/categories', categoryApiRoutes);
 app.use('/api/auth', authApiRoutes);
 app.use('/api/users', userApiRoutes);
 app.use('/api/orders', orderApiRoutes);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Erro 404
 app.use(function(req, res, next) {

@@ -2,7 +2,16 @@ const Restaurant = require('../../models/Restaurant');
 const Category = require('../../models/Category');
 const User = require('../../models/User');
 
-// GET /api/restaurants
+/**
+ * @swagger
+ * /restaurants:
+ *   get:
+ *     summary: Lista todos os restaurantes
+ *     tags: [Restaurantes]
+ *     responses:
+ *       200:
+ *         description: Lista de restaurantes
+ */
 exports.getAll = async (req, res) => {
   try {
     const restaurants = await Restaurant.find();
@@ -12,7 +21,26 @@ exports.getAll = async (req, res) => {
   }
 };
 
-// GET /api/restaurants/:id
+/**
+ * @swagger
+ * /restaurants/{id}:
+ *   get:
+ *     summary: Buscar restaurante por ID
+ *     tags: [Restaurantes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do restaurante
+ *     responses:
+ *       200:
+ *         description: Restaurante encontrado
+ *       404:
+ *         description: Restaurante não encontrado
+ */
+
 exports.getOne = async (req, res) => {
   try {
     const restaurant = await Restaurant.findById(req.params.id);
@@ -23,7 +51,33 @@ exports.getOne = async (req, res) => {
   }
 };
 
-// POST /api/restaurants
+/**
+ * @swagger
+ * /restaurants:
+ *   post:
+ *     summary: Criar novo restaurante
+ *     tags: [Restaurantes]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - location
+ *             properties:
+ *               name:
+ *                 type: string
+ *               location:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Restaurante criado
+ *       400:
+ *         description: Erro ao criar
+ */
+
 exports.create = async (req, res) => {
   try {
     const newRestaurant = new Restaurant(req.body);
@@ -34,7 +88,37 @@ exports.create = async (req, res) => {
   }
 };
 
-// PUT /api/restaurants/:id
+/**
+ * @swagger
+ * /restaurants/{id}:
+ *   put:
+ *     summary: Atualizar restaurante
+ *     tags: [Restaurantes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do restaurante
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               location:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Restaurante atualizado
+ *       404:
+ *         description: Restaurante não encontrado
+ */
+
 exports.update = async (req, res) => {
   try {
     const updated = await Restaurant.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -45,7 +129,25 @@ exports.update = async (req, res) => {
   }
 };
 
-// DELETE /api/restaurants/:id
+/**
+ * @swagger
+ * /restaurants/{id}:
+ *   delete:
+ *     summary: Remover restaurante
+ *     tags: [Restaurantes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Restaurante removido com sucesso
+ *       404:
+ *         description: Restaurante não encontrado
+ */
+
 exports.remove = async (req, res) => {
   try {
     const deleted = await Restaurant.findByIdAndDelete(req.params.id);
