@@ -1,5 +1,5 @@
 const Comment = require('../models/Comment');
-const Order = require('../models/Order'); 
+const Order = require('../models/Order');
 
 exports.addComment = async (req, res) => {
   try {
@@ -21,5 +21,16 @@ exports.addComment = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error saving comment.' });
+  }
+};
+
+exports.getCommentsByOrder = async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const comments = await Comment.find({ order: orderId }).populate('user', 'username');
+    res.json(comments);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao buscar comentários.' });
   }
 };
