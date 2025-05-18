@@ -1,0 +1,16 @@
+<h2>Gerir Restaurantes</h2>
+
+<form (ngSubmit)="submit()">
+    <input [(ngModel)]="form.name" name="name" placeholder="Nome do restaurante" required />
+    <input [(ngModel)]="form.location" name="location" placeholder="Localização" required />
+    <button type="submit">{{ editMode ? 'Atualizar' : 'Criar' }}</button>
+    <button type="button" (click)="resetForm()" *ngIf="editMode">Cancelar</button>
+</form>
+
+<ul>
+    <li *ngFor="let r of restaurants">
+        <strong>{{ r.name }}</strong> ({{ r.location }})
+        <button (click)="edit(r)">✏️</button>
+        <button (click)="remove(r._id)">🗑️</button>
+    </li>
+</ul>
