@@ -1,8 +1,24 @@
 <div class="container mt-4">
   <h2 class="mb-4 text-primary">🍽️ Menu do Restaurante</h2>
-  <div *ngFor="let dish of dishes" class="card mb-3 shadow-sm">
+
+  <!-- Filtro por categoria -->
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <label class="form-label">Filtrar por categoria:</label>
+      <select class="form-select" [(ngModel)]="selectedCategory">
+        <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Lista de pratos filtrados -->
+  <div *ngFor="let dish of getFilteredDishes()" class="card mb-3 shadow-sm">
     <div class="card-body">
-      <h5 class="card-title">{{ dish.name }}</h5>
+      <h5 class="card-title">
+        <a [routerLink]="['/dish', dish._id]" class="text-decoration-none text-dark">
+          {{ dish.name }}
+        </a>
+      </h5>
       <p class="card-text">{{ dish.description }}</p>
       <p class="card-text fw-bold">💰 Preço: {{ dish.price?.inteira }} €</p>
       <button (click)="addToCart(dish)" class="btn btn-success btn-sm">Adicionar ao Carrinho</button>

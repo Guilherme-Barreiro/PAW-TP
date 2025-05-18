@@ -18,8 +18,6 @@ export class CartService {
 
   cart$ = this.cartSubject.asObservable();
 
- 
-
 constructor() {
   if (typeof window !== 'undefined') {
     const saved = localStorage.getItem('cart');
@@ -45,6 +43,15 @@ constructor() {
     }
     this.updateCart();
   }
+
+  updateItem(dishId: string, quantity: number): void {
+  const index = this.cartItems.findIndex(i => i.dishId === dishId);
+  if (index > -1) {
+    this.cartItems[index].quantity = quantity;
+    this.updateCart();
+  }
+}
+
 
   removeItem(dishId: string) {
     this.cartItems = this.cartItems.filter(i => i.dishId !== dishId);

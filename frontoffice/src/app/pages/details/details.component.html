@@ -1,0 +1,25 @@
+<div class="container mt-4" *ngIf="dish">
+  <h2 class="mb-3">{{ dish.name }}</h2>
+
+  <img [src]="'http://localhost:3000/images/pratos/' + dish.image"
+       alt="{{ dish.name }}"
+       class="img-fluid rounded shadow-sm mb-4"
+       style="max-height: 300px;" />
+
+  <p><strong>Categoria:</strong> {{ dish.category }}</p>
+  <p><strong>Descrição:</strong> {{ dish.description }}</p>
+  <p><strong>Preço:</strong> {{ dish.price?.inteira }} €</p>
+  <p><strong>Nutrição:</strong> {{ dish.nutritionalInfo || 'N/D' }}</p>
+
+  <div class="text-end mb-3">
+    <span class="badge bg-primary me-2">
+      🛍️ Itens no Carrinho: {{ cartItemCount }}
+    </span>
+    <span class="badge bg-success">
+      💶 Total: {{ cartTotal }} €
+    </span>
+  </div>
+
+  <button (click)="addToCart()" class="btn btn-success me-2">🛒 Adicionar ao Carrinho</button>
+  <button routerLink="/menu" class="btn btn-secondary">⬅️ Voltar</button>
+</div>

@@ -1,17 +1,60 @@
 <div class="container mt-5">
   <h3 class="text-center mb-4">🛒 Carrinho de Compras</h3>
+
   <div *ngFor="let item of cartItems" class="card mb-2">
     <div class="card-body d-flex justify-content-between align-items-center">
       <div>
         <strong>{{ item.name }}</strong><br />
-        {{ item.quantity }} x {{ item.price }} €
+
+        <div class="d-flex align-items-center mt-1">
+  <button (click)="decreaseQuantity(item)"
+          class="btn btn-sm btn-outline-danger rounded-circle me-2 px-2 py-0 d-flex align-items-center justify-content-center"
+          style="width: 32px; height: 32px;">
+    <i class="bi bi-dash-lg"></i>
+  </button>
+
+  <input type="number"
+         [(ngModel)]="item.quantity"
+         (change)="updateQuantity(item)"
+         class="form-control form-control-sm text-center me-2"
+         min="1" style="width: 60px;" />
+
+  <button (click)="increaseQuantity(item)"
+          class="btn btn-sm btn-outline-success rounded-circle me-2 px-2 py-0 d-flex align-items-center justify-content-center"
+          style="width: 32px; height: 32px;">
+    <i class="bi bi-plus-lg"></i>
+  </button>
+
+  <span class="fw-semibold">x {{ item.price }} €</span>
+</div>
+
       </div>
+
       <button (click)="removeItem(item.dishId)" class="btn btn-outline-danger">Remover</button>
     </div>
   </div>
-  <div class="text-end mt-3 fw-bold">
-    Total: €{{ getTotal() }}
+
+  <div class="row mt-4">
+  <div class="col-md-8">
+    <!-- já existente: lista de produtos -->
   </div>
+
+  <div class="col-md-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title text-center text-primary">🧾 Mini-Fatura</h5>
+        <hr />
+        <p><strong>Produtos distintos:</strong> {{ cartItems.length }}</p>
+        <p><strong>Quantidade total:</strong> {{ getTotalItems() }}</p>
+        <p><strong>Total a pagar:</strong> €{{ getTotal() }}</p>
+        <hr />
+        <button (click)="placeOrder()" class="btn btn-success w-100 mb-2">Finalizar Pedido</button>
+        <button (click)="clearCart()" class="btn btn-outline-secondary w-100">Limpar Carrinho</button>
+      </div>
+    </div>
+  </div>
+</div>
+
   <div class="mt-3 text-end">
     <button (click)="placeOrder()" class="btn btn-primary">Finalizar Pedido</button>
     <button (click)="clearCart()" class="btn btn-secondary ms-2">Limpar Carrinho</button>

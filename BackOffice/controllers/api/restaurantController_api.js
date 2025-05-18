@@ -175,6 +175,10 @@ exports.addDish = async (req, res) => {
     const restaurant = await Restaurant.findById(req.params.id);
     if (!restaurant) return res.status(404).json({ error: 'Restaurante não encontrado.' });
 
+    if (restaurant.menu.length >= 10) {
+      return res.status(400).json({ error: 'O menu já tem 10 pratos. Limite máximo atingido.' });
+    }
+
     restaurant.menu.push(req.body);
     await restaurant.save();
 

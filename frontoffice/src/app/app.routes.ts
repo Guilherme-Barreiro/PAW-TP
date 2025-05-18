@@ -54,6 +54,12 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+  path: 'dish/:id',
+  loadComponent: () =>
+    import('./pages/details/details.component').then(m => m.DetailsComponent)
+  },
+
+  {
     path: '**',
     redirectTo: 'landing'
   }
