@@ -9,9 +9,6 @@ router.post('/', orderController.create);
 // Listar pedidos
 router.get('/', orderController.getAll);
 
-router.patch(
-    '/orders/:id/status',
-    isAuthenticatedAPI,
-    orderController.updateStatus
-);
+router.patch('/api/orders/:id/status', orderController.updateStatus);
+
 module.exports = router;

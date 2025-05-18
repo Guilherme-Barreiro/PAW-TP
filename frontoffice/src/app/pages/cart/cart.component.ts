@@ -1,27 +1,28 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { CartService, CartItem } from '../../services/cart.service';
 import { OrderService } from '../../services/order.service';
 import { AuthService } from '../../services/auth.service';
-import { RestaurantService } from '../../services/restaurant.service'; 
+import { RestaurantService } from '../../services/restaurant.service';
 
 @Component({
   standalone: true,
   selector: 'app-cart',
   templateUrl: './cart.component.html',
   styleUrls: ['./cart.component.css'],
-  imports: [CommonModule]
+  imports: [CommonModule, FormsModule, RouterModule]
 })
 export class CartComponent implements OnInit {
   cartItems: CartItem[] = [];
-  restaurantId: string = ''; 
+  restaurantId: string = '';
 
   constructor(
     private cartService: CartService,
     private orderService: OrderService,
     private authService: AuthService,
-    private restaurantService: RestaurantService, // ✅ INJETADO
+    private restaurantService: RestaurantService,
     private router: Router
   ) {}
 
@@ -54,6 +55,10 @@ export class CartComponent implements OnInit {
     return this.cartService.getTotal();
   }
 
+  getTotalItems(): number {
+    return this.cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  }
+
   removeItem(id: string): void {
     this.cartService.removeItem(id);
   }
@@ -62,35 +67,51 @@ export class CartComponent implements OnInit {
     this.cartService.clearCart();
   }
 
-placeOrder(): void {
-  const employeeId = this.authService.getUserId();
-
-  if (!employeeId || !this.restaurantId) {
-    console.error('Faltam dados para submeter o pedido.');
-    return;
+  updateQuantity(item: CartItem): void {
+    if (item.quantity < 1) item.quantity = 1;
+    this.cartService.updateItem(item.dishId, item.quantity);
   }
 
-  const items = this.cartItems.map(item => ({
-    dish: item.dishId,
-    name: item.name,
-    price: item.price,
-    quantity: item.quantity,
-    subtotal: item.price * item.quantity
-  }));
+  increaseQuantity(item: CartItem): void {
+    item.quantity += 1;
+    this.cartService.updateItem(item.dishId, item.quantity);
+  }
 
-  const total = this.getTotal();
-
-  this.orderService.createOrder(employeeId, this.restaurantId, items, total).subscribe({
-    next: () => {
-      alert('Pedido enviado com sucesso!');
-      this.cartService.clearCart();
-      this.router.navigate(['/']);
-    },
-    error: err => {
-      console.error('Erro ao enviar pedido:', err);
-      alert('Erro ao enviar pedido.');
+  decreaseQuantity(item: CartItem): void {
+    if (item.quantity > 1) {
+      item.quantity -= 1;
+      this.cartService.updateItem(item.dishId, item.quantity);
     }
-  });
-}
+  }
 
+  placeOrder(): void {
+    const employeeId = this.authService.getUserId();
+
+    if (!employeeId || !this.restaurantId) {
+      console.error('Faltam dados para submeter o pedido.');
+      return;
+    }
+
+    const items = this.cartItems.map(item => ({
+      dish: item.dishId,
+      name: item.name,
+      price: item.price,
+      quantity: item.quantity,
+      subtotal: item.price * item.quantity
+    }));
+
+    const total = this.getTotal();
+
+    this.orderService.createOrder(employeeId, this.restaurantId, items, total).subscribe({
+      next: () => {
+        alert('Pedido enviado com sucesso!');
+        this.cartService.clearCart();
+        this.router.navigate(['/']);
+      },
+      error: err => {
+        console.error('Erro ao enviar pedido:', err);
+        alert('Erro ao enviar pedido.');
+      }
+    });
+  }
 }
