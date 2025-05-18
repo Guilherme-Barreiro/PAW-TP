@@ -1,17 +1,14 @@
 const express = require('express');
 const router = express.Router();
+const commentController = require('../../controllers/api/commentController_api');
 const multer = require('multer');
-const path = require('path');
-const { isAuthenticatedAPI } = require('../../middleware/auth');//nao existe acho
-const commentController = require('../../controllers/commentController_api');
-const upload = require('../../utils/multerConfig')
+const upload = multer({ dest: 'public/images/comments/' });
+const { verifyToken } = require('../../controllers/api/authController'); // se usares JWT
 
-// POST /api/orders/:id/comments
-router.post(
-  '/orders/:id/comments',
-  isAuthenticatedAPI,
-  upload.single('image'),
-  commentController.addComment
-);
+// POST /api/comments/:id
+router.post('/:id', verifyToken, upload.single('image'), commentController.addComment);
+
+// GET /api/comments/:id
+router.get('/:id', commentController.getCommentsByOrder);
 
 module.exports = router;
