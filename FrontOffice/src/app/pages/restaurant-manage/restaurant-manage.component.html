@@ -3,6 +3,8 @@
 <form (ngSubmit)="submit()">
     <input [(ngModel)]="form.name" name="name" placeholder="Nome do restaurante" required />
     <input [(ngModel)]="form.location" name="location" placeholder="Localização" required />
+    <input [(ngModel)]="form.tempoEntrega" name="tempoEntrega" type="number" placeholder="Tempo de entrega (min)" required />
+    <input [(ngModel)]="form.raioEntrega" name="raioEntrega" type="number" placeholder="Raio de entrega (km)" required />
     <button type="submit">{{ editMode ? 'Atualizar' : 'Criar' }}</button>
     <button type="button" (click)="resetForm()" *ngIf="editMode">Cancelar</button>
 </form>

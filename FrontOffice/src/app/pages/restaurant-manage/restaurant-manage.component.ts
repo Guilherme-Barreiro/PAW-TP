@@ -15,7 +15,9 @@ export class RestaurantManageComponent implements OnInit {
     restaurants: any[] = [];
     form: any = {
         name: '',
-        location: ''
+        location: '',
+        tempoEntrega: 15,
+        raioEntrega: 5
     };
     editMode = false;
     editingId: string | null = null;
@@ -60,7 +62,9 @@ export class RestaurantManageComponent implements OnInit {
         this.editingId = restaurant._id;
         this.form = {
             name: restaurant.name,
-            location: restaurant.location
+            location: restaurant.location,
+            tempoEntrega: restaurant.tempoEntrega,
+            raioEntrega: restaurant.raioEntrega
         };
     }
 

@@ -36,12 +36,21 @@ exports.create = async (req, res) => {
       return res.status(400).json({ error: 'O total do pedido deve ser maior que zero.' });
     }
 
+    const tempos = items.map(item => {
+    const prato = restaurant.menu.id(item.dish);
+    return prato?.tempoPreparacao || 0;
+    });
+    const tempoPreparacaoTotal = Math.max(...tempos);
+    const tempoEntrega = restaurant.tempoEntrega || 15;
+    const tempoTotal = tempoPreparacaoTotal + tempoEntrega;
+
     const newOrder = new Order({
       restaurant: restaurant._id,
       employee: role === 'employee' ? userId : undefined,
       client: role === 'cliente' ? userId : undefined,
       items: populatedItems,
-      total
+      total,
+      tempoTotal
     });
 
     await newOrder.save();
