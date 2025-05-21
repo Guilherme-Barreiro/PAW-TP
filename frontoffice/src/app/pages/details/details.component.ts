@@ -48,12 +48,14 @@ export class DetailsComponent implements OnInit {
       ? this.dish.price?.meia ?? 0
       : this.dish.price?.inteira ?? 0;
 
-    this.cartService.addItem({
-      dishId: this.dish._id,
-      name: `${this.dish.name} (${this.selectedDose})`,
-      price: precoSelecionado,
-      quantity: 1
-    });
+this.cartService.addItem({
+  dishId: this.dish._id,
+  name: this.dish.name,
+  price: this.dish.price?.inteira,
+  quantity: 1,
+  tipo: 'inteira'
+});
+
 
     alert(`${this.dish.name} (${this.selectedDose}) adicionado ao carrinho.`);
   }

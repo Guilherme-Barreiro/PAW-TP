@@ -59,8 +59,8 @@ export class CartComponent implements OnInit {
     return this.cartItems.reduce((sum, item) => sum + item.quantity, 0);
   }
 
-  removeItem(id: string): void {
-    this.cartService.removeItem(id);
+  removeItem(id: string, tipo: 'meia' | 'inteira'): void {
+    this.cartService.removeItem(id, tipo);
   }
 
   clearCart(): void {
@@ -69,18 +69,18 @@ export class CartComponent implements OnInit {
 
   updateQuantity(item: CartItem): void {
     if (item.quantity < 1) item.quantity = 1;
-    this.cartService.updateItem(item.dishId, item.quantity);
+    this.cartService.updateItem(item.dishId, item.quantity, item.tipo);
   }
 
   increaseQuantity(item: CartItem): void {
     item.quantity += 1;
-    this.cartService.updateItem(item.dishId, item.quantity);
+    this.cartService.updateItem(item.dishId, item.quantity, item.tipo);
   }
 
   decreaseQuantity(item: CartItem): void {
     if (item.quantity > 1) {
       item.quantity -= 1;
-      this.cartService.updateItem(item.dishId, item.quantity);
+      this.cartService.updateItem(item.dishId, item.quantity, item.tipo);
     }
   }
 

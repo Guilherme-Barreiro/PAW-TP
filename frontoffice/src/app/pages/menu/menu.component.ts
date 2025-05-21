@@ -74,16 +74,15 @@ export class MenuComponent implements OnInit {
   }
 
   addToCart(dish: any, dose: 'meia' | 'inteira' = 'inteira'): void {
-    const price = dose === 'meia' ? dish.price?.meia : dish.price?.inteira;
+  const price = dose === 'meia' ? dish.price?.meia : dish.price?.inteira;
 
-    this.cartService.addItem({
-      dishId: dish._id,
-      name: `${dish.name} (${dose === 'meia' ? 'Meia Dose' : 'Inteira'})`,
-      price: price ?? 0,
-      quantity: 1
-    });
-
-    console.log(`${dish.name} (${dose}) adicionado ao carrinho.`);
+  this.cartService.addItem({
+    dishId: dish._id,
+    name: dish.name,
+    price: price,
+    quantity: 1,
+    tipo: dose
+  });
   }
 
   startEdit(index: number): void {

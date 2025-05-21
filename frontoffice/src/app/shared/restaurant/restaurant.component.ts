@@ -17,7 +17,7 @@ export class RestaurantComponent implements OnInit {
   filteredRestaurants: any[] = [];
 
   pratosPorRestaurante: { [key: string]: any[] } = {};
-  expandedRestaurantes: { [key: string]: boolean } = {};
+  expandedRestauranteId: string | null = null;
 
   imageBaseUrl = 'http://localhost:3000/images/restaurantes/';
   dishImageBaseUrl = 'http://localhost:3000/images/pratos/';
@@ -60,7 +60,14 @@ export class RestaurantComponent implements OnInit {
     );
   }
 
-  togglePratos(restaurantId: string): void {
-    this.expandedRestaurantes[restaurantId] = !this.expandedRestaurantes[restaurantId];
-  }
+togglePratosExclusivo(restaurantId: string): void {
+  // Fecha todos se clicares novamente no mesmo
+  this.expandedRestauranteId = this.expandedRestauranteId === restaurantId ? null : restaurantId;
+}
+
+isPratosValidos(id: string): boolean {
+  return Array.isArray(this.pratosPorRestaurante[id]) && this.pratosPorRestaurante[id].length > 0;
+}
+
+
 }

@@ -31,7 +31,16 @@ exports.login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ error: 'Palavra-passe incorreta.' });
 
-    const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '2h' });
+    const token = jwt.sign(
+  {
+    id: user._id,
+    role: user.role,
+    nomeCompleto: user.nomeCompleto  // 👈 ADICIONADO
+  },
+  JWT_SECRET,
+  { expiresIn: '2h' }
+);
+
     res.json({ message: 'Login efetuado com sucesso', token, user });
   } catch (err) {
     console.error(err);

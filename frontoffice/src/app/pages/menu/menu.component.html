@@ -74,7 +74,11 @@
             <option value="meia">Meia - {{ dish.price?.meia }} €</option>
           </select>
 
-          <button class="btn btn-outline-success btn-sm" (click)="addToCart(dish, selectedDose[i])">🛒 Carrinho</button>
+          <button
+    class="btn btn-outline-success btn-sm"
+    (click)="addToCart(dish, selectedDose[i])">
+    🛒 Carrinho
+  </button>
           <button class="btn btn-outline-secondary btn-sm" (click)="startEdit(i)">✏️ Editar</button>
           <button class="btn btn-outline-danger btn-sm" (click)="removeDish(i)">🗑️ Remover</button>
         </div>

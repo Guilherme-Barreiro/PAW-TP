@@ -3,10 +3,16 @@
   object-fit: cover;
 }
 .card {
-  min-height: 330px;
+  min-height: auto;
   font-size: 0.95rem;
+  overflow: hidden;
 }
 .card .card-title {
   font-size: 1.1rem;
   font-weight: 600;
 }
+.card .card-body {
+  padding-bottom: 0 !important;
+}
+
+

@@ -6,28 +6,27 @@ export interface CartItem {
   name: string;
   price: number;
   quantity: number;
+  tipo: 'meia' | 'inteira'; // NOVO
 }
 
 @Injectable({
   providedIn: 'root'
 })
-
 export class CartService {
   private cartItems: CartItem[] = [];
   private cartSubject = new BehaviorSubject<CartItem[]>([]);
 
   cart$ = this.cartSubject.asObservable();
 
-constructor() {
-  if (typeof window !== 'undefined') {
-    const saved = localStorage.getItem('cart');
-    if (saved) {
-      this.cartItems = JSON.parse(saved);
-      this.cartSubject.next(this.cartItems);
+  constructor() {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('cart');
+      if (saved) {
+        this.cartItems = JSON.parse(saved);
+        this.cartSubject.next(this.cartItems);
+      }
     }
   }
-}
-
 
   private updateCart() {
     this.cartSubject.next(this.cartItems);
@@ -35,7 +34,9 @@ constructor() {
   }
 
   addItem(item: CartItem) {
-    const index = this.cartItems.findIndex(i => i.dishId === item.dishId);
+    const index = this.cartItems.findIndex(
+      i => i.dishId === item.dishId && i.tipo === item.tipo
+    );
     if (index > -1) {
       this.cartItems[index].quantity += item.quantity;
     } else {
@@ -44,17 +45,16 @@ constructor() {
     this.updateCart();
   }
 
-  updateItem(dishId: string, quantity: number): void {
-  const index = this.cartItems.findIndex(i => i.dishId === dishId);
-  if (index > -1) {
-    this.cartItems[index].quantity = quantity;
-    this.updateCart();
+  updateItem(dishId: string, quantity: number, tipo: 'meia' | 'inteira'): void {
+    const index = this.cartItems.findIndex(i => i.dishId === dishId && i.tipo === tipo);
+    if (index > -1) {
+      this.cartItems[index].quantity = quantity;
+      this.updateCart();
+    }
   }
-}
 
-
-  removeItem(dishId: string) {
-    this.cartItems = this.cartItems.filter(i => i.dishId !== dishId);
+  removeItem(dishId: string, tipo: 'meia' | 'inteira') {
+    this.cartItems = this.cartItems.filter(i => !(i.dishId === dishId && i.tipo === tipo));
     this.updateCart();
   }
 

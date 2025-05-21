@@ -65,6 +65,11 @@ export const routes: Routes = [
   canActivate: [authGuard]
   },
   {
+  path: 'logout',
+  loadComponent: () =>
+    import('./pages/logout/logout.component').then(m => m.LogoutComponent)
+  },
+  {
     path: '**',
     redirectTo: 'landing'
   }

@@ -59,12 +59,15 @@ updateDish(restaurantId: string, index: number, dish: any): Observable<any> {
   );
 }
 
-  getMenu(restaurantId: string): Observable<any[]> {
-  const token = localStorage.getItem('token');
+getMenu(restaurantId: string): Observable<any[]> {
+  let headers = new HttpHeaders();
 
-  const headers = new HttpHeaders({
-    Authorization: `Bearer ${token}`
-  });
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('token');
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+  }
 
   return this.http.get<any[]>(`http://localhost:3000/api/restaurants/${restaurantId}/menu`, { headers });
 }
