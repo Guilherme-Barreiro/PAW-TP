@@ -8,8 +8,22 @@
 
   <p><strong>Categoria:</strong> {{ dish.category }}</p>
   <p><strong>Descrição:</strong> {{ dish.description }}</p>
-  <p><strong>Preço:</strong> {{ dish.price?.inteira }} €</p>
   <p><strong>Nutrição:</strong> {{ dish.nutritionalInfo || 'N/D' }}</p>
+
+  <p><strong>Preço Meia Dose:</strong> {{ dish.price?.meia || 'N/D' }} €</p>
+  <p><strong>Preço Dose Inteira:</strong> {{ dish.price?.inteira || 'N/D' }} €</p>
+
+  <div class="form-check form-check-inline mb-3">
+    <input class="form-check-input" type="radio" id="meiaDose" name="dose" value="meia"
+           [(ngModel)]="selectedDose" />
+    <label class="form-check-label" for="meiaDose">Meia Dose</label>
+  </div>
+
+  <div class="form-check form-check-inline mb-3">
+    <input class="form-check-input" type="radio" id="inteiraDose" name="dose" value="inteira"
+           [(ngModel)]="selectedDose" />
+    <label class="form-check-label" for="inteiraDose">Dose Inteira</label>
+  </div>
 
   <div class="text-end mb-3">
     <span class="badge bg-primary me-2">
@@ -20,6 +34,7 @@
     </span>
   </div>
 
-  <button (click)="addToCart()" class="btn btn-success me-2">🛒 Adicionar ao Carrinho</button>
-  <button routerLink="/menu" class="btn btn-secondary">⬅️ Voltar</button>
-</div>
+  <button (click)="addToCart()" class="btn btn-success me-2">
+    🛒 Adicionar {{ selectedDose === 'meia' ? 'Meia' : 'Inteira' }} Dose
+  </button>
+  <button routerLink="/menu" class="btn btn-secondary">⬅️ Volta

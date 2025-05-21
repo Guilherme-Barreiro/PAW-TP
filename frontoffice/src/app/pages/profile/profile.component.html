@@ -9,40 +9,73 @@
         <div *ngIf="message" class="alert alert-success">{{ message }}</div>
         <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
 
-        <form (ngSubmit)="updateProfile()">
+        <form #perfilForm="ngForm" (ngSubmit)="updateProfile()" novalidate>
+
+          <!-- Nome Completo -->
           <div class="form-floating mb-3">
-            <input type="text" class="form-control" [(ngModel)]="form.nomeCompleto" name="nomeCompleto" required />
+            <input type="text" class="form-control" name="nomeCompleto"
+              [(ngModel)]="form.nomeCompleto" required pattern="^[A-Za-zÀ-ÿ\s]+$" #nome="ngModel" />
             <label>Nome Completo</label>
+            <div *ngIf="nome.invalid && nome.touched" class="text-danger small mt-1">
+              Introduz um nome válido (só letras e espaços).
+            </div>
           </div>
 
+          <!-- Email -->
           <div class="form-floating mb-3">
-            <input type="email" class="form-control" [(ngModel)]="form.email" name="email" required />
+            <input type="email" class="form-control" name="email"
+              [(ngModel)]="form.email" required #email="ngModel" />
             <label>Email</label>
+            <div *ngIf="email.invalid && email.touched" class="text-danger small mt-1">
+              Introduz um email válido.
+            </div>
           </div>
 
+          <!-- Morada -->
           <div class="form-floating mb-3">
-            <input type="text" class="form-control" [(ngModel)]="form.morada" name="morada" required />
+            <input type="text" class="form-control" name="morada"
+              [(ngModel)]="form.morada" required minlength="5" #morada="ngModel" />
             <label>Morada</label>
+            <div *ngIf="morada.invalid && morada.touched" class="text-danger small mt-1">
+              Introduz uma morada válida (mínimo 5 caracteres).
+            </div>
           </div>
 
+          <!-- Telefone -->
           <div class="form-floating mb-3">
-            <input type="text" class="form-control" [(ngModel)]="form.telefone" name="telefone" required />
+            <input type="text" class="form-control" name="telefone"
+              [(ngModel)]="form.telefone" required pattern="^\d{9}$" #telefone="ngModel" />
             <label>Telefone</label>
+            <div *ngIf="telefone.invalid && telefone.touched" class="text-danger small mt-1">
+              O telefone deve ter exatamente 9 dígitos.
+            </div>
           </div>
 
+          <!-- NIF -->
           <div class="form-floating mb-3">
-            <input type="text" class="form-control" [(ngModel)]="form.nif" name="nif" required />
+            <input type="text" class="form-control" name="nif"
+              [(ngModel)]="form.nif" required pattern="^\d{9}$" #nif="ngModel" />
             <label>NIF</label>
+            <div *ngIf="nif.invalid && nif.touched" class="text-danger small mt-1">
+              O NIF deve ter exatamente 9 dígitos.
+            </div>
           </div>
 
+          <!-- Data de Nascimento -->
           <div class="form-floating mb-4">
-            <input type="date" class="form-control" [(ngModel)]="form.dataNascimento" name="dataNascimento" required />
+            <input type="date" class="form-control" name="dataNascimento"
+              [(ngModel)]="form.dataNascimento" required #dataNasc="ngModel" />
             <label>Data de Nascimento</label>
+            <div *ngIf="dataNasc.invalid && dataNasc.touched" class="text-danger small mt-1">
+              Introduz uma data válida.
+            </div>
           </div>
 
-          <button class="btn btn-primary w-100" type="submit">
-            <i class="bi bi-save"></i> Atualizar Perfil
-          </button>
+          <!-- Botão -->
+          <button class="btn btn-success w-100" type="submit">
+  <i class="bi bi-save"></i> Atualizar Perfil
+</button>
+
         </form>
       </div>
     </div>
