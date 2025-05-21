@@ -1,0 +1,43 @@
+<div class="container mt-4">
+  <h2 class="text-primary mb-3">🍽️ Adicionar Novo Prato</h2>
+
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+  <div *ngIf="success" class="alert alert-success">{{ success }}</div>
+
+  <form (ngSubmit)="submit()" class="row g-3">
+
+    <div class="col-md-6">
+      <input class="form-control" placeholder="Nome" [(ngModel)]="novoPrato.name" name="name" required />
+    </div>
+
+    <div class="col-md-6">
+      <select class="form-select" [(ngModel)]="novoPrato.category" name="category" required>
+        <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+      </select>
+    </div>
+
+    <div class="col-md-12">
+      <input class="form-control" placeholder="Descrição" [(ngModel)]="novoPrato.description" name="description" />
+    </div>
+
+    <div class="col-md-6">
+      <input type="number" class="form-control" [(ngModel)]="novoPrato.price.meia" name="priceMeia" placeholder="Preço Meia (€)" min="0" step="0.01" required />
+    </div>
+
+    <div class="col-md-6">
+      <input type="number" class="form-control" [(ngModel)]="novoPrato.price.inteira" name="priceInteira" placeholder="Preço Inteira (€)" min="0" step="0.01" required />
+    </div>
+
+    <div class="col-md-6">
+      <input type="number" class="form-control" [(ngModel)]="novoPrato.tempoPreparacao" name="tempoPreparacao" placeholder="Tempo de preparação (min)" min="1" />
+    </div>
+
+    <div class="col-md-6">
+      <input type="file" class="form-control" (change)="onFileSelected($event)" required />
+    </div>
+
+    <div class="col-12 text-end">
+      <button class="btn btn-primary" type="submit">Adicionar Prato</button>
+    </div>
+  </form>
+</div>

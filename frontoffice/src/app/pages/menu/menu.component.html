@@ -1,19 +1,62 @@
 <div class="container mt-4">
   <h2 class="mb-4 text-primary">🍽️ Menu do Restaurante</h2>
 
-  <!-- Filtro por categoria -->
-  <div class="row mb-3">
-    <div class="col-md-4">
-      <label class="form-label">Filtrar por categoria:</label>
-      <select class="form-select" [(ngModel)]="selectedCategory">
-        <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
-      </select>
-    </div>
+<div class="row align-items-end mb-4">
+  <div class="col-md-6">
+    <label class="form-label">Filtrar por categoria:</label>
+    <select class="form-select" [(ngModel)]="selectedCategory">
+      <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+    </select>
   </div>
 
-  <!-- Lista de pratos filtrados -->
-  <div *ngFor="let dish of getFilteredDishes()" class="card mb-3 shadow-sm">
-    <div class="card-body">
+  <div class="col-md-6 text-end">
+    <label class="form-label invisible d-block">.</label>
+    <a routerLink="/menu/add" class="btn btn-outline-primary">
+      ➕ Adicionar Novo Prato
+    </a>
+  </div>
+</div>
+
+
+ <!-- Lista de pratos -->
+<div *ngFor="let dish of getFilteredDishes(); let i = index" class="card mb-3 shadow-sm">
+  <div class="card-body">
+
+    <ng-container *ngIf="editIndex === i; else viewMode">
+      <!-- MODO DE EDIÇÃO INLINE -->
+      <input class="form-control mb-2" [(ngModel)]="editedDish.name" placeholder="Nome do prato" />
+      <input class="form-control mb-2" [(ngModel)]="editedDish.description" placeholder="Descrição" />
+      
+      <div class="row mb-2">
+        <div class="col-md-6">
+          <select class="form-select" [(ngModel)]="editedDish.category">
+            <option *ngFor="let cat of categories.slice(1)" [value]="cat">{{ cat }}</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <input type="number" class="form-control" [(ngModel)]="editedDish.tempoPreparacao" placeholder="Tempo de preparação (min)" min="1" />
+        </div>
+      </div>
+
+      <div class="row mb-2">
+        <div class="col-md-6">
+          <input type="number" class="form-control" [(ngModel)]="editedDish.price.meia" placeholder="Preço Meia (€)" min="0" step="0.01" />
+        </div>
+        <div class="col-md-6">
+          <input type="number" class="form-control" [(ngModel)]="editedDish.price.inteira" placeholder="Preço Inteira (€)" min="0" step="0.01" />
+        </div>
+      </div>
+
+      <input type="file" class="form-control form-control-sm mb-2" (change)="onEditImageSelected($event)" />
+
+      <div class="d-flex gap-2 mt-2">
+        <button class="btn btn-success btn-sm" (click)="saveEdit(i)">💾 Guardar</button>
+        <button class="btn btn-secondary btn-sm" (click)="cancelEdit()">❌ Cancelar</button>
+      </div>
+    </ng-container>
+
+    <ng-template #viewMode>
+      <!-- VISUALIZAÇÃO NORMAL -->
       <h5 class="card-title">
         <a [routerLink]="['/dish', dish._id]" class="text-decoration-none text-dark">
           {{ dish.name }}
@@ -21,7 +64,17 @@
       </h5>
       <p class="card-text">{{ dish.description }}</p>
       <p class="card-text fw-bold">💰 Preço: {{ dish.price?.inteira }} €</p>
-      <button (click)="addToCart(dish)" class="btn btn-success btn-sm">Adicionar ao Carrinho</button>
-    </div>
+
+      <img *ngIf="dish.image" [src]="'http://localhost:3000/images/pratos/' + dish.image"
+           alt="Prato" class="img-thumbnail mb-2" style="width: 150px; height: auto;" />
+
+      <div class="d-flex flex-wrap gap-2 mt-2">
+        <button class="btn btn-outline-success btn-sm" (click)="addToCart(dish)">🛒 Carrinho</button>
+        <button class="btn btn-outline-secondary btn-sm" (click)="startEdit(i)">✏️ Editar</button>
+        <button class="btn btn-outline-danger btn-sm" (click)="removeDish(i)">🗑️ Remover</button>
+      </div>
+    </ng-template>
+
   </div>
 </div>
+

@@ -1,6 +1,7 @@
 const Restaurant = require('../../models/Restaurant');
 const Category = require('../../models/Category');
 const User = require('../../models/User');
+const multer = require('multer');
 
 /**
  * @swagger
@@ -196,17 +197,32 @@ exports.addDish = async (req, res) => {
     if (!restaurant) return res.status(404).json({ error: 'Restaurante não encontrado.' });
 
     if (restaurant.menu.length >= 10) {
-      return res.status(400).json({ error: 'O menu já tem 10 pratos. Limite máximo atingido.' });
+      return res.status(400).json({ error: 'O menu já tem 10 pratos.' });
     }
 
-    restaurant.menu.push(req.body);
+    const prato = {
+      name: req.body.name,
+      category: req.body.category,
+      description: req.body.description,
+      nutrition: req.body.nutrition || '',
+      tempoPreparacao: parseInt(req.body.tempoPreparacao) || 15,
+      price: {
+        meia: parseFloat(req.body.price_meia) || 0,
+        inteira: parseFloat(req.body.price_inteira) || 0
+      },
+      image: req.file?.filename || 'default-prato.png'
+    };
+
+    restaurant.menu.push(prato);
     await restaurant.save();
 
-    res.status(201).json({ message: 'Prato adicionado.', menu: restaurant.menu });
+    res.status(201).json({ message: 'Prato adicionado com imagem.', menu: restaurant.menu });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Erro ao adicionar prato.' });
   }
 };
+
 
 // PUT /api/restaurants/:id/menu/:index
 exports.updateDish = async (req, res) => {

@@ -58,7 +58,12 @@ export const routes: Routes = [
   loadComponent: () =>
     import('./pages/details/details.component').then(m => m.DetailsComponent)
   },
-
+  {
+  path: 'menu/add',
+  loadComponent: () =>
+    import('./pages/menuAddDish/menuAddDish.component').then(m => m.MenuAddDishComponent),
+  canActivate: [authGuard]
+  },
   {
     path: '**',
     redirectTo: 'landing'
