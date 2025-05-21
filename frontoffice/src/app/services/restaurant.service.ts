@@ -21,8 +21,11 @@ export class RestaurantService {
 
   // ✅ Buscar restaurante por ID específico
   getRestaurantById(id: string): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/${id}`);
-  }
+  const token = localStorage.getItem('token');
+  const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+
+  return this.http.get<any>(`${this.apiUrl}/${id}`, { headers });
+}
 
   // ✅ Buscar todos os restaurantes (se necessário)
   getAllRestaurants(): Observable<any[]> {

@@ -40,7 +40,6 @@ exports.getAll = async (req, res) => {
  *       404:
  *         description: Restaurante não encontrado
  */
-
 exports.getOne = async (req, res) => {
   try {
     const restaurant = await Restaurant.findById(req.params.id);
@@ -71,16 +70,31 @@ exports.getOne = async (req, res) => {
  *                 type: string
  *               location:
  *                 type: string
+ *               tempoPreparacao:
+ *                 type: number
+ *               tempoEntrega:
+ *                 type: number
+ *               raioEntrega:
+ *                 type: number
  *     responses:
  *       201:
  *         description: Restaurante criado
  *       400:
  *         description: Erro ao criar
  */
-
 exports.create = async (req, res) => {
   try {
-    const newRestaurant = new Restaurant(req.body);
+    const { name, location, createdBy, tempoPreparacao, tempoEntrega, raioEntrega } = req.body;
+
+    const newRestaurant = new Restaurant({
+      name,
+      location,
+      createdBy,
+      tempoPreparacao,
+      tempoEntrega,
+      raioEntrega
+    });
+
     await newRestaurant.save();
     res.status(201).json(newRestaurant);
   } catch (err) {
@@ -112,13 +126,18 @@ exports.create = async (req, res) => {
  *                 type: string
  *               location:
  *                 type: string
+ *               tempoPreparacao:
+ *                 type: number
+ *               tempoEntrega:
+ *                 type: number
+ *               raioEntrega:
+ *                 type: number
  *     responses:
  *       200:
  *         description: Restaurante atualizado
  *       404:
  *         description: Restaurante não encontrado
  */
-
 exports.update = async (req, res) => {
   try {
     const updated = await Restaurant.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -128,6 +147,7 @@ exports.update = async (req, res) => {
     res.status(400).json({ error: 'Erro ao atualizar restaurante.' });
   }
 };
+
 
 /**
  * @swagger
