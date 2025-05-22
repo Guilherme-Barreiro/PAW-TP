@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-restaurant-manage',
@@ -22,7 +23,7 @@ export class RestaurantManageComponent implements OnInit {
     editMode = false;
     editingId: string | null = null;
 
-    constructor(private http: HttpClient, private auth: AuthService) { }
+    constructor(private http: HttpClient, private auth: AuthService, private router: Router) { }
 
     ngOnInit(): void {
         this.loadRestaurants();
@@ -76,6 +77,10 @@ export class RestaurantManageComponent implements OnInit {
             error: () => alert('Erro ao apagar restaurante')
         });
     }
+
+    voltar(): void {
+  this.router.navigate(['/admin']);
+}
 
     resetForm(): void {
         this.form = { name: '', location: '' };

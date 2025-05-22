@@ -1,39 +1,37 @@
-<div class="container mt-5">
-  <div class="text-center mb-5">
-    <h1 class="display-4 text-success">PAW Food Hub</h1>
-    <p class="lead">A sua plataforma de gestão de restaurantes e encomendas.</p>
-  </div>
+<div class="container mt-5 text-center">
+  <h1 class="display-5 fw-bold text-success mb-3">PAW Food Hub</h1>
+  <p class="lead text-muted mb-5">A sua plataforma de gestão de restaurantes e encomendas.</p>
 
-  <div class="row">
+  <div class="row justify-content-center g-4">
+    <!-- Gerir Menu -->
     <div class="col-md-4">
-      <div class="card shadow-sm">
-        <img src="https://source.unsplash.com/400x250/?restaurant" class="card-img-top" alt="Restaurante">
-        <div class="card-body">
-          <h5 class="card-title">Gerir Menu</h5>
+      <div class="card h-100 shadow-sm border-start border-4 border-success">
+        <div class="card-body d-flex flex-column justify-content-between">
+          <h5 class="card-title text-success">Gerir Menu</h5>
           <p class="card-text">Adicione ou edite os pratos disponíveis no seu restaurante.</p>
-          <a href="/menu" class="btn btn-outline-success w-100">Ver Menu</a>
+          <a routerLink="/menu" class="btn btn-outline-success mt-3">Ver Menu</a>
         </div>
       </div>
     </div>
 
+    <!-- Pedidos -->
     <div class="col-md-4">
-      <div class="card shadow-sm">
-        <img src="https://source.unsplash.com/400x250/?order,food" class="card-img-top" alt="Pedidos">
-        <div class="card-body">
-          <h5 class="card-title">Pedidos</h5>
+      <div class="card h-100 shadow-sm border-start border-4 border-primary">
+        <div class="card-body d-flex flex-column justify-content-between">
+          <h5 class="card-title text-primary">Pedidos</h5>
           <p class="card-text">Acompanhe os pedidos dos seus clientes em tempo real.</p>
-          <a href="/order" class="btn btn-outline-success w-100">Ver Pedidos</a>
+          <a routerLink="/order" class="btn btn-outline-primary mt-3">Ver Pedidos</a>
         </div>
       </div>
     </div>
 
+    <!-- Carrinho -->
     <div class="col-md-4">
-      <div class="card shadow-sm">
-        <img src="https://source.unsplash.com/400x250/?cart,shopping" class="card-img-top" alt="Carrinho">
-        <div class="card-body">
-          <h5 class="card-title">Carrinho</h5>
+      <div class="card h-100 shadow-sm border-start border-4 border-warning">
+        <div class="card-body d-flex flex-column justify-content-between">
+          <h5 class="card-title text-warning">Carrinho</h5>
           <p class="card-text">Veja os pratos selecionados antes de finalizar a compra.</p>
-          <a href="/cart" class="btn btn-outline-success w-100">Ir ao Carrinho</a>
+          <a routerLink="/cart" class="btn btn-outline-warning mt-3">Ir ao Carrinho</a>
         </div>
       </div>
     </div>

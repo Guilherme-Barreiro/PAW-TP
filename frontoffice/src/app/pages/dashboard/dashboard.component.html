@@ -1,34 +1,49 @@
-<div class="container mt-5">
-  <h2 class="text-primary mb-4">🎉 Bem-vindo, {{ user.nomeCompleto || user.username }}</h2>
+<div class="container mt-5 text-center">
+  <h2 class="text-info mb-4">📊 Estatísticas da Plataforma</h2>
 
-  <div class="row g-3 mb-4">
-    <div class="col-md-4">
-      <a routerLink="/menu" class="btn btn-outline-primary w-100 py-3">
-        🍽️ Gerir Menu
-      </a>
-    </div>
-    <div class="col-md-4">
-      <a routerLink="/cart" class="btn btn-outline-success w-100 py-3">
-        🛒 Carrinho de Compras
-      </a>
-    </div>
-    <div class="col-md-4">
-      <a routerLink="/order" class="btn btn-outline-dark w-100 py-3">
-        📦 Ver Pedidos
-      </a>
+  <div *ngIf="stats; else carregando">
+    <div class="row justify-content-center g-4">
+      <div class="col-md-3">
+        <div class="card shadow-sm border-info">
+          <div class="card-body">
+            <h5 class="card-title">Utilizadores</h5>
+            <p class="display-6 fw-bold">{{ stats.totalUsers }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="card shadow-sm border-success">
+          <div class="card-body">
+            <h5 class="card-title">Restaurantes</h5>
+            <p class="display-6 fw-bold">{{ stats.totalRestaurants }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="card shadow-sm border-primary">
+          <div class="card-body">
+            <h5 class="card-title">Encomendas</h5>
+            <p class="display-6 fw-bold">{{ stats.totalOrders }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="card shadow-sm border-warning">
+          <div class="card-body">
+            <h5 class="card-title">Receita Total</h5>
+            <p class="display-6 fw-bold">{{ stats.totalRevenue }} €</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div *ngIf="user.role === 'cliente' && restaurantes.length > 0">
-    <h4 class="text-secondary">🍴 Restaurantes Associados</h4>
-    <ul class="list-group mt-2">
-      <li *ngFor="let r of restaurantes" class="list-group-item">
-        <strong>{{ r.name }}</strong> — {{ r.status }}
-      </li>
-    </ul>
-  </div>
+  <ng-template #carregando>
+    <p class="text-muted">A carregar estatísticas...</p>
+  </ng-template>
 
-  <div *ngIf="user.role === 'cliente' && restaurantes.length === 0" class="text-muted mt-3">
-    Nenhum restaurante associado.
-  </div>
+  <a routerLink="/admin" class="btn btn-outline-secondary mt-5">⬅️ Voltar para o Painel de Administração</a>
 </div>

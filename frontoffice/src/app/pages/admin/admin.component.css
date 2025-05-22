@@ -1,0 +1,17 @@
+.card {
+  border-left: 4px solid #0d6efd;
+}
+
+.card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.card-body {
+  padding: 1rem 1.25rem;
+}
+
+.alert-info {
+  background-color: #e9f6ff;
+  border: 1px solid #b6e0fe;
+}

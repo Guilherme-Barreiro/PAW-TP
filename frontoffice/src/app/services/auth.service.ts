@@ -2,12 +2,16 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { jwtDecode } from 'jwt-decode';
 import { Observable } from 'rxjs';
-import { Router } from '@angular/router'; // <-- IMPORTA O ROUTER
+import { Router } from '@angular/router'; 
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+
+  private authStatus = new BehaviorSubject<boolean>(this.isAuthenticated());
+  authStatus$ = this.authStatus.asObservable();
   private tokenKey = 'token';
   private apiUrl = 'http://localhost:3000/api/auth';
 
@@ -20,16 +24,20 @@ constructor(private http: HttpClient, private router: Router) {}
     });
   }
 
-  saveToken(token: string): void {
-    localStorage.setItem(this.tokenKey, token);
-  }
-
-logout(): void {
-  const username = this.getUser()?.nomeCompleto || 'Utilizador';
+  logout(): void {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
-  this.router.navigate(['/logout'], { state: { username } });
+  this.authStatus.next(false); 
+  this.router.navigate(['/logout'], {
+    state: { username: this.getUser()?.nomeCompleto || 'Utilizador' }
+  });
 }
+
+saveToken(token: string): void {
+  localStorage.setItem('token', token);
+  this.authStatus.next(true); 
+}
+
 
   isAuthenticated(): boolean {
     if (typeof window === 'undefined') return false;

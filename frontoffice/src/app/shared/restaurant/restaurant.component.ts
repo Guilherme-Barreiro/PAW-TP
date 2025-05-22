@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { RestaurantService } from '../../services/restaurant.service';
 import { MenuService } from '../../services/menu.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-restaurant',
@@ -15,7 +16,6 @@ import { MenuService } from '../../services/menu.service';
 export class RestaurantComponent implements OnInit {
   restaurants: any[] = [];
   filteredRestaurants: any[] = [];
-
   pratosPorRestaurante: { [key: string]: any[] } = {};
   expandedRestauranteId: string | null = null;
 
@@ -24,22 +24,25 @@ export class RestaurantComponent implements OnInit {
 
   searchName: string = '';
   searchLocation: string = '';
+  role: string | null = null;
 
   constructor(
     private restaurantService: RestaurantService,
-    private menuService: MenuService
+    private menuService: MenuService,
+    private auth: AuthService
   ) {}
 
   ngOnInit(): void {
-    this.restaurantService.getAllRestaurants().subscribe({
-      next: (res) => {
-        this.restaurants = res;
-        this.filteredRestaurants = res;
-        res.forEach(r => this.loadPratos(r._id));
-      },
-      error: (err) => console.error('Erro ao carregar restaurantes:', err)
-    });
-  }
+  this.restaurantService.getAllRestaurants().subscribe({
+    next: (res) => {
+      this.restaurants = res;
+      this.filteredRestaurants = res;
+      res.forEach(r => this.loadPratos(r._id));
+    },
+    error: (err) => console.error('Erro ao carregar restaurantes:', err)
+  });
+}
+
 
   loadPratos(restaurantId: string): void {
     this.menuService.getMenu(restaurantId).subscribe({
@@ -60,14 +63,11 @@ export class RestaurantComponent implements OnInit {
     );
   }
 
-togglePratosExclusivo(restaurantId: string): void {
-  // Fecha todos se clicares novamente no mesmo
-  this.expandedRestauranteId = this.expandedRestauranteId === restaurantId ? null : restaurantId;
-}
+  togglePratosExclusivo(restaurantId: string): void {
+    this.expandedRestauranteId = this.expandedRestauranteId === restaurantId ? null : restaurantId;
+  }
 
-isPratosValidos(id: string): boolean {
-  return Array.isArray(this.pratosPorRestaurante[id]) && this.pratosPorRestaurante[id].length > 0;
-}
-
-
+  isPratosValidos(id: string): boolean {
+    return Array.isArray(this.pratosPorRestaurante[id]) && this.pratosPorRestaurante[id].length > 0;
+  }
 }

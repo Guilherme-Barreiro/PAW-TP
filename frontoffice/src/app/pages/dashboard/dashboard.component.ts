@@ -1,32 +1,22 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { AuthService } from '../../services/auth.service';
+import { CommonModule } from '@angular/common'; // ⬅ necessário
+import { AdminService } from '../../services/admin.service';
 
 @Component({
-  standalone: true,
   selector: 'app-dashboard',
-  imports: [CommonModule, RouterModule],
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+  standalone: true,
+  imports: [CommonModule], // ⬅ obrigatório para usar *ngIf
+  templateUrl: './dashboard.component.html'
 })
 export class DashboardComponent implements OnInit {
-  user: any = {};
-  restaurantes: any[] = [];
+  stats: any = null;
 
-  constructor(private auth: AuthService, private http: HttpClient) {}
+  constructor(private adminService: AdminService) {}
 
   ngOnInit(): void {
-    this.http.get<any>('http://localhost:3000/api/auth/profile').subscribe({
-      next: (res) => {
-        this.user = res.user;
-        this.restaurantes = res.restaurantes || [];
-      },
-      error: () => {
-        this.user = {};
-        this.restaurantes = [];
-      }
+    this.adminService.getStats().subscribe({
+      next: (res: any) => this.stats = res,
+      error: (err: any) => console.error('Erro ao carregar estatísticas:', err)
     });
   }
 }

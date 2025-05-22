@@ -5,19 +5,24 @@ import { AuthService } from '../../services/auth.service';
 @Component({
   standalone: true,
   selector: 'app-redirect',
-  template: '', 
+  template: '',
 })
 export class RedirectComponent implements OnInit {
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
-    const token = localStorage.getItem('token');
+    const isAuth = this.authService.isAuthenticated();
     const role = this.authService.getUserRole();
 
-    if (token && role) {
-      this.router.navigate(['/home']);
+    if (!isAuth) {
+      this.router.navigate(['/landing']);
+      return;
+    }
+
+    if (role === 'admin') {
+      this.router.navigate(['/admin']);
     } else {
-      this.router.navigate(['/login']);
+      this.router.navigate(['/home']);
     }
   }
 }

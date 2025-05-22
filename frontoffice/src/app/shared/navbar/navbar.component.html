@@ -1,39 +1,46 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
-  <a class="navbar-brand" routerLink="/home">
-    <i class="bi bi-house-door-fill me-2"></i> Restaurantes
-  </a>
+  <a class="navbar-brand text-white fw-bold" href="/">🍽️ Restaurantes</a>
 
-  <div class="collapse navbar-collapse justify-content-end">
+  <button
+    class="navbar-toggler"
+    type="button"
+    data-bs-toggle="collapse"
+    data-bs-target="#navbarNav"
+    aria-controls="navbarNav"
+    aria-expanded="false"
+    aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav ms-auto">
-      <!-- Se autenticado -->
-      <li *ngIf="isLoggedIn" class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-          <i class="bi bi-person-circle me-1"></i> {{ user?.username || 'Utilizador' }}
-        </a>
-        <ul class="dropdown-menu dropdown-menu-end">
-          <li>
-            <a class="dropdown-item" routerLink="/profile">
-              <i class="bi bi-person-fill me-2"></i> Ver Perfil
-            </a>
-          </li>
-          <li><hr class="dropdown-divider" /></li>
-          <li>
-            <a class="dropdown-item text-danger" (click)="logout()">
-              <i class="bi bi-box-arrow-right me-2"></i> Terminar Sessão
-            </a>
-          </li>
-        </ul>
-      </li>
-
-      <!-- Se não autenticado -->
-      <ng-container *ngIf="!isLoggedIn">
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/login"><i class="bi bi-box-arrow-in-right me-1"></i> Login</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/register"><i class="bi bi-person-plus me-1"></i> Criar Conta</a>
+      <ng-container *ngIf="isLoggedIn; else guestLinks">
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            id="userDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false">
+            <i class="bi bi-person-circle"></i> {{ user?.nomeCompleto || 'Utilizador' }}
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" routerLink="/profile">Ver Perfil</a></li>
+            <li><hr class="dropdown-divider" /></li>
+            <li><a class="dropdown-item text-danger" (click)="logout()">Terminar Sessão</a></li>
+          </ul>
         </li>
       </ng-container>
+
+      <ng-template #guestLinks>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/login"><i class="bi bi-box-arrow-in-right"></i> Login</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/register"><i class="bi bi-person-plus"></i> Criar Conta</a>
+        </li>
+      </ng-template>
     </ul>
   </div>
 </nav>

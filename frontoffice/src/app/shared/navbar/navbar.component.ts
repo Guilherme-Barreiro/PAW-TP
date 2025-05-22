@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
@@ -10,23 +10,28 @@ import { RouterModule } from '@angular/router';
   imports: [CommonModule, RouterModule],
   templateUrl: './navbar.component.html'
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent implements OnInit, OnDestroy {
   user: any = null;
   isLoggedIn: boolean = false;
+  private authSub!: Subscription;
 
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
-    const userData = this.authService.getUser();
     this.isLoggedIn = this.authService.isAuthenticated();
+    this.user = this.authService.getUser();
 
-    if (userData) {
-      this.user = userData;
-    }
+    this.authSub = this.authService.authStatus$.subscribe(status => {
+      this.isLoggedIn = status;
+      this.user = status ? this.authService.getUser() : null;
+    });
   }
 
   logout(): void {
-  this.authService.logout(); // ✅ Já trata da navegação internamente
-}
+    this.authService.logout();
+  }
 
+  ngOnDestroy(): void {
+    this.authSub.unsubscribe();
+  }
 }

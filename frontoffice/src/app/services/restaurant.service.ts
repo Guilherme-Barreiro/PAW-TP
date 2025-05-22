@@ -27,6 +27,18 @@ export class RestaurantService {
   return this.http.get<any>(`${this.apiUrl}/${id}`, { headers });
 }
 
+getPendingRestaurants() {
+  return this.http.get<any[]>('http://localhost:3000/api/restaurants/status/pending');
+}
+
+validateRestaurant(id: string) {
+  return this.http.put(`http://localhost:3000/api/restaurants/${id}/validate`, {});
+}
+
+rejectRestaurant(id: string) {
+  return this.http.put(`http://localhost:3000/api/restaurants/${id}/reject`, {});
+}
+
   // ✅ Buscar todos os restaurantes (se necessário)
   getAllRestaurants(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);

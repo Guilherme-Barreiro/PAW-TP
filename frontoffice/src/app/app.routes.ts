@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './services/auth.guard';
+import { authGuard, adminGuard } from './services/auth.guard';
 
 export const routes: Routes = [
   {
@@ -8,9 +8,9 @@ export const routes: Routes = [
     pathMatch: 'full'
   },
   {
-    path: 'landing',
-    loadComponent: () =>
-      import('./pages/home/home.component').then(m => m.HomeComponent) 
+  path: 'landing',
+  loadComponent: () =>
+    import('./shared/restaurant/restaurant.component').then(m => m.RestaurantComponent)
   },
   {
     path: 'login',
@@ -23,12 +23,11 @@ export const routes: Routes = [
       import('./pages/register/register.component').then(m => m.RegisterComponent)
   },
   {
-  path: 'home',
-  loadComponent: () =>
-    import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent),
-  canActivate: [authGuard]
-},
-
+    path: 'home',
+    loadComponent: () =>
+      import('./pages/home/home.component').then(m => m.HomeComponent),
+    canActivate: [authGuard]
+  },
   {
     path: 'menu',
     loadComponent: () =>
@@ -54,21 +53,45 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
-  path: 'dish/:id',
-  loadComponent: () =>
-    import('./pages/details/details.component').then(m => m.DetailsComponent)
+    path: 'dish/:id',
+    loadComponent: () =>
+      import('./pages/details/details.component').then(m => m.DetailsComponent)
   },
   {
-  path: 'menu/add',
-  loadComponent: () =>
-    import('./pages/menuAddDish/menuAddDish.component').then(m => m.MenuAddDishComponent),
-  canActivate: [authGuard]
+    path: 'menu/add',
+    loadComponent: () =>
+      import('./pages/menuAddDish/menuAddDish.component').then(m => m.MenuAddDishComponent),
+    canActivate: [authGuard]
   },
   {
-  path: 'logout',
-  loadComponent: () =>
-    import('./pages/logout/logout.component').then(m => m.LogoutComponent)
+    path: 'logout',
+    loadComponent: () =>
+      import('./pages/logout/logout.component').then(m => m.LogoutComponent)
   },
+  {
+  path: 'admin',
+  loadComponent: () =>
+    import('./pages/admin/admin.component').then(m => m.AdminComponent),
+  canActivate: [adminGuard]
+},
+{
+  path: 'admin-validar',
+  loadComponent: () =>
+    import('./pages/validar/validar.component').then(m => m.ValidarComponent),
+  canActivate: [adminGuard]
+},
+{
+  path: 'admin-users',
+  loadComponent: () =>
+    import('./pages/users-manage/users-manage.component').then(m => m.UsersManageComponent),
+  canActivate: [adminGuard]
+},
+{
+  path: 'admin-dashboard',
+  loadComponent: () =>
+    import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent),
+  canActivate: [adminGuard]
+},
   {
     path: '**',
     redirectTo: 'landing'
