@@ -19,6 +19,7 @@ import { CommonModule } from '@angular/common';
 export class MenuAddDishComponent implements OnInit {
   restaurantId: string = '';
   categories = ['Carne', 'Peixe', 'Vegetariano', 'Sobremesa'];
+  menuLength: number = 0;
 
   novoPrato: any = {
     name: '',
@@ -38,7 +39,7 @@ export class MenuAddDishComponent implements OnInit {
     private authService: AuthService,
     private menuService: MenuService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const ownerId = this.authService.getUserId();
@@ -46,9 +47,21 @@ export class MenuAddDishComponent implements OnInit {
 
     this.restaurantService.getRestaurantsByOwner(ownerId).subscribe({
       next: (res) => {
-        if (res.length > 0) this.restaurantId = res[0]._id;
+        if (res.length > 0) {
+          this.restaurantId = res[0]._id;
+          this.loadMenuLength();
+        }
       },
       error: () => this.error = 'Erro ao carregar restaurante.'
+    });
+  }
+
+  loadMenuLength(): void {
+    this.menuService.getMenu(this.restaurantId).subscribe({
+      next: (menu) => {
+        this.menuLength = menu.length;
+      },
+      error: () => this.error = 'Erro ao verificar menu.'
     });
   }
 

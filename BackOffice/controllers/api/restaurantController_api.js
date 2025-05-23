@@ -15,7 +15,7 @@ const multer = require('multer');
  */
 exports.getAll = async (req, res) => {
   try {
-    const restaurants = await Restaurant.find();
+    const restaurants = await Restaurant.find({ status: 'validado' });
     res.json(restaurants);
   } catch (err) {
     res.status(500).json({ error: 'Erro ao buscar restaurantes.' });
