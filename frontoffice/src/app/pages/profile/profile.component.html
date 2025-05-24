@@ -1,5 +1,7 @@
-<div class="container mt-4">
+<div class="container mt-5">
   <div class="row justify-content-center">
+
+    <!-- Coluna Perfil -->
     <div class="col-md-6">
       <div class="card p-4 shadow">
         <h3 class="text-primary text-center mb-3">
@@ -10,21 +12,20 @@
         <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
 
         <form #perfilForm="ngForm" (ngSubmit)="updateProfile()" novalidate>
-
-          <!-- Nome Completo -->
+          <!-- Nome -->
           <div class="form-floating mb-3">
-            <input type="text" class="form-control" name="nomeCompleto"
-              [(ngModel)]="form.nomeCompleto" required pattern="^[A-Za-zÀ-ÿ\s]+$" #nome="ngModel" />
+            <input type="text" class="form-control" name="nomeCompleto" [(ngModel)]="form.nomeCompleto"
+              required pattern="^[A-Za-zÀ-ÿ\s]+$" #nome="ngModel" />
             <label>Nome Completo</label>
             <div *ngIf="nome.invalid && nome.touched" class="text-danger small mt-1">
-              Introduz um nome válido (só letras e espaços).
+              Introduz um nome válido.
             </div>
           </div>
 
           <!-- Email -->
           <div class="form-floating mb-3">
-            <input type="email" class="form-control" name="email"
-              [(ngModel)]="form.email" required #email="ngModel" />
+            <input type="email" class="form-control" name="email" [(ngModel)]="form.email"
+              required #email="ngModel" />
             <label>Email</label>
             <div *ngIf="email.invalid && email.touched" class="text-danger small mt-1">
               Introduz um email válido.
@@ -33,31 +34,31 @@
 
           <!-- Morada -->
           <div class="form-floating mb-3">
-            <input type="text" class="form-control" name="morada"
-              [(ngModel)]="form.morada" required minlength="5" #morada="ngModel" />
+            <input type="text" class="form-control" name="morada" [(ngModel)]="form.morada"
+              required minlength="5" #morada="ngModel" />
             <label>Morada</label>
             <div *ngIf="morada.invalid && morada.touched" class="text-danger small mt-1">
-              Introduz uma morada válida (mínimo 5 caracteres).
+              Introduz uma morada válida.
             </div>
           </div>
 
           <!-- Telefone -->
           <div class="form-floating mb-3">
-            <input type="text" class="form-control" name="telefone"
-              [(ngModel)]="form.telefone" required pattern="^\d{9}$" #telefone="ngModel" />
+            <input type="text" class="form-control" name="telefone" [(ngModel)]="form.telefone"
+              required pattern="^\d{9}$" #telefone="ngModel" />
             <label>Telefone</label>
             <div *ngIf="telefone.invalid && telefone.touched" class="text-danger small mt-1">
-              O telefone deve ter exatamente 9 dígitos.
+              O telefone deve ter 9 dígitos.
             </div>
           </div>
 
           <!-- NIF -->
           <div class="form-floating mb-3">
-            <input type="text" class="form-control" name="nif"
-              [(ngModel)]="form.nif" required pattern="^\d{9}$" #nif="ngModel" />
+            <input type="text" class="form-control" name="nif" [(ngModel)]="form.nif"
+              required pattern="^\d{9}$" #nif="ngModel" />
             <label>NIF</label>
             <div *ngIf="nif.invalid && nif.touched" class="text-danger small mt-1">
-              O NIF deve ter exatamente 9 dígitos.
+              O NIF deve ter 9 dígitos.
             </div>
           </div>
 
@@ -70,14 +71,59 @@
               Introduz uma data válida.
             </div>
           </div>
-
-          <!-- Botão -->
-          <button class="btn btn-success w-100" type="submit">
-  <i class="bi bi-save"></i> Atualizar Perfil
-</button>
-
         </form>
       </div>
     </div>
+
+    <!-- Coluna Histórico -->
+    <div class="col-md-6">
+      <h4 class="text-success mb-3"><i class="bi bi-receipt"></i> Histórico de Encomendas</h4>
+
+      <div *ngIf="loadingOrders" class="text-muted">A carregar encomendas...</div>
+
+      <div *ngIf="!loadingOrders && orders.length === 0" class="alert alert-info">
+        Ainda não fizeste nenhuma encomenda.
+      </div>
+
+      <div class="card shadow-sm p-3 border-start border-4 border-success mb-3" *ngFor="let order of orders">
+  <div class="card-body">
+    <h5 class="card-title">🧾 Encomenda de {{ order.createdAt | date:'short' }}</h5>
+
+    <ul class="list-group list-group-flush mb-3">
+      <li class="list-group-item d-flex justify-content-between" *ngFor="let item of order.items">
+        <span>{{ item.quantity }}x {{ item.name }}</span>
+        <span>{{ item.subtotal | currency:'EUR' }}</span>
+      </li>
+    </ul>
+
+    <div class="d-flex justify-content-between">
+      <p><strong>Total:</strong> {{ order.total | currency:'EUR' }}</p>
+      <p><strong>Estado:</strong>
+  <span [ngClass]="{
+    'badge bg-secondary': order.status === 'pendente',
+    'badge bg-success': order.status === 'enviado' || order.status === 'entregue',
+    'badge bg-danger': order.status === 'cancelado'
+  }">
+    {{ order.status | titlecase }}
+  </span>
+</p>
+
+    </div>
+  </div>
+</div>
+
+    </div>
+
+    <!-- Botões em baixo -->
+    <div class="col-12 text-center mt-4">
+      <button class="btn btn-success me-2" (click)="updateProfile()">
+        <i class="bi bi-save"></i> Atualizar Perfil
+      </button>
+      <button class="btn btn-outline-secondary" (click)="voltar()">
+  <i class="bi bi-arrow-left"></i> Voltar para o Início
+</button>
+
+    </div>
+
   </div>
 </div>

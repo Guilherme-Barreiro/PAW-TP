@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -20,12 +21,17 @@ export class ProfileComponent implements OnInit {
     dataNascimento: ''
   };
 
+  orders: any[] = [];
   message = '';
   error = '';
+  loadingOrders = true;
 
-  constructor(private http: HttpClient) {}
+constructor(private http: HttpClient, private router: Router) {}
+
+
 
   ngOnInit(): void {
+    // Carregar perfil
     this.http.get<any>('http://localhost:3000/api/auth/profile').subscribe({
       next: (res) => {
         const user = res.user;
@@ -37,12 +43,29 @@ export class ProfileComponent implements OnInit {
           nif: user.nif,
           dataNascimento: user.dataNascimento?.split('T')[0] || ''
         };
+
+        // Carregar histórico de encomendas
+        this.http.get<any[]>(`http://localhost:3000/api/orders?userId=${user._id}`).subscribe({
+          next: (orders) => {
+            this.orders = orders;
+            this.loadingOrders = false;
+          },
+          error: () => {
+            this.loadingOrders = false;
+            console.error('Erro ao carregar encomendas.');
+          }
+        });
       },
       error: () => {
         this.error = 'Erro ao carregar perfil.';
       }
     });
   }
+
+  voltar(): void {
+  this.router.navigate(['/home']);
+}
+
 
   updateProfile(): void {
     this.error = '';
