@@ -1,8 +1,13 @@
 <div class="container mt-5 text-center">
   <h1 class="display-5 fw-bold text-success mb-3">PAW Food Hub</h1>
-  <p class="lead text-muted mb-5">A sua plataforma de gestão de restaurantes e encomendas.</p>
+  <p class="lead text-muted mb-4">A sua plataforma de gestão de restaurantes e encomendas.</p>
 
-  <div class="row justify-content-center g-4">
+  <div *ngIf="hasPending" class="alert alert-warning">
+    ⚠️ Tens restaurante(s) pendente(s). Aguarda validação do administrador.
+  </div>
+
+  <div class="row justify-content-center g-4 mt-4">
+    
     <!-- Gerir Menu -->
     <div class="col-md-4">
       <div class="card h-100 shadow-sm border-start border-4 border-success">
@@ -35,5 +40,19 @@
         </div>
       </div>
     </div>
+
+    <!-- Criar Restaurante -->
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-start border-4 border-danger">
+        <div class="card-body d-flex flex-column justify-content-between">
+          <h5 class="card-title text-danger">Criar Restaurante</h5>
+          <p class="card-text">Adiciona mais um restaurante à tua conta.</p>
+          <button (click)="irParaCriar()" class="btn btn-outline-danger mt-3 w-100">
+            ➕ Criar Restaurante
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>

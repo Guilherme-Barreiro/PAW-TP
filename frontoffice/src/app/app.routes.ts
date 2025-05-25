@@ -92,6 +92,12 @@ export const routes: Routes = [
     import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent),
   canActivate: [adminGuard]
 },
+{
+  path: 'restaurant-create',
+  loadComponent: () =>
+    import('./pages/create-restaurant/create-restaurant.component').then(m => m.CreateRestaurantComponent),
+  canActivate: [authGuard]
+},
   {
     path: '**',
     redirectTo: 'landing'

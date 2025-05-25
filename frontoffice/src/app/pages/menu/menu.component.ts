@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MenuService } from '../../services/menu.service';
 import { CartService } from '../../services/cart.service';
-import { HttpClientModule } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { RestaurantService } from '../../services/restaurant.service';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-menu',
@@ -16,10 +16,11 @@ import { RouterModule } from '@angular/router';
   styleUrls: ['./menu.component.css']
 })
 export class MenuComponent implements OnInit {
+  restaurants: any[] = [];
+  selectedRestaurantId: string = '';
   dishes: any[] = [];
   selectedCategory: string = 'Todas';
   categories: string[] = ['Todas', 'Carne', 'Peixe', 'Vegetariano', 'Sobremesa'];
-  restaurantId: string = '';
 
   editedDish: any = {};
   editIndex: number | null = null;
@@ -30,7 +31,8 @@ export class MenuComponent implements OnInit {
     private menuService: MenuService,
     private cartService: CartService,
     private authService: AuthService,
-    private restaurantService: RestaurantService
+    private restaurantService: RestaurantService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -42,24 +44,23 @@ export class MenuComponent implements OnInit {
 
     this.restaurantService.getRestaurantsByOwner(ownerId).subscribe({
       next: (restaurants) => {
-        if (restaurants.length === 0) {
-          console.warn('Nenhum restaurante encontrado.');
-          return;
+        this.restaurants = restaurants.filter(r => r.status === 'validado');
+        if (this.restaurants.length > 0) {
+          this.selectedRestaurantId = this.restaurants[0]._id;
+          this.loadMenu(this.selectedRestaurantId);
         }
-
-        this.restaurantId = restaurants[0]._id;
-        this.loadMenu();
       },
       error: (err) => {
-        console.error('Erro ao buscar restaurantes do utilizador:', err);
+        console.error('Erro ao carregar restaurantes:', err);
       }
     });
   }
 
-  loadMenu(): void {
-    this.menuService.getMenu(this.restaurantId).subscribe({
+  loadMenu(restaurantId: string): void {
+    this.menuService.getMenu(restaurantId).subscribe({
       next: (menu) => {
         this.dishes = menu;
+        this.selectedDose = {};
         this.dishes.forEach((_, i) => this.selectedDose[i] = 'inteira');
       },
       error: (err) => {
@@ -73,16 +74,19 @@ export class MenuComponent implements OnInit {
     return this.dishes.filter(d => d.category === this.selectedCategory);
   }
 
-  addToCart(dish: any, dose: 'meia' | 'inteira' = 'inteira'): void {
-  const price = dose === 'meia' ? dish.price?.meia : dish.price?.inteira;
+  canAddDish(): boolean {
+    return this.dishes.length < 10;
+  }
 
-  this.cartService.addItem({
-    dishId: dish._id,
-    name: dish.name,
-    price: price,
-    quantity: 1,
-    tipo: dose
-  });
+  goToAddDish(): void {
+    if (!this.selectedRestaurantId) {
+      alert("Seleciona um restaurante primeiro.");
+      return;
+    }
+
+    this.router.navigate(['/menu/add'], {
+      queryParams: { restaurantId: this.selectedRestaurantId }
+    });
   }
 
   startEdit(index: number): void {
@@ -96,21 +100,21 @@ export class MenuComponent implements OnInit {
   }
 
   saveEdit(index: number): void {
-    this.menuService.updateDish(this.restaurantId, index, this.editedDish).subscribe({
+    this.menuService.updateDish(this.selectedRestaurantId, index, this.editedDish).subscribe({
       next: () => {
         if (this.selectedImage) {
-          this.menuService.uploadDishImage(this.restaurantId, index, this.selectedImage).subscribe(() => {
-            this.loadMenu();
+          this.menuService.uploadDishImage(this.selectedRestaurantId, index, this.selectedImage).subscribe(() => {
+            this.loadMenu(this.selectedRestaurantId);
             this.cancelEdit();
           });
         } else {
-          this.loadMenu();
+          this.loadMenu(this.selectedRestaurantId);
           this.cancelEdit();
         }
       },
       error: (err) => {
-        console.error('Erro ao atualizar prato:', err);
-        alert('Erro ao guardar alterações.');
+        console.error('Erro ao guardar alterações:', err);
+        alert('Erro ao guardar prato.');
       }
     });
   }
@@ -121,7 +125,25 @@ export class MenuComponent implements OnInit {
 
   removeDish(index: number): void {
     if (confirm('Tens a certeza que queres remover este prato?')) {
-      this.menuService.removeDish(this.restaurantId, index).subscribe(() => this.loadMenu());
+      this.menuService.removeDish(this.selectedRestaurantId, index).subscribe(() => {
+        this.loadMenu(this.selectedRestaurantId);
+      });
     }
   }
+
+  addToCart(dish: any, dose: 'meia' | 'inteira' = 'inteira'): void {
+    const price = dose === 'meia' ? dish.price?.meia : dish.price?.inteira;
+    this.cartService.addItem({
+      dishId: dish._id,
+      name: dish.name,
+      price,
+      quantity: 1,
+      tipo: dose
+    });
+  }
+
+  editarRestaurante(id: string): void {
+  this.router.navigate(['/restaurants/manage', id]);
+}
+
 }

@@ -1,4 +1,11 @@
 <div class="container mt-4">
+  <div class="mb-4">
+    <label for="restaurantSelect" class="form-label">Seleciona o restaurante a gerir:</label>
+    <select class="form-select" [(ngModel)]="selectedRestaurantId" (change)="loadMenu(selectedRestaurantId!)">
+      <option *ngFor="let r of restaurants" [value]="r._id">{{ r.name }} - {{ r.location }}</option>
+    </select>
+  </div>
+
   <h2 class="mb-4 text-primary">🍽️ Menu do Restaurante</h2>
 
   <div class="row align-items-end mb-4">
@@ -11,9 +18,12 @@
 
     <div class="col-md-6 text-end">
       <label class="form-label invisible d-block">.</label>
-      <a routerLink="/menu/add" class="btn btn-outline-primary">
+      <button
+        class="btn btn-outline-primary"
+        [disabled]="!canAddDish()"
+        (click)="goToAddDish()">
         ➕ Adicionar Novo Prato
-      </a>
+      </button>
     </div>
   </div>
 
@@ -63,10 +73,10 @@
         </h5>
         <p class="card-text">{{ dish.description }}</p>
         <p class="card-text">💰 Inteira: <strong>{{ dish.price?.inteira }} €</strong>
-        <br />🧪 Meia: <strong>{{ dish.price?.meia }} €</strong></p>
+          <br />🧪 Meia: <strong>{{ dish.price?.meia }} €</strong></p>
 
         <img *ngIf="dish.image" [src]="'http://localhost:3000/images/pratos/' + dish.image"
-             alt="Prato" class="img-thumbnail mb-2" style="width: 150px; height: auto;" />
+          alt="Prato" class="img-thumbnail mb-2" style="width: 150px; height: auto;" />
 
         <div class="d-flex flex-wrap gap-2 mt-2 align-items-center">
           <select class="form-select form-select-sm w-auto" [(ngModel)]="selectedDose[i]">
@@ -75,10 +85,10 @@
           </select>
 
           <button
-    class="btn btn-outline-success btn-sm"
-    (click)="addToCart(dish, selectedDose[i])">
-    🛒 Carrinho
-  </button>
+            class="btn btn-outline-success btn-sm"
+            (click)="addToCart(dish, selectedDose[i])">
+            🛒 Carrinho
+          </button>
           <button class="btn btn-outline-secondary btn-sm" (click)="startEdit(i)">✏️ Editar</button>
           <button class="btn btn-outline-danger btn-sm" (click)="removeDish(i)">🗑️ Remover</button>
         </div>
@@ -86,9 +96,15 @@
 
     </div>
   </div>
+
+  <div *ngFor="let restaurant of restaurants">
+    <h4>{{ restaurant.name }}</h4>
+    <button class="btn btn-warning" (click)="editarRestaurante(restaurant._id)">Editar Restaurante</button>
+  </div>
+
   <div class="text-center mt-4">
-  <a routerLink="/home" class="btn btn-secondary">
-    ⬅️ Voltar para o Início
-  </a>
-</div>
+    <a routerLink="/home" class="btn btn-secondary">
+      ⬅️ Voltar para o Início
+    </a>
+  </div>
 </div>

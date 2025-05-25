@@ -1,0 +1,35 @@
+<div class="container mt-5">
+  <h2 class="text-primary mb-4 text-center">🍴 Criar Restaurante</h2>
+
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+  <div *ngIf="success" class="alert alert-success">{{ success }}</div>
+
+  <form (ngSubmit)="submit()">
+    <div class="mb-3">
+      <label for="name" class="form-label">Nome do Restaurante</label>
+      <input type="text" class="form-control" [(ngModel)]="form.name" name="name" required />
+    </div>
+
+    <div class="mb-3">
+      <label for="location" class="form-label">Localização</label>
+      <input type="text" class="form-control" [(ngModel)]="form.location" name="location" required />
+    </div>
+
+    <div class="mb-3">
+      <label for="tempoEntrega" class="form-label">Tempo de Entrega (min)</label>
+      <input type="number" class="form-control" [(ngModel)]="form.tempoEntrega" name="tempoEntrega" min="5" required />
+    </div>
+
+    <div class="mb-3">
+      <label for="raioEntrega" class="form-label">Raio de Entrega (km)</label>
+      <input type="number" class="form-control" [(ngModel)]="form.raioEntrega" name="raioEntrega" min="1" required />
+    </div>
+
+    <div class="mb-3">
+      <label for="image" class="form-label">Imagem do Restaurante</label>
+      <input type="file" class="form-control" (change)="onFileSelected($event)" required />
+    </div>
+
+    <button type="submit" class="btn btn-success w-100">Criar Restaurante</button>
+  </form>
+</div>

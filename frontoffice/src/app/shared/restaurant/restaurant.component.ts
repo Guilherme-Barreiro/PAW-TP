@@ -33,20 +33,44 @@ export class RestaurantComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-  this.restaurantService.getAllRestaurants().subscribe({
-    next: (res) => {
-      this.restaurants = res;
-      this.filteredRestaurants = res;
-      res.forEach(r => this.loadPratos(r._id));
-    },
-    error: (err) => console.error('Erro ao carregar restaurantes:', err)
-  });
-}
+    this.loadRestaurants();
+  }
 
+  // Método que carrega os restaurantes públicos validados e aplica filtro inicial
+  loadRestaurants(): void {
+    this.restaurantService.getPublicRestaurants().subscribe({
+      next: (res) => {
+        this.restaurants = res;
+        this.applyFilters(); // garante que filteredRestaurants não fica vazio inicialmente
+      },
+      error: (err) => console.error("Erro ao buscar restaurantes:", err)
+    });
+  }
 
+  // Aplica filtro local nos restaurantes já carregados
+  applyFilters(): void {
+    const normalize = (str: string) =>
+      str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+    this.filteredRestaurants = this.restaurants.filter(r =>
+      (!this.searchName || normalize(r.name || '').includes(normalize(this.searchName))) &&
+      (!this.searchLocation || normalize(r.location || '').includes(normalize(this.searchLocation)))
+    );
+  }
+
+  // Alterna a expansão dos pratos, carregando-os ao expandir
+  togglePratosExclusivo(restaurantId: string): void {
+    this.expandedRestauranteId = this.expandedRestauranteId === restaurantId ? null : restaurantId;
+
+    if (this.expandedRestauranteId) {
+      this.loadPratos(restaurantId);
+    }
+  }
+
+  // Carrega pratos do restaurante especificado
   loadPratos(restaurantId: string): void {
     this.menuService.getMenu(restaurantId).subscribe({
-      next: (pratos) => {
+      next: (pratos: any[]) => {
         this.pratosPorRestaurante[restaurantId] = pratos;
       },
       error: (err) => {
@@ -56,17 +80,7 @@ export class RestaurantComponent implements OnInit {
     });
   }
 
-  applyFilters(): void {
-    this.filteredRestaurants = this.restaurants.filter(r =>
-      (this.searchName ? r.name?.toLowerCase().includes(this.searchName.toLowerCase()) : true) &&
-      (this.searchLocation ? r.location?.toLowerCase().includes(this.searchLocation.toLowerCase()) : true)
-    );
-  }
-
-  togglePratosExclusivo(restaurantId: string): void {
-    this.expandedRestauranteId = this.expandedRestauranteId === restaurantId ? null : restaurantId;
-  }
-
+  // Verifica se existem pratos válidos para mostrar
   isPratosValidos(id: string): boolean {
     return Array.isArray(this.pratosPorRestaurante[id]) && this.pratosPorRestaurante[id].length > 0;
   }

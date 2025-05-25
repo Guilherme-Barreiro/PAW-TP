@@ -83,6 +83,23 @@ exports.getAll = async (req, res) => {
   }
 };
 
+
+exports.getByRestaurant = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const orders = await Order.find({ restaurant: id })
+      .populate('client', 'nomeCompleto email') // mostra dados do cliente
+      .sort({ createdAt: -1 });
+
+    res.json(orders);
+  } catch (err) {
+    console.error('Erro ao buscar pedidos do restaurante:', err);
+    res.status(500).json({ error: 'Erro ao buscar pedidos.' });
+  }
+};
+
+
 exports.updateStatus = async (req, res) => {
   try {
     const { id } = req.params;

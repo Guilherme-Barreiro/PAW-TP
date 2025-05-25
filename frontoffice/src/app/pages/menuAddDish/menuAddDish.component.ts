@@ -1,21 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { MenuService } from '../../services/menu.service';
-import { RestaurantService } from '../../services/restaurant.service';
-import { AuthService } from '../../services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-
 
 @Component({
   selector: 'app-menu-add-dish',
   templateUrl: './menuAddDish.component.html',
   styleUrls: ['./menuAddDish.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule] // 👈 Aqui
+  imports: [CommonModule, FormsModule]
 })
-
-
 export class MenuAddDishComponent implements OnInit {
   restaurantId: string = '';
   categories = ['Carne', 'Peixe', 'Vegetariano', 'Sobremesa'];
@@ -35,33 +30,26 @@ export class MenuAddDishComponent implements OnInit {
   success = '';
 
   constructor(
-    private restaurantService: RestaurantService,
-    private authService: AuthService,
+    private route: ActivatedRoute,
     private menuService: MenuService,
     private router: Router
-  ) { }
+  ) {}
 
   ngOnInit(): void {
-    const ownerId = this.authService.getUserId();
-    if (!ownerId) return;
-
-    this.restaurantService.getRestaurantsByOwner(ownerId).subscribe({
-      next: (res) => {
-        if (res.length > 0) {
-          this.restaurantId = res[0]._id;
-          this.loadMenuLength();
-        }
-      },
-      error: () => this.error = 'Erro ao carregar restaurante.'
+    this.route.queryParams.subscribe(params => {
+      this.restaurantId = params['restaurantId'];
+      if (!this.restaurantId) {
+        this.error = 'ID do restaurante não foi fornecido.';
+        return;
+      }
+      this.loadMenuLength();
     });
   }
 
   loadMenuLength(): void {
     this.menuService.getMenu(this.restaurantId).subscribe({
-      next: (menu) => {
-        this.menuLength = menu.length;
-      },
-      error: () => this.error = 'Erro ao verificar menu.'
+      next: (menu) => this.menuLength = menu.length,
+      error: () => this.error = 'Erro ao verificar o menu.'
     });
   }
 
@@ -83,11 +71,17 @@ export class MenuAddDishComponent implements OnInit {
       this.error = 'Deve selecionar uma imagem.';
       return false;
     }
+    if (this.menuLength >= 10) {
+      this.error = 'Este restaurante já tem 10 pratos.';
+      return false;
+    }
     return true;
   }
 
   submit(): void {
     this.error = '';
+    this.success = '';
+
     if (!this.validate()) return;
 
     const formData = new FormData();
@@ -96,6 +90,7 @@ export class MenuAddDishComponent implements OnInit {
         formData.append(key, this.novoPrato[key]);
       }
     }
+
     formData.append('price_meia', this.novoPrato.price.meia);
     formData.append('price_inteira', this.novoPrato.price.inteira);
     formData.append('image', this.selectedImage!);

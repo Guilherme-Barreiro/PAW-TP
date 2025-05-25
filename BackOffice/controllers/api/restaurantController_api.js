@@ -22,6 +22,19 @@ exports.getAll = async (req, res) => {
   }
 };
 
+
+
+exports.getPublicRestaurants = async (req, res) => {
+  try {
+    const restaurantes = await Restaurant.find({ status: 'validado' });
+    res.status(200).json(restaurantes);
+  } catch (err) {
+    console.error('[getPublicRestaurants]', err);
+    res.status(500).json({ error: 'Erro ao buscar restaurante.' });
+  }
+};
+
+
 /**
  * @swagger
  * /restaurants/{id}:
@@ -83,25 +96,39 @@ exports.getOne = async (req, res) => {
  *       400:
  *         description: Erro ao criar
  */
+// POST /api/restaurants
 exports.create = async (req, res) => {
   try {
-    const { name, location, createdBy, tempoPreparacao, tempoEntrega, raioEntrega } = req.body;
+    const {
+      name,
+      location,
+      description,
+      tempoEntrega,
+      raioEntrega,
+      createdBy
+    } = req.body;
+
+    const image = req.file?.filename || 'default-restaurant.png';
 
     const newRestaurant = new Restaurant({
       name,
       location,
-      createdBy,
-      tempoPreparacao,
+      description,
       tempoEntrega,
-      raioEntrega
+      raioEntrega,
+      createdBy,
+      image
     });
 
     await newRestaurant.save();
-    res.status(201).json(newRestaurant);
+    res.status(201).json({ message: 'Restaurante criado com sucesso!', restaurant: newRestaurant });
+
   } catch (err) {
+    console.error('Erro ao criar restaurante:', err);
     res.status(400).json({ error: 'Erro ao criar restaurante.' });
   }
 };
+
 
 /**
  * @swagger
@@ -190,20 +217,29 @@ exports.getMenu = async (req, res) => {
   }
 };
 
+
 // POST /api/restaurants/:id/menu
 exports.addDish = async (req, res) => {
   try {
-    const restaurant = await Restaurant.findById(req.params.id);
-    if (!restaurant) return res.status(404).json({ error: 'Restaurante não encontrado.' });
+    const restaurantId = req.params.id;
+
+    if (!restaurantId) {
+      return res.status(400).json({ error: 'ID do restaurante em falta na rota.' });
+    }
+
+    const restaurant = await Restaurant.findById(restaurantId);
+    if (!restaurant) {
+      return res.status(404).json({ error: 'Restaurante não encontrado.' });
+    }
 
     if (restaurant.menu.length >= 10) {
-      return res.status(400).json({ error: 'O menu já tem 10 pratos.' });
+      return res.status(400).json({ error: 'O menu já contém 10 pratos.' });
     }
 
     const prato = {
       name: req.body.name,
       category: req.body.category,
-      description: req.body.description,
+      description: req.body.description || '',
       nutrition: req.body.nutrition || '',
       tempoPreparacao: parseInt(req.body.tempoPreparacao) || 15,
       price: {
@@ -216,12 +252,17 @@ exports.addDish = async (req, res) => {
     restaurant.menu.push(prato);
     await restaurant.save();
 
-    res.status(201).json({ message: 'Prato adicionado com imagem.', menu: restaurant.menu });
+    return res.status(201).json({
+      message: '✅ Prato adicionado com sucesso.',
+      pratoAdicionado: prato,
+      totalPratos: restaurant.menu.length
+    });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Erro ao adicionar prato.' });
+    console.error('Erro ao adicionar prato:', err);
+    return res.status(500).json({ error: 'Erro ao adicionar prato.' });
   }
 };
+
 
 
 // PUT /api/restaurants/:id/menu/:index
@@ -304,14 +345,15 @@ exports.rejectRestaurant = async (req, res) => {
     const restaurant = await Restaurant.findById(req.params.id);
     if (!restaurant) return res.status(404).json({ error: 'Restaurante não encontrado.' });
 
-    restaurant.status = 'recusado';
+    restaurant.status = 'rejeitado';
     await restaurant.save();
 
-    res.json({ message: 'Restaurante recusado.' });
+    res.json({ message: 'Restaurante rejeitado.' });
   } catch (err) {
     res.status(500).json({ error: 'Erro ao recusar restaurante.' });
   }
 };
+
 
 // GET /api/restaurants/owner/:ownerId
 exports.getByOwner = async (req, res) => {

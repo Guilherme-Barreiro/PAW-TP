@@ -8,6 +8,7 @@ router.post('/', orderController.create);
 
 // Listar pedidos
 router.get('/', orderController.getAll);
+router.get('/orders/byRestaurant/:id', orderController.getByRestaurant);
 
 router.patch('/api/orders/:id/status', orderController.updateStatus);
 

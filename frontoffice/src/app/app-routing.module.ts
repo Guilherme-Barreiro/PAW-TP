@@ -7,6 +7,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { RedirectComponent } from './pages/redirect/redirect.component';
 import { LogoutComponent } from './pages/logout/logout.component';
+import { RestaurantManageComponent } from './pages/restaurant-manage/restaurant-manage.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -14,6 +15,7 @@ const routes: Routes = [
   { path: 'order', component: OrderComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  { path: 'restaurants/manage/:id', component: RestaurantManageComponent },
   { path: 'landing', component: LogoutComponent },
 
 

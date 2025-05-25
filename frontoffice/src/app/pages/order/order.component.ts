@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { CartService } from '../../services/cart.service';
-import { OrderService } from '../../services/order.service';
+import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -13,37 +11,47 @@ import { AuthService } from '../../services/auth.service';
   imports: [CommonModule]
 })
 export class OrderComponent implements OnInit {
-  constructor(
-    private cartService: CartService,
-    private orderService: OrderService,
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  orders: any[] = [];
+  error = '';
+  loading = true;
+
+  constructor(private http: HttpClient, private auth: AuthService) {}
 
   ngOnInit(): void {
-  const employeeId = this.authService.getUserId();
-  const restaurantId = '680ceb26b8d3bae0bb7ad0b7'; // ID correto
-  const items = this.cartService.getItems().map(item => ({
-    dish: item.dishId,
-    quantity: item.quantity
-  }));
-  const total = this.cartService.getTotal();
+    const ownerId = this.auth.getUserId();
 
-  if (!employeeId) {
-    console.error('Não autenticado.');
-    return;
+    this.http.get<any[]>(`http://localhost:3000/api/restaurants/owner/${ownerId}`).subscribe({
+      next: (res) => {
+        if (res.length === 0) {
+          this.error = 'Ainda não tens restaurante registado.';
+          this.loading = false;
+          return;
+        }
+
+        const restaurant = res[0];
+
+        // ❗ Só mostrar se estiver validado
+        if (restaurant.status !== 'validado') {
+          this.error = `O teu restaurante está com o estado: ${restaurant.status}. Só poderás ver pedidos quando for validado.`;
+          this.loading = false;
+          return;
+        }
+
+        this.http.get<any[]>(`http://localhost:3000/api/orders/byRestaurant/${restaurant._id}`).subscribe({
+          next: (orders) => {
+            this.orders = orders;
+            this.loading = false;
+          },
+          error: () => {
+            this.error = 'Erro ao carregar pedidos.';
+            this.loading = false;
+          }
+        });
+      },
+      error: () => {
+        this.error = 'Erro ao obter restaurante.';
+        this.loading = false;
+      }
+    });
   }
-
-  this.orderService.createOrder(employeeId, restaurantId, items, total).subscribe({
-    next: (res) => {
-      console.log('✅ Pedido criado:', res);
-      this.cartService.clearCart();
-      this.router.navigate(['/']);
-    },
-    error: (err) => {
-      console.error('❌ Erro ao criar pedido:', err);
-    }
-  });
-}
-
 }
