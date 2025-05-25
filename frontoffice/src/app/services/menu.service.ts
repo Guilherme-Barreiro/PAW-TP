@@ -26,13 +26,15 @@ export class MenuService {
     );
   }
 
-  getDishById(dishId: string): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.get<any>(
-      `http://localhost:3000/api/dishes/${dishId}`,
-      { headers }
-    );
-  }
+getDishById(dishId: string): Observable<any> {
+  const headers = this.getAuthHeaders();
+  return this.http.get<any>(
+    `http://localhost:3000/api/restaurants/dish/${dishId}`,
+    { headers }
+  );
+}
+
+
 
   addDish(restaurantId: string, formData: FormData): Observable<any> {
     const headers = this.getAuthHeaders();

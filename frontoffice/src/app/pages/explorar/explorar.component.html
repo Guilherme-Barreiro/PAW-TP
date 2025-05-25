@@ -1,0 +1,47 @@
+<div class="container mt-4">
+  <h2 class="text-center mb-4">🌍 Explorar Restaurantes</h2>
+
+  <!-- Lista de restaurantes -->
+  <div class="row g-4 mb-5">
+    <div class="col-md-4" *ngFor="let r of restaurants">
+      <div class="card h-100 shadow-sm">
+        <img *ngIf="r.image"
+             [src]="'http://localhost:3000/images/restaurantes/' + r.image"
+             class="card-img-top"
+             alt="Imagem Restaurante" />
+        <div class="card-body">
+          <h5 class="card-title">{{ r.name }}</h5>
+          <p class="card-text text-muted">{{ r.location }}</p>
+          <button class="btn btn-outline-primary w-100 mt-2"
+                  (click)="verMenu(r._id)">
+            Ver Pratos 🍽️
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Menu do restaurante selecionado -->
+  <div *ngIf="menu && menu.length > 0">
+    <h3 class="text-center mb-3 text-success">🍴 Menu do Restaurante</h3>
+    <div class="row g-4">
+      <div class="col-md-6" *ngFor="let d of menu">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">{{ d.name }}</h5>
+            <p class="card-text">{{ d.description || 'Sem descrição.' }}</p>
+            <p>
+              <strong>Meia:</strong> {{ d.price?.meia || 0 }} €
+              &nbsp;|&nbsp;
+              <strong>Inteira:</strong> {{ d.price?.inteira || 0 }} €
+            </p>
+            <div class="d-flex gap-2 mt-2">
+              <button class="btn btn-outline-success btn-sm" (click)="addToCart(d, 'meia')">Meia Dose</button>
+              <button class="btn btn-outline-primary btn-sm" (click)="addToCart(d, 'inteira')">Dose Inteira</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

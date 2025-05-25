@@ -454,6 +454,32 @@ exports.adminDashboard = async (req, res) => {
   }
 };
 
+exports.getDishById = async (req, res) => {
+  try {
+    const dishId = req.params.id;
+
+    const restaurants = await Restaurant.find({ 'menu._id': dishId });
+    const restaurant = restaurants[0];
+
+    if (!restaurant) {
+      return res.status(404).json({ error: 'Restaurante não encontrado para este prato.' });
+    }
+
+    const dish = restaurant.menu.id(dishId);
+    if (!dish) {
+      return res.status(404).json({ error: 'Prato não encontrado no menu.' });
+    }
+
+    const response = dish.toObject();
+    response.restaurantId = restaurant._id; // adiciona o restaurantId para uso no carrinho
+
+    res.json(response);
+  } catch (err) {
+    console.error('[getDishById]', err);
+    res.status(500).json({ error: 'Erro ao buscar prato por ID.' });
+  }
+};
+
 // GET /api/restaurants/:id/menu/:index - Buscar prato por índice
 exports.getDishByIndex = async (req, res) => {
   try {

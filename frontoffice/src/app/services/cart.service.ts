@@ -6,7 +6,8 @@ export interface CartItem {
   name: string;
   price: number;
   quantity: number;
-  tipo: 'meia' | 'inteira'; // NOVO
+  tipo: 'meia' | 'inteira';
+  restaurantId: string;
 }
 
 @Injectable({
@@ -34,6 +35,16 @@ export class CartService {
   }
 
   addItem(item: CartItem) {
+    if (
+      this.cartItems.length > 0 &&
+      this.cartItems[0].restaurantId !== item.restaurantId
+    ) {
+      if (!confirm('O carrinho já contém pratos de outro restaurante. Desejas limpar o carrinho para adicionar este novo prato?')) {
+        return;
+      }
+      this.clearCart();
+    }
+
     const index = this.cartItems.findIndex(
       i => i.dishId === item.dishId && i.tipo === item.tipo
     );

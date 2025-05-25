@@ -16,7 +16,6 @@ import { RestaurantService } from '../../services/restaurant.service';
 })
 export class CartComponent implements OnInit {
   cartItems: CartItem[] = [];
-  restaurantId: string = '';
 
   constructor(
     private cartService: CartService,
@@ -27,22 +26,6 @@ export class CartComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const userId = this.authService.getUserId();
-    if (!userId) return;
-
-    this.restaurantService.getRestaurantsByOwner(userId).subscribe({
-      next: (restaurants: any[]) => {
-        if (restaurants.length > 0) {
-          this.restaurantId = restaurants[0]._id;
-        } else {
-          console.warn('Nenhum restaurante encontrado para este utilizador.');
-        }
-      },
-      error: (err: any) => {
-        console.error('Erro ao buscar restaurantes:', err);
-      }
-    });
-
     this.loadCart();
     this.cartService.cart$.subscribe(() => this.loadCart());
   }
@@ -85,33 +68,34 @@ export class CartComponent implements OnInit {
   }
 
   placeOrder(): void {
-    const employeeId = this.authService.getUserId();
+  const employeeId = this.authService.getUserId();
+  if (!employeeId || this.cartItems.length === 0) return;
 
-    if (!employeeId || !this.restaurantId) {
-      console.error('Faltam dados para submeter o pedido.');
-      return;
-    }
-
-    const items = this.cartItems.map(item => ({
-      dish: item.dishId,
-      name: item.name,
-      price: item.price,
-      quantity: item.quantity,
-      subtotal: item.price * item.quantity
-    }));
-
-    const total = this.getTotal();
-
-    this.orderService.createOrder(employeeId, this.restaurantId, items, total).subscribe({
-      next: () => {
-        alert('Pedido enviado com sucesso!');
-        this.cartService.clearCart();
-        this.router.navigate(['/']);
-      },
-      error: err => {
-        console.error('Erro ao enviar pedido:', err);
-        alert('Erro ao enviar pedido.');
-      }
-    });
+  const restaurantId = this.cartItems[0].restaurantId;
+  if (!restaurantId) {
+    alert('Restaurante desconhecido para este pedido.');
+    return;
   }
+
+  const items = this.cartItems.map(item => ({
+    dish: item.dishId,
+    quantity: item.quantity,
+    tipo: item.tipo // ✅ ESSENCIAL para distinguir meia/inteira
+  }));
+
+  const total = this.getTotal();
+
+  this.orderService.createOrder(employeeId, restaurantId, items, total).subscribe({
+    next: () => {
+      alert('Pedido enviado com sucesso!');
+      this.cartService.clearCart();
+      this.router.navigate(['/']);
+    },
+    error: err => {
+      console.error('Erro ao enviar pedido:', err);
+      alert('Erro ao enviar pedido.');
+    }
+  });
+}
+
 }

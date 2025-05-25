@@ -131,16 +131,19 @@ export class MenuComponent implements OnInit {
     }
   }
 
-  addToCart(dish: any, dose: 'meia' | 'inteira' = 'inteira'): void {
-    const price = dose === 'meia' ? dish.price?.meia : dish.price?.inteira;
-    this.cartService.addItem({
-      dishId: dish._id,
-      name: dish.name,
-      price,
-      quantity: 1,
-      tipo: dose
-    });
-  }
+  addToCart(dish: any, tipo: 'meia' | 'inteira') {
+  const price = tipo === 'meia' ? dish.price.meia : dish.price.inteira;
+
+  this.cartService.addItem({
+    dishId: dish._id,
+    name: dish.name,
+    price,
+    quantity: 1,
+    tipo,
+    restaurantId: this.selectedRestaurantId  // ✅ adiciona esta linha
+  });
+}
+
 
   editarRestaurante(id: string): void {
   this.router.navigate(['/restaurants/manage', id]);

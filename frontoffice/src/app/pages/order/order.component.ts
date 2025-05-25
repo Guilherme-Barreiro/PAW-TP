@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -19,27 +20,29 @@ export class OrderComponent implements OnInit {
 
   ngOnInit(): void {
     const ownerId = this.auth.getUserId();
+    if (!ownerId) {
+      this.error = 'Utilizador não autenticado.';
+      this.loading = false;
+      return;
+    }
 
     this.http.get<any[]>(`http://localhost:3000/api/restaurants/owner/${ownerId}`).subscribe({
-      next: (res) => {
-        if (res.length === 0) {
-          this.error = 'Ainda não tens restaurante registado.';
+      next: (restaurants) => {
+        const validados = restaurants.filter(r => r.status === 'validado');
+
+        if (validados.length === 0) {
+          this.error = 'Ainda não tens restaurante validado.';
           this.loading = false;
           return;
         }
 
-        const restaurant = res[0];
+        const pedidosObservables = validados.map(r =>
+          this.http.get<any[]>(`http://localhost:3000/api/orders/byRestaurant/${r._id}`)
+        );
 
-        // ❗ Só mostrar se estiver validado
-        if (restaurant.status !== 'validado') {
-          this.error = `O teu restaurante está com o estado: ${restaurant.status}. Só poderás ver pedidos quando for validado.`;
-          this.loading = false;
-          return;
-        }
-
-        this.http.get<any[]>(`http://localhost:3000/api/orders/byRestaurant/${restaurant._id}`).subscribe({
-          next: (orders) => {
-            this.orders = orders;
+        forkJoin(pedidosObservables).subscribe({
+          next: (resultArrays) => {
+            this.orders = resultArrays.flat();
             this.loading = false;
           },
           error: () => {
@@ -49,7 +52,7 @@ export class OrderComponent implements OnInit {
         });
       },
       error: () => {
-        this.error = 'Erro ao obter restaurante.';
+        this.error = 'Erro ao obter restaurantes.';
         this.loading = false;
       }
     });

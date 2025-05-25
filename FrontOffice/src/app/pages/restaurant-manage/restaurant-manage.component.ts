@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RestaurantService } from '../../services/restaurant.service';
 import { AuthService } from '../../services/auth.service';
+import { ActivatedRoute } from '@angular/router';
+
 
 @Component({
   selector: 'app-restaurant-manage',
@@ -27,12 +29,32 @@ export class RestaurantManageComponent implements OnInit {
   constructor(
     private restaurantService: RestaurantService,
     private auth: AuthService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
+    
   ) {}
 
   ngOnInit(): void {
+  const id = this.route.snapshot.paramMap.get('id');
+  if (id) {
+    this.editMode = true;
+    this.editingId = id;
+    this.restaurantService.getRestaurantById(id).subscribe({
+      next: (r) => {
+        this.form = {
+          name: r.name,
+          location: r.location,
+          tempoEntrega: r.tempoEntrega,
+          raioEntrega: r.raioEntrega
+        };
+      },
+      error: () => console.warn('Erro ao carregar restaurante para edição.')
+    });
+  } else {
     this.loadRestaurants();
   }
+}
+
 
   loadRestaurants(): void {
     const ownerId = this.auth.getUserId();

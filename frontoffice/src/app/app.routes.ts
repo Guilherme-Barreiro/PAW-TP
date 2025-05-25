@@ -98,6 +98,18 @@ export const routes: Routes = [
     import('./pages/create-restaurant/create-restaurant.component').then(m => m.CreateRestaurantComponent),
   canActivate: [authGuard]
 },
+{
+  path: 'restaurants/manage/:id',
+  loadComponent: () =>
+    import('./pages/restaurant-manage/restaurant-manage.component').then(m => m.RestaurantManageComponent),
+  canActivate: [authGuard]
+},
+{
+  path: 'explorar',
+  loadComponent: () =>
+    import('./pages/explorar/explorar.component').then(m => m.ExplorarComponent),
+  canActivate: [authGuard] 
+},
   {
     path: '**',
     redirectTo: 'landing'

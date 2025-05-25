@@ -14,6 +14,8 @@ router.get('/status/pending', controller.getPending);
 router.get('/status/validated', controller.getValidated);
 router.get('/admin/dashboard', controller.adminDashboard);
 
+router.get('/dish/:id', controller.getDishById);
+
 router.post('/', uploadRestaurant.single('image'), controller.create);
 // ✅ Depois: rotas com parâmetros dinâmicos
 router.get('/:id/menu', controller.getMenu);

@@ -43,20 +43,23 @@ export class DetailsComponent implements OnInit {
   }
 
   addToCart(): void {
-    if (!this.dish) return;
-    const precoSelecionado = this.selectedDose === 'meia'
-      ? this.dish.price?.meia ?? 0
-      : this.dish.price?.inteira ?? 0;
+  if (!this.dish) return;
 
-this.cartService.addItem({
-  dishId: this.dish._id,
-  name: this.dish.name,
-  price: this.dish.price?.inteira,
-  quantity: 1,
-  tipo: 'inteira'
-});
+  const precoSelecionado = this.selectedDose === 'meia'
+    ? this.dish.price?.meia ?? 0
+    : this.dish.price?.inteira ?? 0;
+
+  this.cartService.addItem({
+    dishId: this.dish._id,
+    name: this.dish.name,
+    price: precoSelecionado,
+    quantity: 1,
+    tipo: this.selectedDose,
+    restaurantId: this.dish.restaurantId // ✅ assegura que vem do backend
+  });
+
+  alert(`${this.dish.name} (${this.selectedDose}) adicionado ao carrinho.`);
+}
 
 
-    alert(`${this.dish.name} (${this.selectedDose}) adicionado ao carrinho.`);
-  }
 }
