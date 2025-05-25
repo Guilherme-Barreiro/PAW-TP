@@ -18,6 +18,7 @@ const routes: Routes = [
   { path: 'restaurants/manage/:id', component: RestaurantManageComponent },
   { path: 'landing', component: LogoutComponent },
 
+  //
 
   // ✅ Correção: lazy-load para componente standalone
   {
