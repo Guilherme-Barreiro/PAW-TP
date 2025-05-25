@@ -27,6 +27,13 @@ export class RestaurantService {
   return this.http.get<any>(`${this.apiUrl}/${id}`, { headers });
 }
 
+updateRestaurantWithImage(id: string, formData: FormData): Observable<any> {
+  const headers = new HttpHeaders({
+    Authorization: `Bearer ${localStorage.getItem('token') || ''}`
+  });
+  return this.http.put(`${this.apiUrl}/${id}`, formData, { headers });
+}
+
 getPublicRestaurants(): Observable<any[]> {
   return this.http.get<any[]>('http://localhost:3000/api/restaurants/public');
 }

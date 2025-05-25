@@ -22,6 +22,7 @@ export class RestaurantManageComponent implements OnInit {
   };
   editMode = false;
   editingId: string | null = null;
+  selectedImage: File | null = null;
 
   constructor(
     private restaurantService: RestaurantService,
@@ -44,30 +45,35 @@ export class RestaurantManageComponent implements OnInit {
   }
 
   submit(): void {
-    const payload = {
-      ...this.form,
-      createdBy: this.auth.getUserId(),
-      status: 'pendente'
-    };
+  const ownerId = this.auth.getUserId();
+  if (!ownerId) return;
 
-    if (this.editMode && this.editingId) {
-      this.restaurantService.updateRestaurant(this.editingId, payload).subscribe({
-        next: () => {
-          this.resetForm();
-          this.loadRestaurants();
-        },
-        error: () => alert('Erro ao atualizar restaurante')
-      });
-    } else {
-      this.restaurantService.createRestaurant(payload).subscribe({
-        next: () => {
-          this.resetForm();
-          this.loadRestaurants();
-        },
-        error: () => alert('Erro ao criar restaurante')
-      });
+  if (this.editMode && this.editingId) {
+    const formData = new FormData();
+    formData.append('name', this.form.name);
+    formData.append('location', this.form.location);
+    formData.append('tempoEntrega', this.form.tempoEntrega.toString());
+    formData.append('raioEntrega', this.form.raioEntrega.toString());
+    formData.append('createdBy', ownerId);
+
+    if (this.selectedImage) {
+      formData.append('image', this.selectedImage);
     }
+
+    this.restaurantService.updateRestaurantWithImage(this.editingId, formData).subscribe({
+      next: () => {
+        this.resetForm();
+        this.loadRestaurants();
+      },
+      error: () => alert('Erro ao atualizar restaurante')
+    });
   }
+}
+
+onFileSelected(event: any): void {
+  this.selectedImage = event.target.files[0];
+}
+
 
   edit(restaurant: any): void {
     this.editMode = true;

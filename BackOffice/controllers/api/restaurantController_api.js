@@ -176,6 +176,26 @@ exports.update = async (req, res) => {
   }
 };
 
+exports.updateWithImage = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    if (req.file) {
+      updateData.image = req.file.filename;
+    }
+
+    const updated = await Restaurant.findByIdAndUpdate(id, updateData, { new: true });
+    if (!updated) return res.status(404).json({ error: 'Restaurante não encontrado.' });
+
+    res.json({ message: 'Restaurante atualizado com sucesso.', restaurant: updated });
+  } catch (err) {
+    console.error('Erro ao atualizar restaurante com imagem:', err);
+    res.status(500).json({ error: 'Erro ao atualizar restaurante.' });
+  }
+};
+
+
 
 /**
  * @swagger

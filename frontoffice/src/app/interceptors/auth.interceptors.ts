@@ -11,7 +11,7 @@ import { Observable } from 'rxjs';
 export class AuthInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
   if (typeof window === 'undefined') {
-    return next.handle(req); // ⚠️ ignora se em SSR
+    return next.handle(req); 
   }
 
   const token = localStorage.getItem('token');

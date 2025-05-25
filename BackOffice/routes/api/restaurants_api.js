@@ -14,7 +14,7 @@ router.get('/status/pending', controller.getPending);
 router.get('/status/validated', controller.getValidated);
 router.get('/admin/dashboard', controller.adminDashboard);
 
-router.post('/', upload.single('image'), controller.create);
+router.post('/', uploadRestaurant.single('image'), controller.create);
 // ✅ Depois: rotas com parâmetros dinâmicos
 router.get('/:id/menu', controller.getMenu);
 router.post('/:id/menu', upload.single('image'), controller.addDish);
@@ -23,8 +23,8 @@ router.delete('/:id/menu/:index', controller.removeDish);
 router.get('/:id/menu/:index', controller.getDishByIndex);
 router.post('/:id/menu/:index/image', upload.single('image'), controller.uploadDishImage);
 
-router.get('/:id', controller.getOne);
-router.put('/:id', controller.update);
+router.put('/:id', uploadRestaurant.single('image'), controller.updateWithImage);
+router.get('/:id', controller.getOne);  
 router.delete('/:id', controller.remove);
 
 module.exports = router;

@@ -5,17 +5,22 @@
     <input [(ngModel)]="form.location" name="location" placeholder="Localização" required />
     <input [(ngModel)]="form.tempoEntrega" name="tempoEntrega" type="number" placeholder="Tempo de entrega (min)" required />
     <input [(ngModel)]="form.raioEntrega" name="raioEntrega" type="number" placeholder="Raio de entrega (km)" required />
+    <input type="file" (change)="onFileSelected($event)" />
     <button type="submit">{{ editMode ? 'Atualizar' : 'Criar' }}</button>
     <button type="button" (click)="resetForm()" *ngIf="editMode">Cancelar</button>
 </form>
 
 <ul>
-    <li *ngFor="let r of restaurants">
-        <strong>{{ r.name }}</strong> ({{ r.location }})
-        <button (click)="edit(r)">✏️</button>
-        <button (click)="remove(r._id)">🗑️</button>
-    </li>
+  <li *ngFor="let r of restaurants">
+    <strong>{{ r.name }}</strong> ({{ r.location }})
+    <br>
+    <img *ngIf="r.image" [src]="'http://localhost:3000/images/restaurantes/' + r.image" width="120" class="img-thumbnail mt-1" />
+    <br>
+    <button (click)="edit(r)">✏️</button>
+    <button (click)="remove(r._id)">🗑️</button>
+  </li>
 </ul>
+
 
 <button class="btn btn-outline-secondary mt-4" (click)="voltar()">
   ⬅️ Voltar para o Painel de Administração

@@ -14,9 +14,7 @@ export class LogoutComponent {
     this.nome = nav?.extras?.state?.['username'] || 'Utilizador';
 
     // ⏳ Redireciona após 5 segundos
-    setTimeout(() => {
-      this.router.navigate(['/landing']);
-    }, 5000);
+    
   }
 
   voltarManualmente(): void {
