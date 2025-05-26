@@ -16,6 +16,10 @@ import { RestaurantService } from '../../services/restaurant.service';
 })
 export class CartComponent implements OnInit {
   cartItems: CartItem[] = [];
+  tempoRestante: number = 0;
+  minutos: number = 0;
+  segundos: number = 0;
+  timerInterval: any;
 
   constructor(
     private cartService: CartService,
@@ -28,6 +32,28 @@ export class CartComponent implements OnInit {
   ngOnInit(): void {
     this.loadCart();
     this.cartService.cart$.subscribe(() => this.loadCart());
+    this.iniciarTemporizador();
+  }
+
+  iniciarTemporizador(): void {
+    const startTime = this.cartService.getStartTime();
+    if (!startTime) return;
+
+    this.timerInterval = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      const tempoLimite = 10 * 60; // 10 minutos
+      this.tempoRestante = tempoLimite - elapsed;
+
+      if (this.tempoRestante <= 0) {
+        clearInterval(this.timerInterval);
+        this.cartService.clearCart();
+        alert('⏱️ Tempo esgotado! O carrinho foi limpo.');
+        this.router.navigate(['/']);
+      } else {
+        this.minutos = Math.floor(this.tempoRestante / 60);
+        this.segundos = this.tempoRestante % 60;
+      }
+    }, 1000);
   }
 
   loadCart(): void {
@@ -68,34 +94,37 @@ export class CartComponent implements OnInit {
   }
 
   placeOrder(): void {
-  const employeeId = this.authService.getUserId();
-  if (!employeeId || this.cartItems.length === 0) return;
+    const employeeId = this.authService.getUserId();
+    if (!employeeId || this.cartItems.length === 0) return;
 
-  const restaurantId = this.cartItems[0].restaurantId;
-  if (!restaurantId) {
-    alert('Restaurante desconhecido para este pedido.');
-    return;
-  }
-
-  const items = this.cartItems.map(item => ({
-    dish: item.dishId,
-    quantity: item.quantity,
-    tipo: item.tipo // ✅ ESSENCIAL para distinguir meia/inteira
-  }));
-
-  const total = this.getTotal();
-
-  this.orderService.createOrder(employeeId, restaurantId, items, total).subscribe({
-    next: () => {
-      alert('Pedido enviado com sucesso!');
-      this.cartService.clearCart();
-      this.router.navigate(['/']);
-    },
-    error: err => {
-      console.error('Erro ao enviar pedido:', err);
-      alert('Erro ao enviar pedido.');
+    const restaurantId = this.cartItems[0].restaurantId;
+    if (!restaurantId) {
+      alert('Restaurante desconhecido para este pedido.');
+      return;
     }
-  });
-}
 
+    const items = this.cartItems.map(item => ({
+      dish: item.dishId,
+      name: item.name,
+      price: item.price,
+      quantity: item.quantity,
+      subtotal: item.price * item.quantity,
+      tipo: item.tipo
+    }));
+
+    const total = this.getTotal();
+
+    this.orderService.createOrder(employeeId, restaurantId, items, total).subscribe({
+      next: () => {
+        alert('Pedido enviado com sucesso!');
+        this.cartService.clearCart();
+        clearInterval(this.timerInterval);
+        this.router.navigate(['/']);
+      },
+      error: err => {
+        console.error('Erro ao enviar pedido:', err);
+        alert('Erro ao enviar pedido.');
+      }
+    });
+  }
 }

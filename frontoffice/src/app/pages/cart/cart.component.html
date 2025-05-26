@@ -1,6 +1,15 @@
 <div class="container mt-4">
   <h3 class="text-center mb-4">🛒 Carrinho de Compras</h3>
 
+  <!-- Temporizador -->
+  <div *ngIf="tempoRestante > 0" class="alert alert-info text-center">
+    ⏳ Tens {{ minutos }}:{{ segundos < 10 ? '0' + segundos : segundos }} para finalizar a encomenda.
+  </div>
+
+  <div *ngIf="tempoRestante === 0" class="alert alert-warning text-center">
+    ⚠️ O tempo expirou! O carrinho será limpo.
+  </div>
+
   <div class="row justify-content-center">
     <!-- Coluna dos itens do carrinho -->
     <div class="col-lg-8">
@@ -53,11 +62,9 @@
     </div>
   </div>
 
-
-<div class="text-center mt-4">
-  <a routerLink="/home" class="btn btn-secondary">
-    ⬅️ Voltar para o Início
-  </a>
-</div>
-
+  <div class="text-center mt-4">
+    <a routerLink="/home" class="btn btn-secondary">
+      ⬅️ Voltar para o Início
+    </a>
+  </div>
 </div>

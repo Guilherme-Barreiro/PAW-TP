@@ -110,6 +110,10 @@ export const routes: Routes = [
     import('./pages/explorar/explorar.component').then(m => m.ExplorarComponent),
   canActivate: [authGuard] 
 },
+{
+  path: 'meus-pedidos',
+  loadComponent: () => import('./pages/my-order/my-order.component').then(m => m.MyOrderComponent)
+},
   {
     path: '**',
     redirectTo: 'landing'

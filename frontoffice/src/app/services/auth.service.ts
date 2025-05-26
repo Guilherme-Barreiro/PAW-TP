@@ -24,12 +24,20 @@ constructor(private http: HttpClient, private router: Router) {}
     });
   }
 
-  logout(): void {
+logout(): void {
+  const userId = this.getUserId();
+  if (userId) {
+    localStorage.removeItem(`cart_${userId}`);
+  }
+
+  const username = this.getUser()?.nomeCompleto || 'Utilizador';
+
   localStorage.removeItem('token');
   localStorage.removeItem('user');
-  this.authStatus.next(false); 
+  this.authStatus.next(false);
+
   this.router.navigate(['/logout'], {
-    state: { username: this.getUser()?.nomeCompleto || 'Utilizador' }
+    state: { username }
   });
 }
 

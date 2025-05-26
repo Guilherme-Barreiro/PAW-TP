@@ -28,38 +28,43 @@ export class DetailsComponent implements OnInit {
 
   ngOnInit(): void {
     this.dishId = this.route.snapshot.paramMap.get('id') || '';
+
     this.menuService.getDishById(this.dishId).subscribe({
-      next: (res) => this.dish = res,
+      next: (res) => {
+        this.dish = {
+          ...res.prato,
+          restaurantId: res.restaurantId // ✅ assegura o ID do restaurante
+        };
+      },
       error: (err) => console.error('Erro ao carregar prato:', err)
     });
-
-    this.cartItemCount = this.cartService.getTotalItems();
-    this.cartTotal = this.cartService.getTotal();
 
     this.cartService.cart$.subscribe(() => {
       this.cartItemCount = this.cartService.getTotalItems();
       this.cartTotal = this.cartService.getTotal();
     });
+
+    // Inicializa valores atuais
+    this.cartItemCount = this.cartService.getTotalItems();
+    this.cartTotal = this.cartService.getTotal();
   }
 
   addToCart(): void {
-  if (!this.dish) return;
+    if (!this.dish) return;
 
-  const precoSelecionado = this.selectedDose === 'meia'
-    ? this.dish.price?.meia ?? 0
-    : this.dish.price?.inteira ?? 0;
+    const precoSelecionado = this.selectedDose === 'meia'
+      ? this.dish.price?.meia ?? 0
+      : this.dish.price?.inteira ?? 0;
 
-  this.cartService.addItem({
-    dishId: this.dish._id,
-    name: this.dish.name,
-    price: precoSelecionado,
-    quantity: 1,
-    tipo: this.selectedDose,
-    restaurantId: this.dish.restaurantId // ✅ assegura que vem do backend
-  });
+    this.cartService.addItem({
+      dishId: this.dish._id,
+      name: this.dish.name,
+      price: precoSelecionado,
+      quantity: 1,
+      tipo: this.selectedDose,
+      restaurantId: this.dish.restaurantId
+    });
 
-  alert(`${this.dish.name} (${this.selectedDose}) adicionado ao carrinho.`);
-}
-
-
+    alert(`${this.dish.name} (${this.selectedDose}) adicionado ao carrinho.`);
+  }
 }

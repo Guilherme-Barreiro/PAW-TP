@@ -12,27 +12,34 @@ export class OrderService {
   constructor(private http: HttpClient) {}
 
   createOrder(
-    employeeId: string,
-    restaurantId: string,
-    items: { dish: string; quantity: number }[],
-    total: number
-  ): Observable<any> {
-    const token = localStorage.getItem('token');
+  employeeId: string,
+  restaurantId: string,
+  items: {
+    dish: string;
+    name: string;
+    price: number;
+    quantity: number;
+    subtotal: number;
+    tipo: 'meia' | 'inteira';
+  }[],
+  total: number
+): Observable<any> {
+  const token = localStorage.getItem('token');
 
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`
-    });
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`
+  });
 
-    const orderPayload = {
-      employee: employeeId,
-      restaurant: restaurantId,
-      items,
-      total
-    };
+  const orderPayload = {
+    employee: employeeId,
+    restaurant: restaurantId,
+    items,
+    total
+  };
 
-    return this.http.post(this.apiUrl, orderPayload, { headers });
-  }
+  return this.http.post(this.apiUrl, orderPayload, { headers });
+}
   updateOrderStatus(orderId: string, status: string): Observable<any> {
     const token = localStorage.getItem('token');
 

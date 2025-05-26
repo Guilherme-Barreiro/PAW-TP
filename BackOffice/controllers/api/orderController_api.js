@@ -113,6 +113,37 @@
   };
 
 
+exports.cancelOrder = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.id;
+
+    const order = await Order.findById(req.params.id);
+    if (!order) return res.status(404).json({ error: 'Pedido não encontrado.' });
+
+    // Só o cliente que fez o pedido pode cancelar
+    if (order.client?.toString() !== userId) {
+      return res.status(403).json({ error: 'Não tens permissão para cancelar este pedido.' });
+    }
+
+    if (order.status !== 'pending') {
+      return res.status(400).json({ error: 'Só é possível cancelar pedidos pendentes.' });
+    }
+
+    order.status = 'cancelled';
+    order.cancelado = true;
+    await order.save();
+
+    res.json({ message: 'Pedido cancelado com sucesso.', order });
+  } catch (err) {
+    console.error('[cancelOrder]', err);
+    res.status(500).json({ error: 'Erro ao cancelar pedido.' });
+  }
+};
+
+
+
   exports.updateStatus = async (req, res) => {
     try {
       const { id } = req.params;

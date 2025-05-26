@@ -3,16 +3,17 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { forkJoin } from 'rxjs';
+import { OrderStatusComponent } from '../order-status/order-status.component';
 
 @Component({
   standalone: true,
   selector: 'app-order',
   templateUrl: './order.component.html',
   styleUrls: ['./order.component.css'],
-  imports: [CommonModule]
+  imports: [CommonModule, OrderStatusComponent]
 })
 export class OrderComponent implements OnInit {
-  orders: any[] = [];
+  groupedOrders: { restaurante: string, pedidos: any[] }[] = [];
   error = '';
   loading = true;
 
@@ -29,7 +30,6 @@ export class OrderComponent implements OnInit {
     this.http.get<any[]>(`http://localhost:3000/api/restaurants/owner/${ownerId}`).subscribe({
       next: (restaurants) => {
         const validados = restaurants.filter(r => r.status === 'validado');
-
         if (validados.length === 0) {
           this.error = 'Ainda não tens restaurante validado.';
           this.loading = false;
@@ -42,7 +42,20 @@ export class OrderComponent implements OnInit {
 
         forkJoin(pedidosObservables).subscribe({
           next: (resultArrays) => {
-            this.orders = resultArrays.flat();
+            const allOrders = resultArrays.flat();
+
+            const agrupado: { [nomeRestaurante: string]: any[] } = {};
+            allOrders.forEach(order => {
+              const nome = order.restaurant?.name || 'Sem Nome';
+              if (!agrupado[nome]) agrupado[nome] = [];
+              agrupado[nome].push(order);
+            });
+
+            this.groupedOrders = Object.entries(agrupado).map(([restaurante, pedidos]) => ({
+              restaurante,
+              pedidos
+            }));
+
             this.loading = false;
           },
           error: () => {
@@ -56,5 +69,16 @@ export class OrderComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  traduzirEstado(status: string): string {
+    switch (status) {
+      case 'pending': return 'Pendente';
+      case 'preparing': return 'A preparar';
+      case 'shipped': return 'Enviado';
+      case 'delivered': return 'Entregue';
+      case 'cancelled': return 'Cancelado';
+      default: return status;
+    }
   }
 }

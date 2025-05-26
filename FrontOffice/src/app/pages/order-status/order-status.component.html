@@ -1,7 +1,18 @@
-<div>
-  <p><strong>Current status:</strong> {{ status }}</p>
-  <select [(ngModel)]="selectedStatus">
-    <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+<div class="d-flex align-items-center gap-2 flex-wrap">
+  <label class="fw-semibold me-2 mb-1">Estado:</label>
+
+  <select
+    [(ngModel)]="selectedStatus"
+    class="form-select form-select-sm w-auto mb-1">
+    <option *ngFor="let s of statuses" [value]="s">
+      {{ traduzirStatus(s) }}
+    </option>
   </select>
-  <button (click)="changeStatus()">Update Status</button>
+
+  <button
+    *ngIf="selectedStatus !== currentStatus"
+    class="btn btn-outline-primary btn-sm mb-1"
+    (click)="changeStatus()">
+    Guardar
+  </button>
 </div>

@@ -8,7 +8,7 @@
 
   <p><strong>Categoria:</strong> {{ dish.category }}</p>
   <p><strong>Descrição:</strong> {{ dish.description }}</p>
-  <p><strong>Nutrição:</strong> {{ dish.nutritionalInfo || 'N/D' }}</p>
+  <p><strong>Nutrição:</strong> {{ dish.nutrition || 'N/D' }}</p>
 
   <p><strong>Preço Meia Dose:</strong> {{ dish.price?.meia || 'N/D' }} €</p>
   <p><strong>Preço Dose Inteira:</strong> {{ dish.price?.inteira || 'N/D' }} €</p>
@@ -37,4 +37,5 @@
   <button (click)="addToCart()" class="btn btn-success me-2">
     🛒 Adicionar {{ selectedDose === 'meia' ? 'Meia' : 'Inteira' }} Dose
   </button>
-  <button routerLink="/menu" class="btn btn-secondary">⬅️ Volta
+  <button routerLink="/menu" class="btn btn-secondary">⬅️ Voltar</button>
+</div>

@@ -4,22 +4,52 @@
   <div *ngIf="loading" class="text-muted">A carregar encomendas...</div>
   <div *ngIf="error" class="alert alert-warning">{{ error }}</div>
 
-  <div *ngIf="!loading && orders.length === 0 && !error" class="alert alert-info">
+  <div *ngIf="!loading && groupedOrders.length === 0 && !error" class="alert alert-info">
     Nenhum pedido recebido ainda.
   </div>
 
-  <div *ngFor="let order of orders" class="card mb-3 shadow-sm">
-    <div class="card-body">
-      <h5 class="card-title">🧾 Encomenda #{{ order._id }}</h5>
-      <p><strong>Cliente:</strong> {{ order.client?.nomeCompleto || 'Desconhecido' }}</p>
-      <p><strong>Total:</strong> {{ order.total }} €</p>
-      <p><strong>Estado:</strong> {{ order.status }}</p>
+  <div *ngFor="let grupo of groupedOrders">
+    <h4 class="mt-4 text-primary border-bottom pb-1">{{ grupo.restaurante }}</h4>
 
-      <ul class="list-group list-group-flush mt-3">
-        <li *ngFor="let item of order.items" class="list-group-item">
-          {{ item.quantity }}x {{ item.name }} — {{ item.price }} € (Subtotal: {{ item.subtotal }} €)
-        </li>
-      </ul>
+    <div *ngFor="let order of grupo.pedidos" class="card mb-3 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">🧾 Encomenda #{{ order._id }}</h5>
+        <p><strong>Cliente:</strong> {{ order.client?.nomeCompleto || 'Desconhecido' }}</p>
+        <p><strong>Total:</strong> {{ order.total }} €</p>
+
+        <!-- ✅ Estado com estilo -->
+        <p>
+          <strong>Estado:</strong>
+          <span [ngClass]="{
+            'badge bg-secondary': order.status === 'pending',
+            'badge bg-warning text-dark': order.status === 'preparing',
+            'badge bg-info text-dark': order.status === 'shipped',
+            'badge bg-success': order.status === 'delivered',
+            'badge bg-danger': order.status === 'cancelled'
+          }">
+            {{ traduzirEstado(order.status) }}
+          </span>
+        </p>
+
+        <!-- ✅ Tempo estimado -->
+        <p><strong>Tempo Estimado:</strong> {{ order.tempoTotal || 'N/D' }} minutos</p>
+
+        <!-- ✅ Componente de alteração de estado -->
+        <app-order-status
+          [orderId]="order._id"
+          [currentStatus]="order.status">
+        </app-order-status>
+
+        <ul class="list-group list-group-flush mt-3">
+          <li *ngFor="let item of order.items" class="list-group-item">
+            {{ item.quantity }}x {{ item.name }}
+            <span class="text-muted">
+              ({{ item.tipo === 'meia' ? 'Meia dose' : 'Dose inteira' }})
+            </span>
+            — {{ item.price }} € (Subtotal: {{ item.subtotal }} €)
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </div>

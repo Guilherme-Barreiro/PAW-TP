@@ -1,0 +1,47 @@
+<div class="container mt-5">
+  <h2 class="text-success mb-4">📜 Os Meus Pedidos</h2>
+
+  <div *ngIf="loading" class="text-muted">A carregar pedidos...</div>
+  <div *ngIf="error" class="alert alert-warning">{{ error }}</div>
+
+  <div *ngIf="!loading && orders.length === 0 && !error" class="alert alert-info">
+    Ainda não fizeste nenhum pedido.
+  </div>
+
+  <div *ngFor="let order of orders" class="card mb-3 shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title">Pedido #{{ order._id }}</h5>
+
+      <p><strong>Restaurante:</strong> {{ order.restaurant?.name || 'Desconhecido' }}</p>
+      <p><strong>Total:</strong> {{ order.total }} €</p>
+      <p><strong>Estado:</strong> {{ order.status }}</p>
+
+      <!-- ⏱️ Tempo restante -->
+      <p *ngIf="order.status !== 'delivered' && order.status !== 'cancelled'">
+        <strong>Tempo estimado:</strong>
+        <span class="badge bg-warning text-dark">
+          {{ order.tempoRestante }}
+        </span>
+      </p>
+
+      <!-- ❌ Botão de cancelamento -->
+      <button
+        *ngIf="order.status === 'pending'"
+        class="btn btn-sm btn-outline-danger mt-2"
+        (click)="cancelar(order._id)">
+        ❌ Cancelar Pedido
+      </button>
+
+      <!-- Lista dos itens -->
+      <ul class="list-group list-group-flush mt-3">
+        <li *ngFor="let item of order.items" class="list-group-item">
+          {{ item.quantity }}x {{ item.name }}
+          <span class="text-muted">
+            ({{ item.tipo === 'meia' ? 'Meia dose' : 'Dose inteira' }})
+          </span>
+          — {{ item.price }} € (Subtotal: {{ item.subtotal }} €)
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

@@ -10,14 +10,13 @@ export class LogoutComponent {
   nome: string = 'Utilizador';
 
   constructor(private router: Router) {
-    const nav = this.router.getCurrentNavigation();
-    this.nome = nav?.extras?.state?.['username'] || 'Utilizador';
-
-    // ⏳ Redireciona após 5 segundos
-    
+    const state = this.router.getCurrentNavigation()?.extras.state;
+    if (state && state['username']) {
+      this.nome = state['username'];
+    }
   }
 
   voltarManualmente(): void {
-    this.router.navigate(['/landing']);
+    this.router.navigate(['/']);
   }
 }
