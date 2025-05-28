@@ -1,26 +1,47 @@
 <h2>Gerir Restaurantes</h2>
 
-<form (ngSubmit)="submit()">
-    <input [(ngModel)]="form.name" name="name" placeholder="Nome do restaurante" required />
-    <input [(ngModel)]="form.location" name="location" placeholder="Localização" required />
-    <input [(ngModel)]="form.tempoEntrega" name="tempoEntrega" type="number" placeholder="Tempo de entrega (min)" required />
-    <input [(ngModel)]="form.raioEntrega" name="raioEntrega" type="number" placeholder="Raio de entrega (km)" required />
-    <input type="file" (change)="onFileSelected($event)" />
-    <button type="submit">{{ editMode ? 'Atualizar' : 'Criar' }}</button>
-    <button type="button" (click)="resetForm()" *ngIf="editMode">Cancelar</button>
+<form (ngSubmit)="submit()" #f="ngForm">
+  <input [(ngModel)]="form.name" name="name" required #name="ngModel" placeholder="Nome do restaurante" />
+  <div class="text-danger small" *ngIf="name.invalid && name.touched">Nome obrigatório.</div>
+
+  <input [(ngModel)]="form.location" name="location" required #location="ngModel" placeholder="Localização" />
+  <div class="text-danger small" *ngIf="location.invalid && location.touched">Localização obrigatória.</div>
+
+  <input [(ngModel)]="form.tempoEntrega" name="tempoEntrega" type="number" required #tempo="ngModel" placeholder="Tempo de entrega (min)" />
+  <div class="text-danger small" *ngIf="tempo.invalid && tempo.touched">Tempo obrigatório.</div>
+
+  <input [(ngModel)]="form.raioEntrega" name="raioEntrega" type="number" required #raio="ngModel" placeholder="Raio de entrega (km)" />
+  <div class="text-danger small" *ngIf="raio.invalid && raio.touched">Raio obrigatório.</div>
+
+  <input type="file" (change)="onFileSelected($event)" />
+
+  <!-- ✅ Ações alinhadas lado a lado -->
+  <div class="d-flex justify-content-between mt-3" *ngIf="editMode">
+    <button type="submit" class="btn btn-success" [disabled]="f.invalid">Atualizar Restaurante</button>
+    <button type="button" class="btn btn-danger" (click)="confirmRemove(editingId!)">Remover Restaurante</button>
+  </div>
+
+  <!-- Modo criação -->
+  <div *ngIf="!editMode" class="mt-3">
+    <button type="submit" class="btn btn-primary" [disabled]="f.invalid">Criar Restaurante</button>
+  </div>
 </form>
 
-<ul>
+<!-- Mensagens -->
+<div *ngIf="success" class="alert alert-success mt-3">{{ success }}</div>
+<div *ngIf="error" class="alert alert-danger mt-3">{{ error }}</div>
+
+<!-- Lista de restaurantes (apenas se não estiver a editar) -->
+<ul *ngIf="!editMode" class="mt-4">
   <li *ngFor="let r of restaurants">
     <strong>{{ r.name }}</strong> ({{ r.location }})
-    <br>
+    <br />
     <img *ngIf="r.image" [src]="'http://localhost:3000/images/restaurantes/' + r.image" width="120" class="img-thumbnail mt-1" />
-    <br>
+    <br />
     <button (click)="edit(r)">✏️</button>
     <button (click)="remove(r._id)">🗑️</button>
   </li>
 </ul>
-
 
 <button class="btn btn-outline-secondary mt-4" (click)="voltar()">
   ⬅️ Voltar para o Painel de Administração

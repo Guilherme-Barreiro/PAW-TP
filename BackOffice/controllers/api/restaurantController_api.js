@@ -100,25 +100,30 @@ exports.getOne = async (req, res) => {
 exports.create = async (req, res) => {
   try {
     const {
-      name,
-      location,
-      description,
-      tempoEntrega,
-      raioEntrega,
-      createdBy
-    } = req.body;
+  name,
+  location,
+  description,
+  tempoEntrega,
+  raioEntrega
+} = req.body;
+
+const token = req.headers.authorization?.split(' ')[1];
+const decoded = jwt.verify(token, process.env.JWT_SECRET);
+const userId = decoded.id;
+
 
     const image = req.file?.filename || 'default-restaurant.png';
 
     const newRestaurant = new Restaurant({
-      name,
-      location,
-      description,
-      tempoEntrega,
-      raioEntrega,
-      createdBy,
-      image
-    });
+  name,
+  location,
+  description,
+  tempoEntrega,
+  raioEntrega,
+  createdBy: userId, 
+  image
+});
+
 
     await newRestaurant.save();
     res.status(201).json({ message: 'Restaurante criado com sucesso!', restaurant: newRestaurant });

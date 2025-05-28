@@ -1,5 +1,14 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
-  <a class="navbar-brand text-white fw-bold" href="/">🍽️ Restaurantes</a>
+<div class="d-flex align-items-center gap-4">
+  <!-- Link Início (com ícone grande) -->
+  <a *ngIf="isUserLoggedIn()" class="navbar-brand text-white fw-bold d-flex align-items-center" (click)="irParaInicio()" style="cursor: pointer;">
+    <i class="bi bi-house-door-fill me-2"></i> Início
+  </a>
+
+  <!-- Link Restaurantes -->
+  <a class="navbar-brand text-white fw-bold" routerLink="/">🍽️ Restaurantes</a>
+</div>
+
 
   <button
     class="navbar-toggler"
@@ -14,7 +23,9 @@
 
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav ms-auto">
-      <ng-container *ngIf="isLoggedIn; else guestLinks">
+
+      <!-- Se estiver autenticado -->
+      <ng-container *ngIf="isUserLoggedIn(); else guestLinks">
         <li class="nav-item dropdown">
           <a
             class="nav-link dropdown-toggle"
@@ -33,6 +44,7 @@
         </li>
       </ng-container>
 
+      <!-- Se NÃO estiver autenticado -->
       <ng-template #guestLinks>
         <li class="nav-item">
           <a class="nav-link" routerLink="/login"><i class="bi bi-box-arrow-in-right"></i> Login</a>

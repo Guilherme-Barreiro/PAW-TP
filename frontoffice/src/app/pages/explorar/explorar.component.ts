@@ -1,8 +1,7 @@
-// explorar.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { RestaurantService } from '../../services/restaurant.service';
 import { AuthService } from '../../services/auth.service';
 import { MenuService } from '../../services/menu.service';
@@ -25,7 +24,8 @@ export class ExplorarComponent implements OnInit {
     private authService: AuthService,
     private menuService: MenuService,
     private cartService: CartService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router // ✅ Adicionado
   ) {}
 
   ngOnInit(): void {
@@ -52,18 +52,24 @@ export class ExplorarComponent implements OnInit {
     });
   }
 
-addToCart(dish: any, tipo: 'meia' | 'inteira') {
-  const price = tipo === 'meia' ? dish.price.meia : dish.price.inteira;
+  addToCart(dish: any, tipo: 'meia' | 'inteira'): void {
+    const price = tipo === 'meia' ? dish.price.meia : dish.price.inteira;
+    this.cartService.addItem({
+      dishId: dish._id,
+      name: dish.name,
+      price,
+      quantity: 1,
+      tipo,
+      restaurantId: this.selectedRestaurantId
+    });
+  }
 
-  this.cartService.addItem({
-    dishId: dish._id,
-    name: dish.name,
-    price,
-    quantity: 1,
-    tipo,
-    restaurantId: this.selectedRestaurantId  // ✅ obrigatório
-  });
-}
+  voltarParaHome(): void {
+    this.router.navigate(['/home']);
+  }
 
+  isUserLoggedIn(): boolean {
+  return this.authService.isAuthenticated();
+  }
 
 }

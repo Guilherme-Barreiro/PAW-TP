@@ -9,15 +9,14 @@
   </div>
 
   <div *ngFor="let grupo of groupedOrders">
-    <h4 class="mt-4 text-primary border-bottom pb-1">{{ grupo.restaurante }}</h4>
+    <h4 class="mt-4 text-primary border-bottom pb-1">{{ grupo.restaurante || 'Sem Nome' }}</h4>
 
     <div *ngFor="let order of grupo.pedidos" class="card mb-3 shadow-sm">
       <div class="card-body">
         <h5 class="card-title">🧾 Encomenda #{{ order._id }}</h5>
-        <p><strong>Cliente:</strong> {{ order.client?.nomeCompleto || 'Desconhecido' }}</p>
+        <p><strong>Cliente:</strong> {{ order.clientName || 'Desconhecido' }}</p>
         <p><strong>Total:</strong> {{ order.total }} €</p>
 
-        <!-- ✅ Estado com estilo -->
         <p>
           <strong>Estado:</strong>
           <span [ngClass]="{
@@ -32,13 +31,19 @@
         </p>
 
         <!-- ✅ Tempo estimado -->
-        <p><strong>Tempo Estimado:</strong> {{ order.tempoTotal || 'N/D' }} minutos</p>
+        <p *ngIf="order.status !== 'cancelled'">
+  <strong>Tempo Estimado:</strong> {{ order.tempoTotal || 'N/D' }} minutos
+</p>
+
 
         <!-- ✅ Componente de alteração de estado -->
-        <app-order-status
-          [orderId]="order._id"
-          [currentStatus]="order.status">
-        </app-order-status>
+        <!-- ✅ Mostrar componente só se o pedido não estiver cancelado -->
+<app-order-status
+  *ngIf="order.status !== 'cancelled'"
+  [orderId]="order._id"
+  [currentStatus]="order.status">
+</app-order-status>
+
 
         <ul class="list-group list-group-flush mt-3">
           <li *ngFor="let item of order.items" class="list-group-item">
@@ -49,7 +54,16 @@
             — {{ item.price }} € (Subtotal: {{ item.subtotal }} €)
           </li>
         </ul>
+
+
       </div>
     </div>
   </div>
+
+          <!-- Fora de qualquer *ngFor -->
+<div class="text-center mt-5">
+  <button (click)="voltarParaHome()" class="btn btn-outline-secondary">
+    🏠 Voltar para o Início
+  </button>
+</div>
 </div>

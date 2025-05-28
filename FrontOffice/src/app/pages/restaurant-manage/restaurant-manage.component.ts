@@ -15,6 +15,9 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./restaurant-manage.component.css']
 })
 export class RestaurantManageComponent implements OnInit {
+  
+success = '';
+error = '';
   restaurants: any[] = [];
   form: any = {
     name: '',
@@ -66,9 +69,16 @@ export class RestaurantManageComponent implements OnInit {
     });
   }
 
-  submit(): void {
+submit(): void {
   const ownerId = this.auth.getUserId();
   if (!ownerId) return;
+
+  // Validação manual
+  if (!this.form.name || !this.form.location || !this.form.tempoEntrega || !this.form.raioEntrega) {
+    this.error = 'Preenche todos os campos obrigatórios.';
+    this.success = '';
+    return;
+  }
 
   if (this.editMode && this.editingId) {
     const formData = new FormData();
@@ -84,10 +94,28 @@ export class RestaurantManageComponent implements OnInit {
 
     this.restaurantService.updateRestaurantWithImage(this.editingId, formData).subscribe({
       next: () => {
-        this.resetForm();
+        this.success = 'Restaurante atualizado com sucesso!';
+        this.error = '';
+
+        // Atualiza os dados no formulário
+        this.restaurantService.getRestaurantById(this.editingId!).subscribe({
+          next: (r) => {
+            this.form = {
+              name: r.name,
+              location: r.location,
+              tempoEntrega: r.tempoEntrega,
+              raioEntrega: r.raioEntrega
+            };
+          }
+        });
+
         this.loadRestaurants();
+        setTimeout(() => (this.success = ''), 3000);
       },
-      error: () => alert('Erro ao atualizar restaurante')
+      error: () => {
+        this.error = 'Erro ao atualizar restaurante.';
+        this.success = '';
+      }
     });
   }
 }
@@ -120,6 +148,24 @@ onFileSelected(event: any): void {
   voltar(): void {
     this.router.navigate(['/admin']);
   }
+
+  confirmRemove(id: string): void {
+  if (confirm('Tens a certeza que queres remover este restaurante? Esta ação é irreversível.')) {
+    this.restaurantService.deleteRestaurant(id).subscribe({
+      next: () => {
+        this.success = 'Restaurante removido com sucesso.';
+        this.error = '';
+        this.resetForm();        
+        this.loadRestaurants();   
+      },
+      error: () => {
+        this.error = 'Erro ao remover restaurante.';
+        this.success = '';
+      }
+    });
+  }
+}
+
 
   resetForm(): void {
     this.form = { name: '', location: '', tempoEntrega: 15, raioEntrega: 5 };

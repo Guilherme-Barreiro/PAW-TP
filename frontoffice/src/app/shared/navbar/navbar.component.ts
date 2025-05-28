@@ -29,9 +29,27 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   logout(): void {
     this.authService.logout();
+    this.router.navigate(['/login']); // opcional: redirecionar após logout
   }
 
   ngOnDestroy(): void {
     this.authSub.unsubscribe();
   }
+
+  // ✅ Método renomeado para evitar conflito
+  isUserLoggedIn(): boolean {
+    return this.authService.isAuthenticated();
+  }
+
+  irParaInicio(): void {
+  const user = this.authService.getUser();
+  if (!user || !user.role) return;
+
+  if (user.role === 'admin') {
+    this.router.navigate(['/admin']);
+  } else {
+    this.router.navigate(['/home']);
+  }
+}
+
 }

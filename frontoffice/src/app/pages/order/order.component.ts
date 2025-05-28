@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { forkJoin } from 'rxjs';
 import { OrderStatusComponent } from '../order-status/order-status.component';
+import { Router } from '@angular/router'; 
 
 @Component({
   standalone: true,
@@ -17,7 +18,7 @@ export class OrderComponent implements OnInit {
   error = '';
   loading = true;
 
-  constructor(private http: HttpClient, private auth: AuthService) {}
+  constructor(private http: HttpClient, private auth: AuthService, private router: Router) {}
 
   ngOnInit(): void {
     const ownerId = this.auth.getUserId();
@@ -46,7 +47,7 @@ export class OrderComponent implements OnInit {
 
             const agrupado: { [nomeRestaurante: string]: any[] } = {};
             allOrders.forEach(order => {
-              const nome = order.restaurant?.name || 'Sem Nome';
+              const nome = order.restaurantName || 'Sem Nome';
               if (!agrupado[nome]) agrupado[nome] = [];
               agrupado[nome].push(order);
             });
@@ -80,5 +81,9 @@ export class OrderComponent implements OnInit {
       case 'cancelled': return 'Cancelado';
       default: return status;
     }
+  }
+
+  voltarParaHome(): void {
+    this.router.navigate(['/home']);
   }
 }

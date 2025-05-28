@@ -87,7 +87,11 @@
 
       <div class="card shadow-sm p-3 border-start border-4 border-success mb-3" *ngFor="let order of orders">
   <div class="card-body">
-    <h5 class="card-title">🧾 Encomenda de {{ order.createdAt | date:'short' }}</h5>
+    <h5 class="card-title">
+  🧾 Encomenda a <strong>{{ order.restaurantName || 'Restaurante desconhecido' }}</strong><br>
+  <small class="text-muted">{{ order.createdAt | date:'short' }}</small>
+</h5>
+
 
     <ul class="list-group list-group-flush mb-3">
       <li class="list-group-item d-flex justify-content-between" *ngFor="let item of order.items">

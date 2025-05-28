@@ -7,12 +7,13 @@ router.post('/', orderController.create);
 
 // Listar pedidos
 router.get('/', orderController.getAll);
-router.get('/orders/byRestaurant/:id', orderController.getByRestaurant);
+router.get('/byRestaurant/:id', orderController.getByRestaurant);
+
 
 // ✅ Cancelar pedido (somente o cliente autenticado pode)
 router.patch('/:id/cancel', orderController.cancelOrder);
 
 // Atualizar estado do pedido
-router.patch('/api/orders/:id/status', orderController.updateStatus);
+router.patch('/:id/status', orderController.updateStatus);
 
 module.exports = router;

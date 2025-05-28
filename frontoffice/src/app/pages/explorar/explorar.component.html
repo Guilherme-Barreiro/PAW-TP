@@ -1,6 +1,13 @@
 <div class="container mt-4">
   <h2 class="text-center mb-4">🌍 Explorar Restaurantes</h2>
 
+  <div class="text-end mb-4" *ngIf="isUserLoggedIn()">
+  <a routerLink="/cart" class="nav-link text-primary fw-bold">
+    <i class="bi bi-cart-fill"></i> Ver Carrinho
+  </a>
+</div>
+
+
   <!-- Lista de restaurantes -->
   <div class="row g-4 mb-5">
     <div class="col-md-4" *ngFor="let r of restaurants">

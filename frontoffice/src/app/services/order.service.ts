@@ -2,6 +2,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { AuthService } from './auth.service';
+
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +11,7 @@ import { Observable } from 'rxjs';
 export class OrderService {
   private apiUrl = 'http://localhost:3000/api/orders';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private auth: AuthService) {}
 
   createOrder(
   employeeId: string,
@@ -40,17 +42,16 @@ export class OrderService {
 
   return this.http.post(this.apiUrl, orderPayload, { headers });
 }
-  updateOrderStatus(orderId: string, status: string): Observable<any> {
-    const token = localStorage.getItem('token');
+ updateOrderStatus(orderId: string, newStatus: string): Observable<any> {
+  const token = this.auth.getUser()?.token || localStorage.getItem('token');
 
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`
-    });
+  const headers = new HttpHeaders({
+    Authorization: `Bearer ${token}`
+  });
 
-    const payload = { status };
+  return this.http.patch(`${this.apiUrl}/${orderId}/status`, { status: newStatus }, { headers });
+}
 
-    return this.http.patch(`${this.apiUrl}/${orderId}/status`, payload, { headers });
-  }
+  
 }
 

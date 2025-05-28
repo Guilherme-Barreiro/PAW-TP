@@ -56,7 +56,17 @@ const userSchema = new mongoose.Schema({
     match: [/^\d{9}$/, 'O NIF deve ter exatamente 9 dígitos.']
   },
   historicoEncomendas: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }],
-  restaurant: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' }
+  restaurant: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' },
+
+  // ✅ Novos campos para bloqueio por cancelamento
+  cancelamentos: [{
+    type: Date,
+    default: []
+  }],
+  bloqueadoAte: {
+    type: Date,
+    default: null
+  }
 });
 
 module.exports = mongoose.model('User', userSchema);

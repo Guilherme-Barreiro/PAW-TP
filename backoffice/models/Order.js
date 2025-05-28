@@ -1,49 +1,44 @@
 const mongoose = require('mongoose');
 
-const itemSchema = new mongoose.Schema({
-  dish: { type: mongoose.Schema.Types.ObjectId, required: true },
-  name: { type: String, required: true },
-  price: { type: Number, required: true, min: 0 },
-  quantity: { type: Number, required: true, min: 1 },
-  subtotal: { type: Number, required: true, min: 0 },
-  tipo: { type: String, enum: ['meia', 'inteira'], required: true } // ✅ NOVO!
-});
-
-
-const orderSchema = new mongoose.Schema({
+const OrderSchema = new mongoose.Schema({
   restaurant: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Restaurant',
     required: true
   },
-  employee: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
-  },
+  restaurantName: String, 
   client: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
-  items: {
-    type: [itemSchema],
-    validate: [a => a.length > 0, 'Pedido não pode estar vazio']
+  clientName: String,
+
+  employee: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   },
-  total: {
-    type: Number,
-    required: true,
-    min: 0
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
+
+  items: [{
+    dish: mongoose.Schema.Types.ObjectId,
+    name: String,
+    price: Number,
+    quantity: Number,
+    subtotal: Number,
+    tipo: String
+  }],
+  total: Number,
+  tempoTotal: Number,
   status: {
     type: String,
-    enum: ['pending', 'preparing', 'shipped', 'delivered', 'cancelled'], // ✅ adicionado
+    enum: ['pending', 'preparing', 'shipped', 'delivered', 'cancelled'],
     default: 'pending'
   },
-  tempoTotal: { type: Number, default: 30 }, // ✅ novo campo: minutos estimados
-  cancelado: { type: Boolean, default: false }, // ✅ útil se quiseres registar cancelamento sem mudar status
+  cancelado: {
+    type: Boolean,
+    default: false
+  }
+}, {
+  timestamps: true
 });
 
-module.exports = mongoose.model('Order', orderSchema);
+module.exports = mongoose.model('Order', OrderSchema);

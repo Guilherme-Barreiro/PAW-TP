@@ -28,6 +28,7 @@ logout(): void {
   const userId = this.getUserId();
   if (userId) {
     localStorage.removeItem(`cart_${userId}`);
+    localStorage.removeItem(`cart_start_${userId}`);
   }
 
   const username = this.getUser()?.nomeCompleto || 'Utilizador';
@@ -40,6 +41,7 @@ logout(): void {
     state: { username }
   });
 }
+
 
 saveToken(token: string): void {
   localStorage.setItem('token', token);
