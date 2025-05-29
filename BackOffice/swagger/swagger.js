@@ -35,8 +35,22 @@ const options = {
                 description: 'Endpoints relacionados com os pedidos (orders)',
             }
         ],
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                }
+            }
+        },
+        security: [
+            {
+                bearerAuth: []
+            }
+        ]
     },
-    apis: ['./routes/api/*.js'], // Onde estão as tuas rotas anotadas com Swagger
+    apis: ['./routes/api/*.js'], // Ajusta se necessário
 };
 
 const swaggerSpec = swaggerJSDoc(options);

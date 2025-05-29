@@ -56,3 +56,19 @@ button {
   text-align: center;
 }
 
+/* Garante que a app ocupa toda a altura da janela */
+html, body {
+  height: 100%;
+}
+
+/* Define a estrutura vertical principal */
+app-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Garante que o main ocupa o espaço restante */
+.main {
+  flex: 1;
+}
