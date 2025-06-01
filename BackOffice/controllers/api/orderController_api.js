@@ -4,6 +4,7 @@
   const mongoose = require('mongoose');
   const User = require('../../models/User');
   const Employee = require('../../models/Employee');
+  const stripe = require('stripe')('process.env.STRIPE_SECRET_KEY');
 
   exports.create = async (req, res) => {
   try {

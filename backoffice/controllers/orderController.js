@@ -1,5 +1,6 @@
 const Order = require('../models/Order');
 const Restaurant = require('../models/Restaurant');
+const stripe = require('stripe')('process.env.STRIPE_SECRET_KEY');
 
 exports.createOrder = async (req, res) => {
   try {
