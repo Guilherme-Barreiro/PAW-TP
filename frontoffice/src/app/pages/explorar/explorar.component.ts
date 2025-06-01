@@ -53,16 +53,29 @@ export class ExplorarComponent implements OnInit {
   }
 
   addToCart(dish: any, tipo: 'meia' | 'inteira'): void {
-    const price = tipo === 'meia' ? dish.price.meia : dish.price.inteira;
-    this.cartService.addItem({
-      dishId: dish._id,
-      name: dish.name,
-      price,
-      quantity: 1,
-      tipo,
-      restaurantId: this.selectedRestaurantId
-    });
+  const existingItems = this.cartService.getItems()
+    .filter(item => item.dishId === dish._id);
+
+  const hasMeia = existingItems.some(item => item.tipo === 'meia');
+
+  if (tipo === 'meia' && hasMeia) {
+    alert('⚠️ Já adicionaste uma meia dose deste prato.');
+    return;
   }
+
+  const price = tipo === 'meia' ? dish.price.meia : dish.price.inteira;
+
+  this.cartService.addItem({
+    dishId: dish._id,
+    name: dish.name,
+    price,
+    quantity: 1,
+    tipo,
+    restaurantId: this.selectedRestaurantId
+  });
+
+  alert(`✅ ${dish.name} (${tipo}) adicionado ao carrinho!`);
+}
 
   voltarParaHome(): void {
     this.router.navigate(['/home']);

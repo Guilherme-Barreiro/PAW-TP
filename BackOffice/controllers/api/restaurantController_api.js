@@ -436,26 +436,70 @@ exports.uploadDishImage = async (req, res) => {
 // GET /api/admin/dashboard
 exports.adminDashboard = async (req, res) => {
   try {
+    const totalUsers = await User.countDocuments();
     const totalRestaurants = await Restaurant.countDocuments({ status: 'validado' });
 
     const totalDishesAgg = await Restaurant.aggregate([
-      { $project: { count: { $size: "$menu" } } },
-      { $group: { _id: null, total: { $sum: "$count" } } }
+      { $project: { menuSize: { $size: "$menu" } } },
+      { $group: { _id: null, total: { $sum: "$menuSize" } } }
     ]);
     const totalDishes = totalDishesAgg[0]?.total || 0;
 
-    const totalUsers = await User.countDocuments();
-
-    res.json({
-      success: true,
-      data: {
-        totalRestaurants,
-        totalDishes,
-        totalUsers,
+    const topUsers = await User.aggregate([
+      {
+        $lookup: {
+          from: 'restaurants',
+          localField: '_id',
+          foreignField: 'createdBy',
+          as: 'restaurantes'
+        }
       },
+      {
+        $project: {
+          username: 1,
+          totalRestaurantes: { $size: "$restaurantes" }
+        }
+      },
+      { $sort: { totalRestaurantes: -1 } },
+      { $limit: 5 }
+    ]);
+
+    const topRestaurants = await Restaurant.aggregate([
+      {
+        $project: {
+          name: 1,
+          totalPratos: { $size: "$menu" }
+        }
+      },
+      { $sort: { totalPratos: -1 } },
+      { $limit: 5 }
+    ]);
+
+    const expensiveRestaurants = await Restaurant.aggregate([
+      { $unwind: "$menu" },
+      {
+        $group: {
+          _id: "$_id",
+          name: { $first: "$name" },
+          avgPrice: { $avg: "$menu.price.inteira" }
+        }
+      },
+      { $sort: { avgPrice: -1 } },
+      { $limit: 5 }
+    ]);
+
+    return res.status(200).json({
+      totalUsers,
+      totalRestaurants,
+      totalDishes,
+      topUsers,
+      topRestaurants,
+      expensiveRestaurants
     });
+
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Erro ao carregar dashboard.' });
+    console.error('[API Dashboard Error]', err);
+    return res.status(500).json({ error: 'Erro ao carregar estatísticas do dashboard' });
   }
 };
 

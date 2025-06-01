@@ -557,14 +557,31 @@ exports.getAdminDashboard = async (req, res) => {
     const totalDishes = totalDishesAgg[0]?.total || 0;
 
     const topUsers = await User.aggregate([
-      { $lookup: { from: 'restaurants', localField: '_id', foreignField: 'createdBy', as: 'restaurantes' } },
-      { $project: { username: 1, totalRestaurantes: { $size: "$restaurantes" } } },
+      {
+        $lookup: {
+          from: 'restaurants',
+          localField: '_id',
+          foreignField: 'createdBy',
+          as: 'restaurantes'
+        }
+      },
+      {
+        $project: {
+          username: 1,
+          totalRestaurantes: { $size: "$restaurantes" }
+        }
+      },
       { $sort: { totalRestaurantes: -1 } },
       { $limit: 5 }
     ]);
 
     const topRestaurants = await Restaurant.aggregate([
-      { $project: { name: 1, totalPratos: { $size: "$menu" } } },
+      {
+        $project: {
+          name: 1,
+          totalPratos: { $size: "$menu" }
+        }
+      },
       { $sort: { totalPratos: -1 } },
       { $limit: 5 }
     ]);
@@ -582,6 +599,19 @@ exports.getAdminDashboard = async (req, res) => {
       { $limit: 5 }
     ]);
 
+    // 👉 Verifica se é uma chamada do Angular (JSON)
+    if (req.headers.accept?.includes('application/json')) {
+      return res.json({
+        totalUsers,
+        totalRestaurants,
+        totalDishes,
+        topUsers,
+        topRestaurants,
+        expensiveRestaurants
+      });
+    }
+
+    // Caso contrário, renderiza o EJS (backoffice)
     res.render('admin/dashboard', {
       title: 'Painel de Administração',
       totalUsers,
@@ -597,6 +627,7 @@ exports.getAdminDashboard = async (req, res) => {
     res.status(500).send('Erro ao carregar dashboard');
   }
 };
+
 
 
 

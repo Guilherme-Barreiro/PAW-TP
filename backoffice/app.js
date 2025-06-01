@@ -79,6 +79,8 @@ app.use('/api/categories', categoryApiRoutes);
 app.use('/api/auth', authApiRoutes);
 app.use('/api/users', userApiRoutes);
 app.use('/api/orders', orderApiRoutes);
+app.use('/api/restaurants', require('./routes/api/restaurants_api'));
+
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

@@ -1,51 +1,46 @@
-<div class="container mt-5 text-center">
-  <h2 class="text-info mb-4">📊 Estatísticas da Plataforma</h2>
+<div class="container mt-5">
+  <h1 class="text-center mb-4">📊 Painel de Administração</h1>
 
-  <div *ngIf="stats; else carregando">
-    <div class="row justify-content-center g-4">
-      <div class="col-md-3">
-        <div class="card shadow-sm border-info">
-          <div class="card-body">
-            <h5 class="card-title">Utilizadores</h5>
-            <p class="display-6 fw-bold">{{ stats.totalUsers }}</p>
-          </div>
+  <div *ngIf="stats">
+    <div class="row text-center mb-4">
+      <div class="col-md-4">
+        <div class="card shadow-sm p-3">
+          <h5>Total de Utilizadores</h5>
+          <p class="display-6">{{ stats.totalUsers }}</p>
         </div>
       </div>
-
-      <div class="col-md-3">
-        <div class="card shadow-sm border-success">
-          <div class="card-body">
-            <h5 class="card-title">Restaurantes</h5>
-            <p class="display-6 fw-bold">{{ stats.totalRestaurants }}</p>
-          </div>
+      <div class="col-md-4">
+        <div class="card shadow-sm p-3">
+          <h5>Total de Restaurantes</h5>
+          <p class="display-6">{{ stats.totalRestaurants }}</p>
         </div>
       </div>
-
-      <div class="col-md-3">
-        <div class="card shadow-sm border-primary">
-          <div class="card-body">
-            <h5 class="card-title">Encomendas</h5>
-            <p class="display-6 fw-bold">{{ stats.totalOrders }}</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-3">
-        <div class="card shadow-sm border-warning">
-          <div class="card-body">
-            <h5 class="card-title">Receita Total</h5>
-            <p class="display-6 fw-bold">{{ stats.totalRevenue }} €</p>
-          </div>
+      <div class="col-md-4">
+        <div class="card shadow-sm p-3">
+          <h5>Total de Pratos</h5>
+          <p class="display-6">{{ stats.totalDishes }}</p>
         </div>
       </div>
     </div>
+
+    <div class="card p-4 shadow-sm mb-5">
+      <h4 class="text-center mb-4">Distribuição Geral</h4>
+      <canvas id="adminChart" class="w-100" style="max-height: 400px;"></canvas>
+    </div>
+
+    <div class="card mt-5 p-4 shadow-sm">
+      <h4 class="text-center mb-4">Top Criadores de Restaurantes</h4>
+      <canvas id="topCreatorsChart" class="w-100" style="max-height: 400px;"></canvas>
+    </div>
+
+    <div class="card mt-5 p-4 shadow-sm">
+      <h4 class="text-center mb-4">Restaurantes com Mais Pratos</h4>
+      <canvas id="topRestaurantDishesChart" class="w-100" style="max-height: 400px;"></canvas>
+    </div>
+
+    <div class="card mt-5 p-4 shadow-sm">
+      <h4 class="text-center mb-4">Restaurantes Mais Caros (Média dos Pratos)</h4>
+      <canvas id="expensiveRestaurantsChart" class="w-100" style="max-height: 400px;"></canvas>
+    </div>
   </div>
-
-  <ng-template #carregando>
-    <p class="text-muted">A carregar estatísticas...</p>
-  </ng-template>
-
-  <a class="btn btn-outline-secondary mt-5" (click)="voltar()">
-    ⬅️ Voltar para o Painel de Administração
-  </a>
 </div>
